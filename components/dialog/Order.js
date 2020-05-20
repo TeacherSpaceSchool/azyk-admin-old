@@ -378,7 +378,7 @@ const Order =  React.memo(
                                             <div className={classes.column}>
                                                 <div className={classes.row}>
                                                     <div className={classes.counterbtn} onClick={()=>{decrement(idx)}}>-</div>
-                                                    <div className={classes.value}>{order.count}&nbsp;шт</div>
+                                                    <div className={classes.value}>{order.count}&nbsp;{order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}</div>
                                                     <div className={classes.counterbtn} onClick={()=>{increment(idx)}}>+</div>
                                                 </div>
                                                 {
@@ -404,7 +404,7 @@ const Order =  React.memo(
                                             <div className={classes.value}>{order.allPrice}&nbsp;сом</div>
                                         </div>
                                         {
-                                            element.organization.consignation?
+                                            profile.role!=='client'||element.organization.consignation?
                                                 <div className={classes.row}>
                                                     <div onClick={()=>{showCons[order._id]=!showCons[order._id];setShowCons({...showCons})}} style={showCons[order._id]?{background: '#ffb300'}:{}} className={classes.minibtn}>КОНС</div>
                                                 </div>
@@ -424,7 +424,7 @@ const Order =  React.memo(
                                                     <div className={classes.column}>
                                                         <div className={classes.row}>
                                                             <div className={classes.counterbtn} onClick={()=>{decrementConsignation(idx)}}>-</div>
-                                                            <div className={classes.value}>{order.consignment}&nbsp;шт</div>
+                                                            <div className={classes.value}>{order.consignment}&nbsp;{order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}</div>
                                                             <div className={classes.counterbtn} onClick={()=>{incrementConsignation(idx)}}>+</div>
                                                         </div>
                                                         <div className={classes.addPackaging} style={{color: '#ffb300'}} onClick={()=>{
@@ -467,7 +467,7 @@ const Order =  React.memo(
                                         </a>
                                         <div className={classes.row}>
                                             <div className={classes.nameField}>Количество{order.returned?' (факт./итого)':''}:&nbsp;</div>
-                                            <div className={classes.value}>{order.returned?`${order.count-order.returned} шт/${order.count} шт`:`${order.count} шт`}</div>
+                                            <div className={classes.value}>{order.returned?`${order.count-order.returned} ${order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}/${order.count} ${order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}`:`${order.count} ${order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}`}</div>
                                         </div>
                                         <div className={classes.row}>
                                             <div className={classes.nameField}>Сумма{order.returned?' (факт./итого)':''}:&nbsp;</div>
@@ -481,7 +481,7 @@ const Order =  React.memo(
                                             </div>
                                         </div>
                                         <div className={classes.row}>
-                                            {element.organization.consignation?
+                                            {profile.role!=='client'||element.organization.consignation?
                                                 <div onClick={()=>{showCons[order._id]=!showCons[order._id];setShowCons({...showCons})}} style={showCons[order._id]?{background: '#ffb300'}:{}} className={classes.minibtn}>КОНС</div>
                                                 :
                                                 null
@@ -501,7 +501,7 @@ const Order =  React.memo(
                                                             <div className={classes.column}>
                                                                 <div className={classes.row}>
                                                                     <div className={classes.counterbtn} onClick={()=>{decrementConsignation(idx)}}>-</div>
-                                                                    <div className={classes.value}>{order.consignment}&nbsp;шт</div>
+                                                                    <div className={classes.value}>{order.consignment}&nbsp;{order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}</div>
                                                                     <div className={classes.counterbtn} onClick={()=>{incrementConsignation(idx)}}>+</div>
                                                                 </div>
                                                                 <div className={classes.addPackaging} style={{color: '#ffb300'}} onClick={()=>{
@@ -538,7 +538,7 @@ const Order =  React.memo(
                                                                     </div>
                                                                     <div
                                                                         className={classes.value}>{order.returned}&nbsp;
-                                                                        шт
+                                                                        {order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}
                                                                     </div>
                                                                     <div className={classes.counterbtn} onClick={() => {
                                                                         incrementReturned(idx)
@@ -576,14 +576,14 @@ const Order =  React.memo(
                                         </a>
                                         <div className={classes.row}>
                                             <div className={classes.nameField}>Количество{order.returned?' (факт./итого)':''}:&nbsp;</div>
-                                            <div className={classes.value}>{order.returned?`${order.count-order.returned} шт/${order.count} шт`:`${order.count} шт`}</div>
+                                            <div className={classes.value}>{order.returned?`${order.count-order.returned} ${order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}/${order.count} ${order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}`:`${order.count} ${order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}`}</div>
                                         </div>
                                         <div className={classes.row}>
                                             <div className={classes.nameField}>Сумма{order.returned?' (факт./итого)':''}:&nbsp;</div>
                                             <div className={classes.value}>
                                                 {
                                                     order.returned?
-                                                        `${order.allPrice/order.count*(order.count-order.returned)} шт/${order.allPrice} сом`
+                                                        `${order.allPrice/order.count*(order.count-order.returned)} ${order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}/${order.allPrice} сом`
                                                         :
                                                         `${order.allPrice} сом`
                                                 }
@@ -594,7 +594,7 @@ const Order =  React.memo(
                                                 <>
                                                 <div className={classes.row}>
                                                     <div className={classes.nameField}>Консигнации:&nbsp;</div>
-                                                    <div className={classes.value}>{order.consignment}&nbsp;шт</div>
+                                                    <div className={classes.value}>{order.consignment}&nbsp;{order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}</div>
                                                 </div>
                                                 <div className={classes.row}>
                                                     <div className={classes.nameField}>Стоимость консигнации:&nbsp;</div>
@@ -609,7 +609,7 @@ const Order =  React.memo(
                                                 <>
                                                 <div className={classes.row}>
                                                     <div className={classes.nameField}>Отказ:&nbsp;</div>
-                                                    <div className={classes.value}>{order.returned}&nbsp;шт</div>
+                                                    <div className={classes.value}>{order.returned}&nbsp;{order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}</div>
                                                 </div>
                                                 </>
                                                 :

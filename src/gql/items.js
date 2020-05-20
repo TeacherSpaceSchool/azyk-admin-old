@@ -86,6 +86,7 @@ export const getItems = async({subCategory,  search,  sort,  filter}, client)=>{
                             info
                             price
                             apiece
+                            unit
                             priotiry
                             packaging
                             reiting
@@ -138,6 +139,7 @@ export const getItemsTrash = async({search}, client)=>{
                             info
                             price
                             apiece
+                            unit
                             priotiry
                             packaging
                             reiting
@@ -174,6 +176,7 @@ export const getBrands = async({organization,  search,  sort}, client)=>{
                             createdAt                  
                             stock
                             apiece
+                            unit
                             priotiry
                             packaging
                             image
@@ -216,6 +219,7 @@ export const favorites = async({ search}, client)=>{
                             createdAt                  
                             stock
                             apiece
+                            unit
                             priotiry
                             packaging
                             image
@@ -259,6 +263,7 @@ export const getItem = async({_id}, client)=>{
                             createdAt                  
                             stock
                             apiece
+                            unit
                             priotiry
                             image
                             info
@@ -370,8 +375,8 @@ export const addItem = async(element, subCategory)=>{
         await client.mutate({
             variables: {...element, subCategory: subCategory},
             mutation : gql`
-                    mutation ($priotiry: Int, $apiece: Boolean, $weight: Float!, $size: Float!, $packaging: Int!, $stock: Int!, $deliveryDays: [String], $name: String!, $image: Upload, $info: String!, $price: Float!, $subCategory: ID!, $organization: ID!, $hit: Boolean!, $latest: Boolean!) {
-                        addItem(priotiry: $priotiry, apiece: $apiece, weight: $weight, size: $size, packaging: $packaging, stock: $stock, deliveryDays: $deliveryDays, name: $name, image: $image, info: $info, price: $price, subCategory: $subCategory, organization: $organization, hit: $hit, latest: $latest) {
+                    mutation ($priotiry: Int, $unit: String, $apiece: Boolean, $weight: Float!, $size: Float!, $packaging: Int!, $stock: Int!, $deliveryDays: [String], $name: String!, $image: Upload, $info: String!, $price: Float!, $subCategory: ID!, $organization: ID!, $hit: Boolean!, $latest: Boolean!) {
+                        addItem(priotiry: $priotiry, unit: $unit, apiece: $apiece, weight: $weight, size: $size, packaging: $packaging, stock: $stock, deliveryDays: $deliveryDays, name: $name, image: $image, info: $info, price: $price, subCategory: $subCategory, organization: $organization, hit: $hit, latest: $latest) {
                              data
                         }
                     }`})
@@ -386,8 +391,8 @@ export const setItem = async(element)=>{
         await client.mutate({
             variables: {...element},
             mutation : gql`
-                    mutation ($_id: ID!, $priotiry: Int, $apiece: Boolean, $weight: Float, $size: Float, $packaging: Int, $stock: Int, $deliveryDays: [String], $name: String, $image: Upload, $info: String, $price: Float, $subCategory: ID, $organization: ID, $hit: Boolean, $latest: Boolean) {
-                        setItem(_id: $_id, priotiry: $priotiry, apiece: $apiece, weight: $weight, size: $size, packaging: $packaging, stock: $stock, deliveryDays: $deliveryDays, name: $name, image: $image, info: $info, price: $price, subCategory: $subCategory, organization: $organization, hit: $hit, latest: $latest) {
+                    mutation ($_id: ID!, $priotiry: Int, $unit: String, $apiece: Boolean, $weight: Float, $size: Float, $packaging: Int, $stock: Int, $deliveryDays: [String], $name: String, $image: Upload, $info: String, $price: Float, $subCategory: ID, $organization: ID, $hit: Boolean, $latest: Boolean) {
+                        setItem(_id: $_id, priotiry: $priotiry, unit: $unit, apiece: $apiece, weight: $weight, size: $size, packaging: $packaging, stock: $stock, deliveryDays: $deliveryDays, name: $name, image: $image, info: $info, price: $price, subCategory: $subCategory, organization: $organization, hit: $hit, latest: $latest) {
                              data
                         }
                     }`})

@@ -135,7 +135,7 @@ const BuyBasket =  React.memo(
                                    const action = async () => {
                                        if (agent&&geo&&client.address[0][1].includes(', ')) {
                                            let distance = getGeoDistance(geo.coords.latitude, geo.coords.longitude, ...(client.address[0][1].split(', ')))
-                                           if(distance<500){
+                                           if(distance<1000){
                                                await addAgentHistoryGeo({client: client._id, geo: `${geo.coords.latitude}, ${geo.coords.longitude}`})
                                            }
                                        }

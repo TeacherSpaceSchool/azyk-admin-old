@@ -384,6 +384,7 @@ export const getOrder = async({_id})=>{
                                             name    
                                             stock 
                                             apiece
+                                            unit
                                             priotiry
                                             packaging
                                             weight
@@ -641,6 +642,7 @@ export const subscriptionOrder = gql`
                                             name    
                                             stock 
                                             apiece
+                                            unit
                                             priotiry
                                             packaging
                                             weight

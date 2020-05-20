@@ -196,21 +196,17 @@ const AgentRoute = React.memo((props) => {
                             />
                         }
                         <br/>
-                        {/*['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role)*/true?
-                            <div style={{ justifyContent: 'center' }} className={classes.row}>
-                                <div style={{background: selectType==='Все'?'#ffb300':'#ffffff'}} onClick={()=>{setSelectType('Все')}} className={classes.selectType}>
-                                    Все
-                                </div>
-                                <div style={{background: selectType==='Свободные'?'#ffb300':'#ffffff'}} onClick={()=>{setSelectType('Свободные')}} className={classes.selectType}>
-                                    Своб
-                                </div>
-                                <div style={{background: selectType==='Выбраные'?'#ffb300':'#ffffff'}} onClick={()=>{setSelectType('Выбраные')}} className={classes.selectType}>
-                                    Выбр
-                                </div>
+                        <div style={{ justifyContent: 'center' }} className={classes.row}>
+                            <div style={{background: selectType==='Все'?'#ffb300':'#ffffff'}} onClick={()=>{setSelectType('Все')}} className={classes.selectType}>
+                                Все
                             </div>
-                            :
-                            null
-                        }
+                            <div style={{background: selectType==='Свободные'?'#ffb300':'#ffffff'}} onClick={()=>{setSelectType('Свободные')}} className={classes.selectType}>
+                                Своб
+                            </div>
+                            <div style={{background: selectType==='Выбраные'?'#ffb300':'#ffffff'}} onClick={()=>{setSelectType('Выбраные')}} className={classes.selectType}>
+                                Выбр
+                            </div>
+                        </div>
                         <br/>
                             <div style={{ justifyContent: 'center' }} className={classes.row}>
                                 <div style={{background: dayWeek===0?'#ffb300':'#ffffff'}} onClick={()=>{setDayWeek(0)}} className={classes.selectType}>
@@ -243,61 +239,57 @@ const AgentRoute = React.memo((props) => {
                                         return (
                                             <div key={idx} style={isMobileApp ? {alignItems: 'baseline'} : {}}
                                                  className={isMobileApp ? classes.column : classes.row}>
-                                                {
-                                                    /*!['агент', 'суперагент'].includes(profile.role)*/true?
-                                                    <div className={isMobileApp ? classes.row : classes.column}>
-                                                        <Checkbox checked={selected}
-                                                                  onChange={() => {
-                                                                      if (!selected) {
-                                                                          clients[dayWeek].push(element._id)
-                                                                      } else {
-                                                                          clients[dayWeek].splice(clients[dayWeek].indexOf(element._id), 1)
-                                                                      }
-                                                                      setClients([...clients])
-                                                                  }}
-                                                        />
-                                                        {
-                                                            selectType==='Выбраные'?
-                                                                <>
-                                                                {
-                                                                    filtredClient[idx-1]?
-                                                                        <Tooltip title='Вверх'>
-                                                                            <IconButton
-                                                                                onClick={()=>{
-                                                                                    clients[dayWeek][idx] = filtredClient[idx - 1]._id
-                                                                                    clients[dayWeek][idx - 1] = filtredClient[idx]._id
-                                                                                    setClients([...clients])
-                                                                                }}
-                                                                                color='inherit'
-                                                                            >
-                                                                                <VerticalAlignTop />
-                                                                            </IconButton>
-                                                                        </Tooltip>
-                                                                        :null
-                                                                }
-                                                                {
-                                                                    filtredClient[idx+1]?
-                                                                        <Tooltip title='Вниз'>
-                                                                            <IconButton
-                                                                                onClick={()=>{
-                                                                                    clients[dayWeek][idx] = filtredClient[idx + 1]._id
-                                                                                    clients[dayWeek][idx + 1] = filtredClient[idx]._id
-                                                                                    setClients([...clients])
-                                                                                }}
-                                                                                color='inherit'
-                                                                            >
-                                                                                <VerticalAlignBottom />
-                                                                            </IconButton>
-                                                                        </Tooltip>
-                                                                        :null
-                                                                }
-                                                                </>
-                                                                :
-                                                                null
-                                                        }
-                                                    </div>
-                                                    :null
-                                                }
+                                                <div className={isMobileApp ? classes.row : classes.column}>
+                                                    <Checkbox checked={selected}
+                                                              onChange={() => {
+                                                                  if (!selected) {
+                                                                      clients[dayWeek].push(element._id)
+                                                                  } else {
+                                                                      clients[dayWeek].splice(clients[dayWeek].indexOf(element._id), 1)
+                                                                  }
+                                                                  setClients([...clients])
+                                                              }}
+                                                    />
+                                                    {
+                                                        selectType==='Выбраные'?
+                                                            <>
+                                                            {
+                                                                filtredClient[idx-1]?
+                                                                    <Tooltip title='Вверх'>
+                                                                        <IconButton
+                                                                            onClick={()=>{
+                                                                                clients[dayWeek][idx] = filtredClient[idx - 1]._id
+                                                                                clients[dayWeek][idx - 1] = filtredClient[idx]._id
+                                                                                setClients([...clients])
+                                                                            }}
+                                                                            color='inherit'
+                                                                        >
+                                                                            <VerticalAlignTop />
+                                                                        </IconButton>
+                                                                    </Tooltip>
+                                                                    :null
+                                                            }
+                                                            {
+                                                                filtredClient[idx+1]?
+                                                                    <Tooltip title='Вниз'>
+                                                                        <IconButton
+                                                                            onClick={()=>{
+                                                                                clients[dayWeek][idx] = filtredClient[idx + 1]._id
+                                                                                clients[dayWeek][idx + 1] = filtredClient[idx]._id
+                                                                                setClients([...clients])
+                                                                            }}
+                                                                            color='inherit'
+                                                                        >
+                                                                            <VerticalAlignBottom />
+                                                                        </IconButton>
+                                                                    </Tooltip>
+                                                                    :null
+                                                            }
+                                                            </>
+                                                            :
+                                                            null
+                                                    }
+                                                </div>
                                                 <LazyLoad scrollContainer={'.App-body'} key={element._id}
                                                           height={height} offset={[height, 0]} debounce={0}
                                                           once={true}
@@ -321,58 +313,56 @@ const AgentRoute = React.memo((props) => {
                                 Карта
                             </Button>
                             {
-                                /*!['агент', 'суперагент'].includes(profile.role)*/true?
-                                    router.query.id==='new'?
-                                        <Button onClick={async()=>{
-                                            if (name.length>0&&district._id&&organization._id) {
-                                                const action = async() => {
-                                                    await addAgentRoute({
-                                                        organization: organization._id,
-                                                        clients: clients,
-                                                        name: name,
-                                                        district: district._id,
-                                                    })
-                                                    Router.push(`/agentroutes/${organization._id}`)
-                                                }
-                                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                                showMiniDialog(true)
-                                            } else {
-                                                showSnackBar('Заполните все поля')
+                                router.query.id==='new'?
+                                    <Button onClick={async()=>{
+                                        if (name.length>0&&district._id&&organization._id) {
+                                            const action = async() => {
+                                                await addAgentRoute({
+                                                    organization: organization._id,
+                                                    clients: clients,
+                                                    name: name,
+                                                    district: district._id,
+                                                })
+                                                Router.push(`/agentroutes/${organization._id}`)
                                             }
-                                        }} size='small' color='primary'>
-                                            Добавить
-                                        </Button>
-                                        :
+                                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                            showMiniDialog(true)
+                                        } else {
+                                            showSnackBar('Заполните все поля')
+                                        }
+                                    }} size='small' color='primary'>
+                                        Добавить
+                                    </Button>
+                                    :
+                                    <>
+                                    <Button onClick={async()=>{
+                                        const action = async() => {
+                                            let editElement = {_id: data.agentRoute._id, clients: clients}
+                                            if(name.length>0&&name!==data.agentRoute.name)editElement.name = name;
+                                            await setAgentRoute(editElement)
+                                        }
+                                        setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                        showMiniDialog(true)
+                                    }} size='small' color='primary'>
+                                        Сохранить
+                                    </Button>
+                                    {['суперорганизация', 'организация', 'менеджер', 'admin'].includes(profile.role)?
                                         <>
                                         <Button onClick={async()=>{
                                             const action = async() => {
-                                                let editElement = {_id: data.agentRoute._id, clients: clients}
-                                                if(name.length>0&&name!==data.agentRoute.name)editElement.name = name;
-                                                await setAgentRoute(editElement)
+                                                await deleteAgentRoute([data.agentRoute._id], data.agentRoute.organization._id)
+                                                Router.push(`/agentroutes/${data.agentRoute.organization._id}`)
                                             }
                                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                             showMiniDialog(true)
                                         }} size='small' color='primary'>
-                                            Сохранить
+                                            Удалить
                                         </Button>
-                                        {['суперорганизация', 'организация', 'менеджер', 'admin'].includes(profile.role)?
-                                            <>
-                                            <Button onClick={async()=>{
-                                                const action = async() => {
-                                                    await deleteAgentRoute([data.agentRoute._id], data.agentRoute.organization._id)
-                                                    Router.push(`/agentroutes/${data.agentRoute.organization._id}`)
-                                                }
-                                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                                showMiniDialog(true)
-                                            }} size='small' color='primary'>
-                                                Удалить
-                                            </Button>
-                                            </>
-                                            :
-                                            null
-                                        }
                                         </>
-                                    :null
+                                        :
+                                        null
+                                    }
+                                    </>
                             }
                         </div>
                             </>

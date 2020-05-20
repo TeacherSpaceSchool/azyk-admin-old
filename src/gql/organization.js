@@ -27,6 +27,7 @@ export const getOrganization = async({_id: _id}, client)=>{
                             consignation
                             priotiry
                             onlyDistrict
+                            onlyIntegrate
                           }
                     }`,
             })
@@ -163,8 +164,8 @@ export const addOrganization = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($miniInfo: String!, $image: Upload!, $priotiry: Int, $minimumOrder: Int, $name: String!, $address: [String]!, $email: [String]!, $phone: [String]!, $info: String!, $consignation: Boolean!, $accessToClient: Boolean!, $onlyDistrict: Boolean!) {
-                        addOrganization(miniInfo: $miniInfo, image: $image, priotiry: $priotiry, minimumOrder: $minimumOrder, name: $name, address: $address, email: $email, phone: $phone, info: $info, consignation: $consignation, accessToClient: $accessToClient, onlyDistrict: $onlyDistrict) {
+                    mutation ($miniInfo: String!, $image: Upload!, $priotiry: Int, $minimumOrder: Int, $name: String!, $address: [String]!, $email: [String]!, $phone: [String]!, $info: String!, $consignation: Boolean!, $accessToClient: Boolean!, $onlyDistrict: Boolean!, $onlyIntegrate: Boolean!) {
+                        addOrganization(miniInfo: $miniInfo, image: $image, priotiry: $priotiry, minimumOrder: $minimumOrder, name: $name, address: $address, email: $email, phone: $phone, info: $info, consignation: $consignation, accessToClient: $accessToClient, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate) {
                              data
                         }
                     }`})
@@ -179,8 +180,8 @@ export const setOrganization = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($miniInfo: String, $_id: ID!, $consignation: Boolean, $priotiry: Int, $accessToClient: Boolean, $image: Upload, $minimumOrder: Int, $name: String, $address: [String], $email: [String], $phone: [String], $info: String, $onlyDistrict: Boolean) {
-                        setOrganization(miniInfo: $miniInfo, _id: $_id, priotiry: $priotiry, consignation: $consignation, accessToClient: $accessToClient, image: $image, minimumOrder: $minimumOrder, name: $name, address: $address, email: $email, phone: $phone, info: $info, onlyDistrict: $onlyDistrict) {
+                    mutation ($miniInfo: String, $_id: ID!, $consignation: Boolean, $priotiry: Int, $accessToClient: Boolean, $image: Upload, $minimumOrder: Int, $name: String, $address: [String], $email: [String], $phone: [String], $info: String, $onlyDistrict: Boolean, , $onlyIntegrate: Boolean) {
+                        setOrganization(miniInfo: $miniInfo, _id: $_id, priotiry: $priotiry, consignation: $consignation, accessToClient: $accessToClient, image: $image, minimumOrder: $minimumOrder, name: $name, address: $address, email: $email, phone: $phone, info: $info, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate) {
                              data
                         }
                     }`})

@@ -165,7 +165,7 @@ const CardOrganization = React.memo((props) => {
                                 if (navigator.geolocation&&element.address[0][1].includes(', ')) {
                                     navigator.geolocation.getCurrentPosition(async(position)=>{
                                         let distance = getGeoDistance(position.coords.latitude, position.coords.longitude, ...(element.address[0][1].split(', ')))
-                                        if(distance<500){
+                                        if(distance<1000){
                                             await addAgentHistoryGeo({client: element._id, geo: `${position.coords.latitude}, ${position.coords.longitude}`})
                                             window.open(`/catalog?client=${element._id}`, '_blank');
                                             //Router.push(`/catalog?client=${element._id}`)

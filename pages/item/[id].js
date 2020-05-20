@@ -54,6 +54,7 @@ const Item = React.memo((props) => {
     const { isMobileApp } = props.app;
     const { profile, authenticated } = props.user;
     let [stock, setStock] = useState(data.item!==null?data.item.stock:'');
+    let [unit, setUnit] = useState(data.item?data.item.unit:'');
     let [name, setName] = useState(data.item!==null?data.item.name:'');
     let [info, setInfo] = useState(data.item!==null?data.item.info:'');
     let [price, setPrice] = useState(data.item!==null?data.item.price:'');
@@ -248,6 +249,19 @@ const Item = React.memo((props) => {
                                         </div>
                                         <div className={classes.price}>
                                             <TextField
+                                                label='Единица измерения'
+                                                value={unit}
+                                                className={isMobileApp?classes.inputM:classes.inputD}
+                                                onChange={(event)=>{
+                                                    setUnit(event.target.value)}
+                                                }
+                                                inputProps={{
+                                                    'aria-label': 'description',
+                                                }}
+                                            />
+                                        </div>
+                                        <div className={classes.price}>
+                                            <TextField
                                                 type={isMobileApp?'number':'text'}
                                                 label='Вес в килограммах'
                                                 value={weight}
@@ -386,6 +400,7 @@ const Item = React.memo((props) => {
                                                                     weight: checkFloat(weight),
                                                                     size: checkFloat(size),
                                                                     apiece: apiece,
+                                                                    unit: unit,
                                                                     priotiry: checkInt(priotiry)
                                                                 }, subCategory._id)
                                                                 Router.push(`/items/${subCategory._id}`)
@@ -412,6 +427,7 @@ const Item = React.memo((props) => {
                                                         if(size!==data.item.size)editElement.size = checkFloat(size)
                                                         if(hit!==data.item.hit)editElement.hit = hit
                                                         if(apiece!==data.item.apiece)editElement.apiece = apiece
+                                                        if(unit!==data.item.unit)editElement.unit = unit
                                                         if(latest!==data.item.latest)editElement.latest = latest
                                                         if(organization._id!==data.item.organization._id)editElement.organization = organization._id
                                                         if(subCategory._id!==data.item.subCategory._id)editElement.subCategory = subCategory._id

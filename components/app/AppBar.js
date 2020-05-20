@@ -6,8 +6,6 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import MenuIcon from '@material-ui/icons/Menu';
-import LocalGroceryStore from '@material-ui/icons/LocalGroceryStore';
-import Star from '@material-ui/icons/Star';
 import ExitToApp from '@material-ui/icons/ExitToApp';
 import AssignmentInd from '@material-ui/icons/AssignmentInd';
 import { connect } from 'react-redux'
@@ -16,7 +14,6 @@ import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as userActions from '../../redux/actions/user'
 import * as appActions from '../../redux/actions/app'
 import appbarStyle from '../../src/styleMUI/appbar'
-import { getCountBasket } from '../../src/gql/basket'
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import Paper from '@material-ui/core/Paper';
@@ -39,7 +36,7 @@ const MyAppBar = React.memo((props) => {
     //props
     const classes = appbarStyle();
     const { filters, sorts, pageName, dates, searchShow, unread, defaultOpenSearch } = props
-    const { drawer, search, filter, sort, isMobileApp, countBasket, date } = props.app;
+    const { drawer, search, filter, sort, isMobileApp, date } = props.app;
     const { showDrawer, setSearch, setFilter, setSort, setDate } = props.appActions;
     const { authenticated, profile } = props.user;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
@@ -89,11 +86,6 @@ const MyAppBar = React.memo((props) => {
     let handleSearch = (event) => {
         setSearch(event.target.value)
     };
-    useEffect(()=>{
-        (async()=>{
-            getCountBasket()
-        })()
-    },[])
     useEffect(()=>{
         if(document.getElementById('search'))
             document.getElementById('search').focus();
@@ -267,9 +259,7 @@ const MyAppBar = React.memo((props) => {
                                     color='inherit'
                                     onClick={handleMenuProfile}
                                 >
-                                    <Badge badgeContent={countBasket} color='secondary'>
-                                        <PermIdentity/>
-                                    </Badge>
+                                    <PermIdentity/>
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -286,33 +276,6 @@ const MyAppBar = React.memo((props) => {
                                 open={openProfile}
                                 onClose={handleCloseProfile}
                             >
-                                {
-                                    /*'client'===profile.role?
-                                        <MenuItem>
-                                            <Badge badgeContent={countBasket} color='secondary'>
-                                                <Link href='/basket'>
-                                                    <a style={{display: 'flex', color: '#606060'}}>
-                                                        <LocalGroceryStore/>
-                                                        &nbsp;Корзина&nbsp;&nbsp;
-                                                    </a>
-                                                </Link>
-                                            </Badge>
-                                        </MenuItem>
-                                        :
-                                        null*/
-                                }
-                                {
-                                    profile.role==='client'?
-                                        <MenuItem>
-                                            <Link href='/favorite'>
-                                                <a style={{display: 'flex', color: '#606060'}}>
-                                                    <Star/>&nbsp;Избранное
-                                                </a>
-                                            </Link>
-                                        </MenuItem>
-                                        :
-                                        null
-                                }
                                 {
                                     profile.role==='client'?
                                         <MenuItem>
@@ -498,9 +461,7 @@ const MyAppBar = React.memo((props) => {
                                     color='inherit'
                                     onClick={handleMenuProfile}
                                 >
-                                    <Badge badgeContent={countBasket} color='secondary'>
-                                        <PermIdentity/>
-                                    </Badge>
+                                    <PermIdentity/>
                                 </IconButton>
                             </Tooltip>
                             <Menu
@@ -517,33 +478,6 @@ const MyAppBar = React.memo((props) => {
                                 open={openProfile}
                                 onClose={handleCloseProfile}
                             >
-                                {
-                                    /*'client'===profile.role?
-                                        <MenuItem>
-                                            <Badge badgeContent={countBasket} color='secondary'>
-                                                <Link href='/basket'>
-                                                    <a style={{display: 'flex', color: '#606060'}}>
-                                                        <LocalGroceryStore/>
-                                                        &nbsp;Корзина&nbsp;&nbsp;
-                                                    </a>
-                                                </Link>
-                                            </Badge>
-                                        </MenuItem>
-                                        :
-                                        null*/
-                                }
-                                {
-                                    profile.role==='client'?
-                                        <MenuItem>
-                                            <Link href='/favorite'>
-                                                <a style={{display: 'flex', color: '#606060'}}>
-                                                    <Star/>&nbsp;Избранное
-                                                </a>
-                                            </Link>
-                                        </MenuItem>
-                                        :
-                                        null
-                                }
                                 {
                                     profile.role==='client'?
                                         <MenuItem>

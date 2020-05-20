@@ -36,6 +36,7 @@ export const getRoutes = async({search, sort, filter, date}, client)=>{
                                                     name    
                                                     stock 
                                                     apiece
+                                                    unit
                                                     priotiry
                                                     price
                                                     packaging
@@ -151,6 +152,7 @@ export const getRoute = async({_id}, client)=>{
                                                     name    
                                                     stock 
                                                     apiece
+                                                    unit
                                                     priotiry
                                                     price
                                                     organization

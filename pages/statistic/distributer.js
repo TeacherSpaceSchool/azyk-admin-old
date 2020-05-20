@@ -30,6 +30,9 @@ const DistributerStatistic = React.memo((props) => {
     let [showStat, setShowStat] = useState(false);
     let [organization, setOrganization] = useState(undefined);
     let [distributer, setDistributer] = useState(profile.organization?{distributer: {_id: profile.organization}}:undefined);
+    let handleDistributer = ((value) => {
+        setDistributer(value)
+    })
     const { showLoad } = props.appActions;
     useEffect(()=>{
         (async()=>{
@@ -91,7 +94,7 @@ const DistributerStatistic = React.memo((props) => {
                                     getOptionLabel={option => option.distributer.name}
                                     value={distributer}
                                     onChange={(event, newValue) => {
-                                        setDistributer(newValue)
+                                        handleDistributer(newValue)
                                     }}
                                     noOptionsText='Ничего не найдено'
                                     renderInput={params => (
@@ -166,9 +169,11 @@ DistributerStatistic.getInitialProps = async function(ctx) {
             ctx.res.end()
         } else
             Router.push('/')
+    let distributers = (await getDistributers({search: '', sort: 'name'},ctx.req?await getClientGqlSsr(ctx.req):undefined)).distributers
+    distributers = distributers.filter(distributer=>distributer.sales.length>0)
     return {
         data: {
-            ...await getDistributers({search: '', sort: 'name'},ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            distributers: distributers
         }
     };
 };

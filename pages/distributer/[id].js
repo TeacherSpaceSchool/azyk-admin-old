@@ -188,7 +188,6 @@ Distributer.getInitialProps = async function(ctx) {
     let organization = (await getOrganization({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organization
 
     if(distributer){
-        distributer = distributer.distributer
         distributer.sales = distributer.sales.map(element=>element._id)
         distributer.provider = distributer.provider.map(element=>element._id)
     }
