@@ -196,12 +196,19 @@ const Catalog = React.memo((props) => {
                                                             }}>+
                                                             </div>
                                                         </div>
-                                                        &nbsp;&nbsp;&nbsp;
-                                                        <div className={classes.showCons} style={{color: basket[row._id]&&basket[row._id].showConsignment?'#ffb300':'#000'}} onClick={()=>{
-                                                            showConsignment(idx)
-                                                        }}>
-                                                            КОНС
-                                                        </div>
+                                                        {
+                                                            row.organization.consignation?
+                                                                <>
+                                                                &nbsp;&nbsp;&nbsp;
+                                                                <div className={classes.showCons} style={{color: basket[row._id]&&basket[row._id].showConsignment?'#ffb300':'#000'}} onClick={()=>{
+                                                                    showConsignment(idx)
+                                                                }}>
+                                                                    КОНС
+                                                                </div>
+                                                                </>
+                                                                :
+                                                                null
+                                                        }
                                                     </div>
                                                     {row.apiece?
                                                         <div className={classes.addPackaging} style={{color: '#ffb300'}} onClick={()=>{

@@ -90,7 +90,7 @@ const Organization = React.memo((props) => {
         setPhone([...phone])
     };
     let [info, setInfo] = useState(data.organization!==null?data.organization.info:'');
-    let [miniInfo, setMiniInfo] = useState(data.organization!==null?data.organization.miniInfo:'');
+    let [miniInfo, setMiniInfo] = useState(data.organization&&data.organization.miniInfo?data.organization.miniInfo:'');
     let [preview, setPreview] = useState(data.organization!==null?data.organization.image:'');
     let [image, setImage] = useState(undefined);
     let handleChangeImage = ((event) => {
