@@ -278,12 +278,12 @@ const MyDrawer = React.memo((props) => {
                         :null
                 }
                 {
-                    ['lol'].includes(profile.role)?
+                    ['admin'].includes(profile.role)?
                         <>
                         <Link href='/routes'>
                             <ListItem style={{background: router.pathname==='/routes'?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncoverBonus(false);showDrawer(false)}}>
                                 <ListItemIcon><FormatListNumberedIcon color='inherit'/></ListItemIcon>
-                                <ListItemText primary='Маршрутные листы' />
+                                <ListItemText primary='Маршруты экспедитора' />
                             </ListItem>
                         </Link>
                         <Divider/>

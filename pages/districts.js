@@ -2,14 +2,12 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as userActions from '../redux/actions/user'
 import { getOrganizations } from '../src/gql/organization'
 import pageListStyle from '../src/styleMUI/organization/orgaizationsList'
-import CardOrganization from '../components/organization/CardOrganization'
 import Link from 'next/link';
 import { urlMain } from '../redux/constants/other'
 import LazyLoad from 'react-lazyload';
+import CardOrganization from '../components/organization/CardOrganization'
 import CardOrganizationPlaceholder from '../components/organization/CardOrganizationPlaceholder'
 import { getClientGqlSsr } from '../src/getClientGQL'
 import initialApp from '../src/initialApp'
@@ -94,10 +92,4 @@ function mapStateToProps (state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        userActions: bindActionCreators(userActions, dispatch),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Districts);
+export default connect(mapStateToProps)(Districts);

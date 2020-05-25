@@ -14,11 +14,17 @@ import * as snackbarActions from '../../redux/actions/snackbar'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import Confirmation from '../dialog/Confirmation'
 import Autocomplete from '@material-ui/lab/Autocomplete';
-
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import Input from '@material-ui/core/Input';
 
 const CardAds = React.memo((props) => {
     const classes = cardAdsStyle();
-    const { element, setList, organization, list, items } = props;
+    const { element, setList, organization, list, items, edit } = props;
     const { profile } = props.user;
     const { isMobileApp } = props.app;
     //addCard
@@ -41,6 +47,21 @@ const CardAds = React.memo((props) => {
         setCount(checkInt(event.target.value))
     };
     let [item, setItem] = useState(element?element.item:undefined);
+    let [targetItem, setTargetItem ] = useState(element?element.targetItem:undefined);
+    let [targetCount, setTargetCount ] = useState(element?element.targetCount:0);
+    let handleTargetCount =  (event) => {
+        setTargetCount(checkInt(event.target.value))
+    };
+    let [targetPrice, setTargetPrice ] = useState(element?element.targetPrice:0);
+    let handleTargetPrice =  (event) => {
+        setTargetPrice(checkInt(event.target.value))
+    };
+    let [multiplier , setMultiplier] = useState(element?element.multiplier:false);
+    let [targetType, setTargetType] = useState(element?element.targetType:'Цена');
+    let handleTargetType =  (event) => {
+        setTargetType(event.target.value)
+    };
+    const targetTypes = ['Цена', 'Товар']
     let [url, setUrl] = useState(element?element.url:'');
     let handleUrl =  (event) => {
         setUrl(event.target.value)
@@ -49,7 +70,7 @@ const CardAds = React.memo((props) => {
     const { showSnackBar } = props.snackbarActions;
     return (
           <> {
-                profile.role === 'admin' ?
+                profile.role === 'admin' && edit ?
                     <Card className={isMobileApp?classes.cardM:classes.cardD}>
                         <label htmlFor={element?element._id:'add'}>
                             <img
@@ -68,7 +89,7 @@ const CardAds = React.memo((props) => {
                                         'aria-label': 'description',
                                     }}
                                 />
-                            <br/>
+                                <br/>
                                 <br/>
                                 <TextField
                                     label='URL'
@@ -79,31 +100,108 @@ const CardAds = React.memo((props) => {
                                         'aria-label': 'description',
                                     }}
                                 />
+                                <br/>
+                                <br/>
+                                <Autocomplete
+                                    className={classes.input}
+                                    options={items}
+                                    getOptionLabel={option => option.name}
+                                    value={item}
+                                    onChange={(event, newValue) => {
+                                        setItem(newValue)
+                                    }}
+                                    noOptionsText='Ничего не найдено'
+                                    renderInput={params => (
+                                        <TextField {...params} label='Товар' fullWidth />
+                                    )}/>
+                                <br/>
+                                <TextField
+                                    label='Количество'
+                                    value={count}
+                                    className={classes.input}
+                                    onChange={handleCount}
+                                    inputProps={{
+                                        'aria-label': 'description',
+                                    }}
+                                />
                             <br/>
                             <br/>
-                            <Autocomplete
-                                className={classes.input}
-                                options={items}
-                                getOptionLabel={option => option.name}
-                                value={item}
-                                onChange={(event, newValue) => {
-                                    setItem(newValue)
-                                }}
-                                noOptionsText='Ничего не найдено'
-                                renderInput={params => (
-                                    <TextField {...params} label='Товар' fullWidth />
-                                )}/>
-                            <br/>
-                            <TextField
-                                label='Количество'
-                                value={count}
-                                className={classes.input}
-                                onChange={handleCount}
-                                inputProps={{
-                                    'aria-label': 'description',
-                                }}
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={multiplier}
+                                        onChange={()=>{setMultiplier(!multiplier)}}
+                                        color='primary'
+                                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                                    />
+                                }
+                                label='Множитель'
                             />
-                            </CardContent>
+                            <br/>
+                            <br/>
+                            <FormControl className={classes.input} variant='outlined'>
+                                <InputLabel>Цель</InputLabel>
+                                <Select
+                                    value={targetType}
+                                    onChange={handleTargetType}
+                                    input={<Input/>}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            style: {
+                                                maxHeight: 226,
+                                                width: 250,
+                                            },
+                                        }
+                                    }}
+                                >
+                                    {targetTypes.map((targetType) => (
+                                        <MenuItem key={targetType} value={targetType}>
+                                            {targetType}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <br/>
+                            <br/>
+                            {
+                                targetType==='Цена'?
+                                    <TextField
+                                        label='Целевая цена'
+                                        value={targetPrice}
+                                        className={classes.input}
+                                        onChange={handleTargetPrice}
+                                        inputProps={{
+                                            'aria-label': 'description',
+                                        }}
+                                    />
+                                    :
+                                    <>
+                                    <Autocomplete
+                                        className={classes.input}
+                                        options={items}
+                                        getOptionLabel={option => option.name}
+                                        value={targetItem}
+                                        onChange={(event, newValue) => {
+                                            setTargetItem(newValue)
+                                        }}
+                                        noOptionsText='Ничего не найдено'
+                                        renderInput={params => (
+                                            <TextField {...params} label='Целевой товар' fullWidth />
+                                        )}
+                                    />
+                                    <br/>
+                                    <TextField
+                                        label='Целевое количество'
+                                        value={targetCount}
+                                        className={classes.input}
+                                        onChange={handleTargetCount}
+                                        inputProps={{
+                                            'aria-label': 'description',
+                                        }}
+                                    />
+                                    </>
+                            }
+                        </CardContent>
                         <CardActions>
                             {
                                    element!==undefined?
@@ -114,7 +212,12 @@ const CardAds = React.memo((props) => {
                                             if(title.length>0&&title!==element.title)editElement.title = title
                                             if(url.length>0&&url!==element.url)editElement.url = url
                                             if(count!==element.count)editElement.count = count
+                                            if(targetCount!==element.targetCount)editElement.targetCount = targetCount
+                                            if(targetPrice!==element.targetPrice)editElement.targetPrice = targetPrice
+                                            if(multiplier!==element.multiplier)editElement.multiplier = multiplier
+                                            if(targetType!==element.targetType)editElement.targetType = targetType
                                             editElement.item = item?item._id:undefined
+                                            editElement.targetItem = targetItem?targetItem._id:undefined
                                             if(image)editElement.image = image
                                             const action = async() => {
                                                 setList((await setAds(editElement, organization)).adss)
@@ -157,7 +260,7 @@ const CardAds = React.memo((props) => {
                                                 setCount(0)
                                                 setItem(undefined)
                                                 const action = async() => {
-                                                    setList((await addAds({count: count, item: item?item._id:undefined, organization: organization, image: image, url: url, title: title}, organization)).adss)
+                                                    setList((await addAds({count: count, item: item?item._id:undefined, organization: organization, image: image, url: url, title: title, targetItem: targetItem, targetCount: targetCount, targetPrice: targetPrice, multiplier: multiplier, targetType: targetType}, organization)).adss)
                                                 }
                                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                 showMiniDialog(true)

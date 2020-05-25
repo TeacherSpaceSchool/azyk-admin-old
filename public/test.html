@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Web-Push Application with Restful Api</title>
+    <title>My map</title>
+    <link rel='stylesheet' type='text/css' href='/sdk-tomtom/map.css'/>
+    <script src='/sdk-tomtom/tomtom.min.js'></script>
 </head>
 <body>
-<h1>This is a web-push notification example</h1>
-<!-- call service worker for register and send subscribe request to the server with javascript -->
-<script src="/app.js"></script>
+<div id='map' style='height:500px;width:500px'></div>
+<script>
+    tomtom.setProductInfo('azyk.store', '1.1');
+    tomtom.L.map('map', {
+        key: 'waWMYtFJZce2G49GAz0nXJG5Grw3OpNm',
+            source: 'vector',
+            basePath: '/sdk-tomtom'
+                });
+</script>
 </body>
 </html>

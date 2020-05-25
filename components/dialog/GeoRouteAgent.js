@@ -23,6 +23,7 @@ const Geo =  React.memo(
         const { profile } = props.user;
         const { classes, clients } = props;
         let [geo, setGeo] = useState(null);
+        let [follow, setFollow] = useState(false);
         const searchTimeOutRef = useRef(null);
         useEffect(()=>{
             if (navigator.geolocation) {
@@ -39,7 +40,6 @@ const Geo =  React.memo(
             }
         });
         let [load, setLoad] = useState(true);
-        let [follow, setFollow] = useState(false);
 
         return (
             <YMaps>

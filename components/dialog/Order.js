@@ -23,7 +23,7 @@ const Order =  React.memo(
         const { isMobileApp } = props.app;
         const { profile, authenticated } = props.user;
         const { showMiniDialog, setMiniDialog, showFullDialog, setFullDialog } = props.mini_dialogActions;
-        const { classes, element, setList, getInvoices, list, idx } = props;
+        const { classes, element, setList, list, idx } = props;
         let [orders, setOrders] = useState([...element.orders]);
         let [adss, setAdss] = useState([...element.adss]);
         let [allPrice, setAllPrice] = useState(element.allPrice);
@@ -746,57 +746,11 @@ const Order =  React.memo(
                         }
                     />
                 </div>
-                {/*
-                    {
-                        (
-                            (profile.role==='client'&&'принят'===element.orders[0].status&&!element.confirmationClient)
-                            ||
-                            (['менеджер', 'суперорганизация', 'организация'].includes(profile.role)&&'принят'===element.orders[0].status&&!element.confirmationForwarder)
-                            ||
-                            profile.role==='admin'
-                        )?
-                            <Button variant='contained' color='primary' onClick={()=>{
-                                const action = async() => {
-                                    let invoices = (await approveOrders({route: route, invoices: [element._id]})).invoices
-                                    if(setList)
-                                        setList(invoices)
-                                    if(getInvoices)
-                                        getInvoices()
-                                }
-                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                            }} className={classes.button}>
-                                Заказ выполнен
-                            </Button>
-                            :
-                            null
-                    }
-                    {
-                        (profile.role==='client'&&element.orders[0].status==='обработка')
-                        ||(['менеджер', 'суперорганизация', 'организация'].includes(profile.role)&&['обработка', 'принят'].includes(element.orders[0].status)&&!element.confirmationForwarder
-                        ||profile.role==='admin')?
-                            <Button variant='contained' color='primary' onClick={()=>{
-                                let _id = element.orders.map(order=>order._id)
-                                const action = async() => {
-                                    let invoices = (await cancelOrders({_id: _id, invoice: element._id})).invoices
-                                    if(setList)
-                                        setList(invoices)
-                                    if(getInvoices)
-                                        getInvoices()
-                                }
-                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                            }} className={classes.button}>
-                                Отменить заказ
-                            </Button>
-                            :
-                            null
-                    }
-                    */}
                     <div>
                 {
                     ((profile.role==='client'||allowOrganization||['агент', 'экспедитор'].includes(profile.role)||['admin', 'суперагент'].includes(profile.role)))?
                         <Button variant='contained' color='primary' onClick={()=>{
                             const action = async() => {
-
                                 let invoice = {invoice: element._id, adss: adss.map(ads=>ads._id)}
                                 if(element.taken!==taken)invoice.taken=taken;
                                 if(element.confirmationClient!==confirmationClient) invoice.confirmationClient=confirmationClient;
@@ -823,15 +777,11 @@ const Order =  React.memo(
                                         }
                                     })
                                 let res = await setOrder({orders: sendOrders, invoice: element._id})
-                                if (res) {
+                                if (res&&list) {
                                     let _list = [...list]
                                     _list[idx] = res
                                     setList(_list)
                                 }
-                                /*if(setList)
-                                    setList(invoices)
-                                if(getInvoices)
-                                    getInvoices()*/
                                 showMiniDialog(false);
                             }
                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)

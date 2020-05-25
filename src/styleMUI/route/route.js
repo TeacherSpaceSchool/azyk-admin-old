@@ -17,13 +17,6 @@ export default makeStyles({
         display: 'flex',
         flexDirection: 'column',
     },
-    media: {
-        objectFit: 'cover',
-        height: 300,
-        width: 300,
-        marginRight: 10,
-        marginBottom: 10,
-    },
     name: {
         marginBottom: 10,
         fontWeight: 'bold',
@@ -44,36 +37,17 @@ export default makeStyles({
         fontFamily: 'Roboto',
         color: '#A0A0A0'
     },
-    info: {
-        color: '#455A64',
-        marginBottom: 10,
-        fontSize: '16px',
-        fontFamily: 'Roboto',
-        whiteSpace: 'pre-wrap'
+    input: {
+        margin: 10,
+        width: 'calc(100% - 20px)',
     },
-    inputM: {
-        marginBottom: 10,
-        width: '100%',
+    inputHalf: {
+        margin: 10,
+        width: 'calc(50% - 20px)'
     },
-    inputD: {
-        marginBottom: 10,
-        width: 'calc(100vw - 700px)'
-    },
-    inputDF: {
-        marginBottom: 10,
-        width: 'calc(100vw - 382px)'
-    },
-    number: {
-        marginBottom: 10,
-        fontWeight: 'bold',
-        fontSize: '1rem',
-        fontFamily: 'Roboto',
-    },
-    date: {
-        marginBottom: 10,
-        fontSize: '0.875rem',
-        fontFamily: 'Roboto',
-        color: '#A0A0A0'
+    inputThird: {
+        margin: 10,
+        width: 'calc((100% / 3) - 20px)'
     },
     status: {
         position: 'absolute',
@@ -85,7 +59,6 @@ export default makeStyles({
         fontWeight: 'bold',
         color: 'white',
         fontFamily: 'Roboto',
-
     },
     selectType: {
         width: 100,
@@ -98,7 +71,6 @@ export default makeStyles({
         color: 'black',
         fontFamily: 'Roboto',
         border: '1px solid black'
-
     },
     bottomRouteD: {
         width: 'calc(100vw - 300px)',
@@ -132,6 +104,11 @@ export default makeStyles({
         paddingRight: 16,
         zIndex: 10000
     },
+    fab: {
+        position: 'fixed!important',
+        bottom: '20px',
+        right: '20px'
+    },
     listInvoices: {
         display: 'flex',
         flexDirection: 'row',
@@ -139,17 +116,4 @@ export default makeStyles({
         justifyContent: 'center',
         width: '100%'
     },
-    geo: {
-        width: 200,
-        textAlign: 'center',
-        marginTop: -10,
-        marginBottom: 20,
-        fontSize: '1rem',
-        fontFamily: 'Roboto',
-        whiteSpace: 'pre-wrap',
-        cursor: 'pointer',
-        fontWeight: 'bold',
-        borderBottom: '1px dashed #ffb300'
-    },
-
 })

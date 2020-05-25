@@ -19,7 +19,7 @@ import {getOrder} from '../../src/gql/order'
 
 const CardOrder = React.memo((props) => {
     const classes = cardOrderStyle();
-    const { element, setList, route, getInvoices, setSelected, selected, list, idx } = props;
+    const { element, setList, route, setSelected, selected, list, idx } = props;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { profile, authenticated} = props.user;
     const status =
@@ -42,10 +42,10 @@ const CardOrder = React.memo((props) => {
                     null
             }
             <CardActionArea onClick={async()=>{
-                if(!selected.length){
+                if(!selected||!selected.length){
                     let _elemenet = (await getOrder({_id: element._id})).invoice
                     if(_elemenet) {
-                        setMiniDialog('Заказ', <Order idx={idx} list={list} getInvoices={getInvoices} route={route}
+                        setMiniDialog('Заказ', <Order idx={idx} list={list} route={route}
                                                       element={_elemenet} setList={setList}/>);
                         showMiniDialog(true)
                     }

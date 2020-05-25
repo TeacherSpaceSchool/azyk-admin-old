@@ -172,7 +172,7 @@ const Catalog = React.memo((props) => {
                                     <LazyLoad scrollContainer={'.App-body'} key={row._id} offset={[186, 0]} debounce={0} once={true}  placeholder={<CardCatalogPlaceholder/>}>
                                         <div style={{width: '100%'}}>
                                             <div className={classes.line}>
-                                                <img className={classes.media} src={row.image} onClick={()=>{
+                                                <img className={classes.media} style={{border: `solid ${row.hit? 'yellow': row.latest? 'green': 'transparent'} 1px`}} src={row.image} onClick={()=>{
                                                     setFullDialog(row.name, <Image imgSrc={row.image}/>)
                                                     showFullDialog(true)
                                                 }}/>

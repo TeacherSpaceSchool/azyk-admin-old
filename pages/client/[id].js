@@ -340,7 +340,7 @@ const Client = React.memo((props) => {
                                             (router.query.id!=='new'&&['суперорганизация', 'организация', 'агент', 'admin', 'суперагент'].includes(profile.role))||(data.client.user&&profile._id===data.client.user._id)?
                                                 <>
                                                 <Button onClick={async()=>{
-                                                    if(name.length>0&&address.length>0&&address[0].length>0&&address[0][0].length>0&&address[0][2].length>0&&phone.length>0&&phone[0].length>0) {
+                                                    if(name.length>0&&address.length>0&&address[0].length>0&&address[0][0]&&address[0][0].length>0&&address[0][2]&&address[0][2].length>0&&phone.length>0&&phone[0].length>0) {
                                                         let editElement = {_id: data.client._id}
                                                         if (image) editElement.image = image
                                                         if (name && name.length > 0 && name !== data.client.name) editElement.name = name

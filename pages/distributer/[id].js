@@ -48,8 +48,7 @@ const Distributer = React.memo((props) => {
     let [selectType, setSelectType] = useState('Все');
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { showSnackBar } = props.snackbarActions;
-    const _new = !data.distributer
-
+    const _new = !data.distributer||!data.distributer._id
     useEffect(()=>{
         (async()=>{
             if(organization) {

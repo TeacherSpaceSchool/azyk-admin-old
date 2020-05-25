@@ -16,6 +16,7 @@ export const getContact = async(client)=>{
                             phone
                             info
                             social
+                            warehouse
                           }
                     }`,
             })
@@ -31,8 +32,8 @@ export const setContact = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($name: String!, $image: Upload, $address: [String]!, $email: [String]!, $phone: [String]!, $info: String!, $social: [String]!) {
-                        setContact(name: $name, image: $image, address: $address, email: $email, phone: $phone, info: $info, social: $social) {
+                    mutation ($warehouse: String!, $name: String!, $image: Upload, $address: [String]!, $email: [String]!, $phone: [String]!, $info: String!, $social: [String]!) {
+                        setContact(warehouse: $warehouse, name: $name, image: $image, address: $address, email: $email, phone: $phone, info: $info, social: $social) {
                              data
                         }
                     }`})

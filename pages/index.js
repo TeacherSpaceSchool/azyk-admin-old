@@ -50,7 +50,7 @@ const Organization = React.memo((props) => {
                     behavior: 'smooth'
                 });
             }
-        }, 5000)
+        }, 10000)
         return ()=>{
             clearTimeout(searchTimeOutRef.current)
         }
@@ -93,7 +93,7 @@ const Organization = React.memo((props) => {
                     :
                     null
             }
-            <div className={classes.page}>
+            <div className={classes.page} style={{paddingTop: profile.role==='client'&&data.popularItems&&data.popularItems.length>0&&widthPopularItem?10:20}}>
                 {list?list.map((element, idx)=> {
                     if(idx<=pagination)
                         return(

@@ -2,15 +2,15 @@ import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
 import { SingletonStore } from '../singleton/store';
 
-export const getAutos = async({search: search, sort: sort, filter: filter}, client)=>{
+export const getAutos = async({search: search, sort: sort, organization: organization}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {search: search, sort: sort, filter: filter},
+                variables: {search: search, sort: sort, organization: organization},
                 query: gql`
-                    query ($search: String!, $sort: String!, $filter: String!) {
-                        autos(search: $search, sort: $sort, filter: $filter) {
+                    query ($organization: ID!, $search: String!, $sort: String!) {
+                        autos(organization: $organization, search: $search, sort: $sort) {
                             _id
                             number
                             tonnage
@@ -75,7 +75,6 @@ export const deleteAuto = async(ids)=>{
                              data
                         }
                     }`})
-        return await getAutos(new SingletonStore().getStore().getState().app)
     } catch(err){
         console.error(err)
     }
@@ -87,13 +86,11 @@ export const setAuto = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($_id: ID!, $tonnage: Float, $size: Float, $number: String, $organization: ID, $employment: ID) {
-                        setAuto(_id: $_id, tonnage: $tonnage, size: $size, number: $number, organization: $organization, employment: $employment) {
+                    mutation ($_id: ID!, $tonnage: Float, $size: Float, $number: String, $employment: ID) {
+                        setAuto(_id: $_id, tonnage: $tonnage, size: $size, number: $number, employment: $employment) {
                              data
                         }
                     }`})
-        let list = await getAutos(new SingletonStore().getStore().getState().app)
-        return list
     } catch(err){
         console.error(err)
     }
@@ -102,15 +99,23 @@ export const setAuto = async(element)=>{
 export const addAuto = async(element)=>{
     try{
         const client = new SingletonApolloClient().getClient()
-        await client.mutate({
+        let res = await client.mutate({
             variables: element,
             mutation : gql`
                     mutation ($tonnage: Float!, $size: Float!, $number: String!, $organization: ID, $employment: ID) {
                         addAuto(tonnage: $tonnage, size: $size, number: $number, organization: $organization, employment: $employment) {
-                             data
+                            _id
+                            number
+                            tonnage
+                            size
+                            createdAt
+                            employment 
+                                {_id name}
+                            organization 
+                                {_id name}
                         }
                     }`})
-        return await getAutos(new SingletonStore().getStore().getState().app)
+        return res.data
     } catch(err){
         console.error(err)
     }

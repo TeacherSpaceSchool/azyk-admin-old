@@ -5,29 +5,29 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
-import { Map, YMaps, Placemark, TrafficControl } from 'react-yandex-maps';
-import SetRoute from './SetRoute';
+import { Map, YMaps, Placemark, TrafficControl, Polyline } from 'react-yandex-maps';
+import Order from './Order';
 import * as snackbarActions from '../../redux/actions/snackbar'
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Fab from '@material-ui/core/Fab';
+import GpsFixed from '@material-ui/icons/GpsFixed';
+import {getOrder} from '../../src/gql/order'
 
 const Geo =  React.memo(
     (props) =>{
         const { showFullDialog, setMiniDialog, showMiniDialog } = props.mini_dialogActions;
         const { showSnackBar } = props.snackbarActions;
-        const { classes, invoices, getInvoices, route,  } = props;
-
-        /*let getGeo = () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition((position)=>{
-                    setNewGeo(position.coords.latitude+', '+position.coords.longitude)
-                });
-            } else {
-                showSnackBar('Геолокация не поддерживается')
-            }
-        }*/
-        let [geo, setGeo] = useState(null);
+        const { classes, legs, invoices, setList  } = props;
+        let [_list, _setList] = useState(invoices);
+        let _setList_ = (list)=>{
+            setList(list)
+            _setList(list)
+        }
+        let [load, setLoad] = useState(true);
         const searchTimeOutRef = useRef(null);
+        let [geo, setGeo] = useState(null);
+        let [follow, setFollow] = useState(false);
         useEffect(()=>{
             if (navigator.geolocation) {
                 searchTimeOutRef.current = setInterval(() => {
@@ -42,8 +42,6 @@ const Geo =  React.memo(
                 showSnackBar('Геолокация не поддерживается')
             }
         });
-        let [load, setLoad] = useState(true);
-        let [map, setMap] = useState(null);
 
         return (
             <YMaps>
@@ -52,42 +50,115 @@ const Geo =  React.memo(
                         {
                             load?<CircularProgress/>:null
                         }
-                        <div style={{display: load?'none':'block'}}>
-                            <Map instanceRef={(ref) => setMap(ref)} onLoad={()=>{setLoad(false)}} height={window.innerHeight-128} width={window.innerWidth-48} defaultState={{ center: ['42.8700000', '74.5900000'], zoom: 12 }} >
-                                <TrafficControl options={{ float: 'right' }} />
-                                {geo?
-                                    <Placemark
-                                        options={{draggable: false, iconColor: '#ffb300'}}
-                                        properties={{iconCaption: 'Я'}}
-                                        geometry={geo} />
-                                    :
-                                    null
-                                }
-                                {invoices.map((invoice, idx)=> {
-                                    if(invoice.address[1]) return <Placemark
-                                            onClick={() => {
-                                                setMiniDialog('Заказ', <SetRoute
-                                                    geo={invoice.address[1].split(', ')}
-                                                    getInvoices={getInvoices} route={route} invoice={invoice}/>);
-                                                showMiniDialog(true)
-                                            }}
+                        {geo&&follow?
+                            <div style={{display: load?'none':'block'}}>
+                                <Map onLoad={()=>{setLoad(false)}} height={window.innerHeight-128} width={window.innerWidth-48} defaultState={{ center: ['42.8700000', '74.5900000'], zoom: 12 }}
+                                     state={{ center: geo, zoom: 18 }}>
+                                    <TrafficControl options={{ float: 'right' }} />
+                                    {legs.map((leg, idx)=> <Polyline
                                             key={idx}
+                                            geometry={leg.map(element=>element.split(', '))}
                                             options={{
-                                                draggable: false,
-                                                iconColor: !invoice.confirmationForwarder ? 'red' : '#ffb300'
+                                                balloonCloseButton: false,
+                                                strokeColor: '#0F0',
+                                                strokeWidth: 4,
+                                                strokeOpacity: 1,
                                             }}
-                                            properties={{iconCaption: invoice.client.name}}
-                                            geometry={invoice.address[1].split(', ')}/>
+                                        />
+                                    )}
+                                    {geo?
+                                        <Placemark
+                                            options={{draggable: false, iconColor: 'indigo'}}
+                                            properties={{iconCaption: 'Я'}}
+                                            geometry={geo} />
+                                        :
+                                        null
                                     }
-                                )}
-                            </Map>
-                        </div>
+                                    <Placemark
+                                        options={{
+                                            draggable: false,
+                                            iconColor: '#ffb300'
+                                        }}
+                                        properties={{iconCaption: 'Cклад'}}
+                                        geometry={legs[0][0].split(', ')}/>
+                                    {_list.map((invoice, idx)=> <Placemark
+                                        key={invoice._id}
+                                        onClick={async() => {
+                                            let _elemenet = (await getOrder({_id: invoice._id})).invoice
+                                            if(_elemenet) {
+                                                setMiniDialog('Заказ', <Order idx={idx} list={invoices} setList={_setList_} route={false}
+                                                                              element={_elemenet}/>);
+                                                showMiniDialog(true)
+                                            }
+                                        }}
+                                        options={{
+                                            draggable: false,
+                                            iconColor: invoice.confirmationForwarder?'#ffb300':'#ff0000'
+                                        }}
+                                        properties={{iconCaption: `${idx+1}) ${invoice.address[2] ? `${invoice.address[2]}, ` : ''}${invoice.address[0]}`}}
+                                        geometry={invoice.address[1].split(', ')}/>
+                                    )}
+                                </Map>
+                            </div>
+                            :
+                            <div style={{display: load?'none':'block'}}>
+                                <Map onLoad={()=>{setLoad(false)}} height={window.innerHeight-128} width={window.innerWidth-48} defaultState={{ center: ['42.8700000', '74.5900000'], zoom: 12 }} >
+                                    <TrafficControl options={{ float: 'right' }} />
+                                    {legs.map((leg, idx)=> <Polyline
+                                            key={idx}
+                                            geometry={leg.map(element=>element.split(', '))}
+                                            options={{
+                                                balloonCloseButton: false,
+                                                strokeColor: '#0F0',
+                                                strokeWidth: 4,
+                                                strokeOpacity: 1,
+                                            }}
+                                        />
+                                    )}
+                                    {geo?
+                                        <Placemark
+                                            options={{draggable: false, iconColor: 'indigo'}}
+                                            properties={{iconCaption: 'Я'}}
+                                            geometry={geo} />
+                                        :
+                                        null
+                                    }
+                                    <Placemark
+                                        options={{
+                                            draggable: false,
+                                            iconColor: '#ffb300'
+                                        }}
+                                        properties={{iconCaption: 'Cклад'}}
+                                        geometry={legs[0][0].split(', ')}/>
+                                    {_list.map((invoice, idx)=> <Placemark
+                                        key={invoice._id}
+                                        options={{
+                                            draggable: false,
+                                            iconColor: invoice.confirmationForwarder?'#ffb300':'#ff0000'
+                                        }}
+                                        onClick={async () => {
+                                            let _elemenet = (await getOrder({_id: invoice._id})).invoice
+                                            if(_elemenet) {
+                                                setMiniDialog('Заказ', <Order setList={_setList_} idx={idx} list={invoices} route={false}
+                                                                              element={_elemenet}/>);
+                                                showMiniDialog(true)
+                                            }
+                                        }}
+                                        properties={{iconCaption: `${idx+1}) ${invoice.address[2] ? `${invoice.address[2]}, ` : ''}${invoice.address[0]}`}}
+                                        geometry={invoice.address[1].split(', ')}/>
+                                    )}
+                                </Map>
+                            </div>
+                        }
                     </div>
                     <center>
                         <Button variant='contained' color='secondary' onClick={()=>{showFullDialog(false);}} className={classes.button}>
                             Закрыть
                         </Button>
                     </center>
+                    <Fab color={follow?'primary':'secondary'} aria-label='Найти геолокацию' className={classes.fabGeo} onClick={()=>setFollow(!follow)}>
+                        <GpsFixed/>
+                    </Fab>
                 </div>
             </YMaps>
         );

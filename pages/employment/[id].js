@@ -75,7 +75,7 @@ const Client = React.memo((props) => {
     let roles = ['организация', 'менеджер', 'экспедитор', 'агент']
     if(profile.role==='admin')
         roles.push('суперорганизация')
-    let superRoles = ['суперменеджер', 'суперагент']
+    let superRoles = ['суперменеджер', 'суперагент', 'суперэкспедитор']
     useEffect(()=>{
         if(router.query.id!=='new'&&!organization.name){
             setOrganization({name: 'AZYK.STORE', _id: 'super'})

@@ -12,6 +12,17 @@ export default makeStyles({
         flexDirection: 'column',
         alignItems: 'start'
     },
+    geo: {
+        width: 50,
+        textAlign: 'center',
+        marginTop: -10,
+        marginBottom: 20,
+        fontSize: '1rem',
+        fontFamily: 'Roboto',
+        whiteSpace: 'pre-wrap',
+        cursor: 'pointer',
+        borderBottom: '1px dashed #ffb300'
+    },
     media: {
         objectFit: 'cover',
         maxHeight: 'calc(100vw - 72px)',

@@ -27,6 +27,7 @@ import { getClientGqlSsr } from '../../src/getClientGQL'
 import initialApp from '../../src/initialApp'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import Geo from '../../components/dialog/Geo'
 
 const Organization = React.memo((props) => {
     const classes = organizationStyle();
@@ -39,6 +40,7 @@ const Organization = React.memo((props) => {
     let [accessToClient, setAccessToClient] = useState(data.organization&&data.organization.accessToClient!==null?data.organization.accessToClient:false);
     let [onlyDistrict, setOnlyDistrict] = useState(data.organization&&data.organization.onlyDistrict!==null?data.organization.onlyDistrict:false);
     let [onlyIntegrate, setOnlyIntegrate] = useState(data.organization&&data.organization.onlyIntegrate!==null?data.organization.onlyIntegrate:false);
+    let [warehouse, setWarehouse] = useState(data.organization&&data.organization.warehouse!==null?data.organization.warehouse:'');
     let [consignation, setConsignation] = useState(data.organization&&data.organization.consignation!==null?data.organization.consignation:false);
     let [minimumOrder, setMinimumOrder] = useState(data.organization!==null?data.organization.minimumOrder:0);
     let [priotiry, setPriotiry] = useState(data.organization!==null?data.organization.priotiry:0);
@@ -100,7 +102,7 @@ const Organization = React.memo((props) => {
         }
     })
     const { profile } = props.user;
-    const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
+    const { setMiniDialog, showMiniDialog, setFullDialog, showFullDialog } = props.mini_dialogActions;
     return (
         <App filters={data.filterSubCategory} sorts={data.sortSubCategory} pageName={data.organization!==null?router.query.id==='new'?'Добавить':data.organization.name:'Ничего не найдено'}>
             <Head>
@@ -174,6 +176,13 @@ const Organization = React.memo((props) => {
                                                 }
                                                 label='Только по интеграции'
                                             />
+                                            <br/>
+                                            <div className={classes.geo} style={{color: warehouse&&warehouse.length>0?'#ffb300':'red'}} onClick={()=>{
+                                                setFullDialog('Геолокация', <Geo change={true} geo={warehouse} setAddressGeo={setWarehouse}/>)
+                                                showFullDialog(true)
+                                            }}>
+                                                Склад
+                                            </div>
                                             </>
                                             :
                                             null
@@ -330,7 +339,7 @@ const Organization = React.memo((props) => {
                                                 <Button onClick={async()=>{
                                                     if (image!==undefined&&name.length>0&&email.length>0&&address.length>0&&phone.length>0&&info.length>0) {
                                                         const action = async() => {
-                                                            await addOrganization({miniInfo: miniInfo, priotiry: checkInt(priotiry),consignation: consignation, onlyDistrict: onlyDistrict, onlyIntegrate: onlyIntegrate, accessToClient: accessToClient, image: image, name: name, address: address, email: email, phone: phone, info: info, minimumOrder: checkInt(minimumOrder)})
+                                                            await addOrganization({miniInfo: miniInfo, priotiry: checkInt(priotiry),consignation: consignation, onlyDistrict: onlyDistrict, onlyIntegrate: onlyIntegrate, warehouse: warehouse, accessToClient: accessToClient, image: image, name: name, address: address, email: email, phone: phone, info: info, minimumOrder: checkInt(minimumOrder)})
                                                             Router.push('/organizations')
                                                         }
                                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
@@ -355,6 +364,7 @@ const Organization = React.memo((props) => {
                                                     if(accessToClient!==data.organization.accessToClient)editElement.accessToClient = accessToClient
                                                     if(onlyDistrict!==data.organization.onlyDistrict)editElement.onlyDistrict = onlyDistrict
                                                     if(onlyIntegrate!==data.organization.onlyIntegrate)editElement.onlyIntegrate = onlyIntegrate
+                                                    if(warehouse!==data.organization.warehouse)editElement.warehouse = warehouse
                                                     if(consignation!==data.organization.consignation)editElement.consignation = consignation
                                                     if(minimumOrder!==data.organization.minimumOrder)editElement.minimumOrder = checkInt(minimumOrder)
                                                     if(priotiry!==data.organization.priotiry)editElement.priotiry = checkInt(priotiry)
@@ -495,7 +505,7 @@ Organization.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...ctx.query.id!=='new'?await getOrganization({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{organization:{name: '',image: '/static/add.png',address: [],email: [],phone: [],info: '',miniInfo: '',priotiry: 0,minimumOrder: 0,consignation: false,accessToClient: false, onlyDistrict: false, onlyIntegrate: false}}
+            ...ctx.query.id!=='new'?await getOrganization({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{organization:{name: '',image: '/static/add.png',address: [],email: [],phone: [],info: '',miniInfo: '',priotiry: 0,minimumOrder: 0,consignation: false,accessToClient: false, onlyDistrict: false, onlyIntegrate: false, warehouse: ''}}
         }
 
     };

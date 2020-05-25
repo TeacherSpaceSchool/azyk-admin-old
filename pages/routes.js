@@ -1,38 +1,24 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import App from '../layouts/App';
-import CardRoute from '../components/route/CardRoute'
-import pageListStyle from '../src/styleMUI/route/routeList'
-import {getRoutes} from '../src/gql/route'
 import { connect } from 'react-redux'
-import { urlMain } from '../redux/constants/other'
-import Fab from '@material-ui/core/Fab';
-import AddIcon from '@material-ui/icons/Add';
+import { getOrganizations } from '../src/gql/organization'
+import pageListStyle from '../src/styleMUI/organization/orgaizationsList'
+import CardOrganization from '../components/organization/CardOrganization'
 import Link from 'next/link';
-import Router from 'next/router'
-import { getClientGqlSsr } from '../src/getClientGQL'
-const height = 210
+import { urlMain } from '../redux/constants/other'
 import LazyLoad from 'react-lazyload';
-import { forceCheck } from 'react-lazyload';
-import CardRoutePlaceholder from '../components/route/CardRoutePlaceholder'
+import CardOrganizationPlaceholder from '../components/organization/CardOrganizationPlaceholder'
+import { getClientGqlSsr } from '../src/getClientGQL'
 import initialApp from '../src/initialApp'
+import Router from 'next/router'
 
 const Routes = React.memo((props) => {
-    const { profile } = props.user;
     const classes = pageListStyle();
     const { data } = props;
-    let [list, setList] = useState(data.routes);
-    const { search, filter, sort, date } = props.app;
-    let getList = async()=>{
-        setList((await getRoutes({search: search, sort: sort, filter: filter, date: date})).routes)
-    }
-    useEffect(()=>{
-        getList()
-    },[filter, sort, search, date]);
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
+    let [list, setList] = useState(data.organizations);
+    const { profile } = props.user;
+    let height = 80
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -40,11 +26,11 @@ const Routes = React.memo((props) => {
         }
     }
     return (
-        <App checkPagination={checkPagination} getList={getList} searchShow={true} dates={true} filters={data.filterRoute} sorts={data.sortRoute} pageName='Маршрутные листы'>
+        <App checkPagination={checkPagination} pageName='Маршрут экспедитора'>
             <Head>
-                <title>Маршрутные листы</title>
+                <title>Маршрут экспедитора</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
-                <meta property='og:title' content='Маршрутные листы' />
+                <meta property='og:title' content='Маршрут экспедитора' />
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
@@ -52,34 +38,38 @@ const Routes = React.memo((props) => {
                 <link rel='canonical' href={`${urlMain}/routes`}/>
             </Head>
             <div className='count'>
-                {`Всего маршрутов: ${list.length}`}
+                {`Всего организаций: ${list.length}`}
             </div>
             <div className={classes.page}>
+                {
+                    profile.role==='admin'?
+                        <Link href='/routes/[id]' as='/routes/super'>
+                            <a>
+                                <CardOrganization element={{name: 'AZYK.STORE', image: '/static/512x512.png'}}/>
+                            </a>
+                        </Link>
+                        :null
+                }
                 {list?list.map((element, idx)=> {
                     if(idx<=pagination)
                         return(
-                            <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardRoutePlaceholder/>}>
-                                <CardRoute setList={setList} key={element._id} element={element}/>
+                            <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOrganizationPlaceholder height={height}/>}>
+                                <Link href='/routes/[id]' as={`/routes/${element._id}`}>
+                                    <a>
+                                        <CardOrganization key={element._id} setList={setList} element={element}/>
+                                    </a>
+                                </Link>
                             </LazyLoad>
                         )}
                 ):null}
             </div>
-            {['admin', 'организация', 'менеджер'].includes(profile.role)?
-                <Link href='/route/[id]' as={`/route/new`}>
-                    <Fab color='primary' aria-label='add' className={classes.fab}>
-                        <AddIcon />
-                    </Fab>
-                </Link>
-                :
-                null
-            }
         </App>
     )
 })
 
 Routes.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    if(!['admin', 'организация', 'суперорганизация', 'менеджер', 'экспедитор'].includes(ctx.store.getState().user.profile.role))
+    if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/'
@@ -88,7 +78,10 @@ Routes.getInitialProps = async function(ctx) {
         } else
             Router.push('/')
     return {
-        data: await getRoutes({search: '', sort: '-createdAt', filter: '', date: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+        data: {
+            organizations:
+            (await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
+        }
     };
 };
 

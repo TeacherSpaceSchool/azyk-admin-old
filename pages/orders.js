@@ -121,7 +121,7 @@ const Orders = React.memo((props) => {
                                         <>
                                         <br/>
                                         <br/>
-                                        {`Всего тонаж: ${simpleStatistic[4]} кг`}
+                                        {`Всего тоннаж: ${simpleStatistic[4]} кг`}
                                         </>
                                         :
                                         null

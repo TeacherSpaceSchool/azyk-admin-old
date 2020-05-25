@@ -19,6 +19,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Confirmation from '../components/dialog/Confirmation'
 import AddSocial from '../components/dialog/AddSocial'
+import Geo from '../components/dialog/Geo'
 import { urlMain } from '../redux/constants/other'
 import { getClientGqlSsr } from '../src/getClientGQL'
 import initialApp from '../src/initialApp'
@@ -45,6 +46,7 @@ const Contact = React.memo((props) => {
         address.splice(idx, 1);
         setAddress([...address])
     };
+    let [warehouse, setWarehouse] = useState(data.contact.warehouse);
     let [email, setEmail] = useState(data.contact.email);
     let [newEmail, setNewEmail] = useState('');
     let addEmail = ()=>{
@@ -92,7 +94,7 @@ const Contact = React.memo((props) => {
         }
     })
     const { profile } = props.user;
-    const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
+    const { setMiniDialog, showMiniDialog, setFullDialog, showFullDialog } = props.mini_dialogActions;
     return (
         <App filters={data.filterSubCategory} sorts={data.sortSubCategory} pageName='Контакты'>
             <Head>
@@ -118,6 +120,13 @@ const Contact = React.memo((props) => {
                                                 alt={'Добавить'}
                                             />
                                         </label>
+                                        <br/>
+                                        <div className={classes.geo} style={{color: warehouse&&warehouse.length>0?'#ffb300':'red'}} onClick={()=>{
+                                            setFullDialog('Геолокация', <Geo change={true} geo={warehouse} setAddressGeo={setWarehouse}/>)
+                                            showFullDialog(true)
+                                        }}>
+                                            Склад
+                                        </div>
                                         Наши страницы
                                         <div className={classes.row}>
                                             <img src='/static/instagram.svg' onClick={()=>{
@@ -260,7 +269,8 @@ const Contact = React.memo((props) => {
                                                     email: email,
                                                     phone: phone,
                                                     social: social,
-                                                    info: info
+                                                    info: info,
+                                                    warehouse: warehouse
                                                 }
                                                 if(image!==undefined)editElement.image = image
                                                 const action = async() => {

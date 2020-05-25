@@ -288,15 +288,15 @@ export const getOrderHistorys = async(invoice, client)=>{
     }
 }
 
-export const getOrdersForRouting = async(organization)=>{
+export const getOrdersForRouting = async({produsers, clients, dateStart, dateEnd, dateDelivery})=>{
     try{
         const client = new SingletonApolloClient().getClient();
         let res = await client
             .query({
-                variables: {organization: organization},
+                variables: {produsers: produsers, clients: clients, dateStart: dateStart, dateEnd: dateEnd, dateDelivery: dateDelivery},
                 query: gql`
-                    query($organization: ID){
-                        invoicesForRouting(organization: $organization){
+                    query($produsers: [ID]!, $clients: [ID]!, $dateStart: Date!, $dateEnd: Date, $dateDelivery: Date!){
+                        invoicesForRouting(produsers: $produsers, clients: $clients, dateStart: $dateStart, dateEnd: $dateEnd, dateDelivery: $dateDelivery){
                             _id
                             agent 
                                 {_id name}

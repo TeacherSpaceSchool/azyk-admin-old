@@ -77,7 +77,7 @@ const LogistiOorder = React.memo((props) => {
         (async()=>{
             setSelectedClients([])
             setAllClients([])
-            if(district){
+            if(district&&organization){
                 await showLoad(true)
                 let _district = (await getDistrict({_id: district._id})).district
                 setAllClients(_district.client)
@@ -90,7 +90,7 @@ const LogistiOorder = React.memo((props) => {
                 await showLoad(false)
             }
         })()
-    },[district])
+    },[district, organization])
     const checkPagination = ()=>{
         if(pagination<clients.length){
             setPagination(pagination+100)
@@ -119,7 +119,6 @@ const LogistiOorder = React.memo((props) => {
     let close = () => {
         setAnchorEl(null);
     };
-
     return (
         <App pageName='Дни доставки' checkPagination={checkPagination} searchShow={true}>
             <Head>
@@ -272,8 +271,7 @@ const LogistiOorder = React.memo((props) => {
                         const action = async() => {
                             if(selectedClients.length>0) {
                                 await saveDeliveryDates(selectedClients, organization._id, days)
-                                for (let i = 1; i < selectedClients.length; i++) {
-                                    console.log(selectedClients[i])
+                                for (let i = 0; i < selectedClients.length; i++) {
                                     deliveryDates[selectedClients[i]] = {
                                         client: selectedClients[i],
                                         days: days,
@@ -320,7 +318,7 @@ LogistiOorder.getInitialProps = async function(ctx) {
             Router.push('/')
     return {
         data: {
-            ...await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            activeOrganization: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
         }
     };
 };

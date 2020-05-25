@@ -16,7 +16,7 @@ import Confirmation from '../dialog/Confirmation'
 
 const CardOrder = React.memo((props) => {
     const classes = cardRouteStyle();
-    const { element, setList } = props;
+    const { element, setList, list, idx } = props;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { profile } = props.user;
     const statusColor = {
@@ -35,51 +35,36 @@ const CardOrder = React.memo((props) => {
                             <div className={classes.status} style={{background: statusColor[element.status]}}>{element.status}</div>
                         </div>
                         <div className={classes.row}>
-                            <div className={classes.nameField}>Дата:&nbsp;</div>
-                            <div className={classes.value}>{pdDDMMYY(element.dateStart)}</div>
+                            <div className={classes.nameField}>Дата заказов:&nbsp;</div>
+                            <div className={classes.value}>{`${pdDDMMYY(element.dateStart)}${element.dateEnd?`-${pdDDMMYY(element.dateEnd)}`:''}`}</div>
+                        </div>
+                        <div className={classes.row}>
+                            <div className={classes.nameField}>Дата развозки:&nbsp;</div>
+                            <div className={classes.value}>{pdDDMMYY(element.dateDelivery)}</div>
+                        </div>
+                        <div className={classes.row}>
+                            <div className={classes.nameField}>Заказов:&nbsp;</div>
+                            <div className={classes.value}>{element.selectedOrders.length}</div>
                         </div>
                         {
-                            element.allTonnage?
+                            element.selectEcspeditor?
                                 <div className={classes.row}>
-                                    <div className={classes.nameField}>Тоннаж:&nbsp;</div>
-                                    <div className={classes.value}>{element.allTonnage}&nbsp;кг</div>
+                                    <div className={classes.nameField}>Экспедитор:&nbsp;</div>
+                                    <div className={classes.value}>{element.selectEcspeditor.name}</div>
                                 </div>
-                                :
-                                null
-
+                                :null
                         }
-                        {
-                            element.allSize?
-                            <div className={classes.row}>
-                                <div className={classes.nameField}>Кубатура:&nbsp;</div>
-                                <div className={classes.value}>{element.allSize}&nbsp;см³</div>
-                            </div>
-                                :
-                                null
-                        }
-                        <div className={classes.row}>
-                            <div className={classes.nameField}>Организация:&nbsp;</div>
-                            <div className={classes.value}>{element.organization?element.organization.name:'AZYK.STORE'}</div>
-                        </div>
-                        <div className={classes.row}>
-                            <div className={classes.nameField}>Экспедитор:&nbsp;</div>
-                            <div className={classes.value}>{element.employment.name}</div>
-                        </div>
-                        <div className={classes.row}>
-                            <div className={classes.nameField}>Заказы:&nbsp;</div>
-                            <div className={classes.column}>
-                                {element.invoices.map((invoice, idx)=> idx<4?<div key={idx} className={classes.value}>{invoice.number}</div>:idx===4?'...':null)}
-                            </div>
-                        </div>
                     </CardContent>
                 </CardActionArea>
             </Link>
             <CardActions>
                 {
-                    ['организация', 'менеджер', 'admin'].includes(profile.role)&&element.status==='создан'?
+                    ['организация', 'менеджер', 'admin'].includes(profile.role)?
                         <Button onClick={async()=>{
                             const action = async() => {
-                                setList((await deleteRoute([element._id])).routes)
+                                await deleteRoute({_id: element._id, selectedOrders: element.selectedOrders?element.selectedOrders.map(element=>element._id):[]})
+                                list.splice(idx, 1);
+                                setList([...list])
                             }
                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                             showMiniDialog(true)
