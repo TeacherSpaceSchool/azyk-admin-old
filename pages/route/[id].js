@@ -399,35 +399,6 @@ const Route = React.memo((props) => {
                                         ):null
                                     }
                                     <br/>
-                                    {
-                                        deliverys&&deliverys.length?
-                                            <>
-                                            <Button onClick={async()=>{
-                                                let items = []
-                                                for(let i=0; i<deliverys.length; i++) {
-                                                    items = [...items, ...deliverys[i].orders.map(order=>order._id)]
-                                                }
-                                                items = (await listDownload(items)).listDownload
-                                                setMiniDialog('Лист загрузки', <ItemList items={items}/>)
-                                                showMiniDialog(true)
-                                            }} size='small' color='primary'>
-                                                Лист загрузки
-                                            </Button>
-                                            <Button onClick={async()=>{
-                                                let items = []
-                                                for(let i=0; i<deliverys.length; i++) {
-                                                    items = [...items, ...deliverys[i].orders.map(order=>order._id)]
-                                                }
-                                                items = (await listUnload(items)).listUnload
-                                                setMiniDialog('Лист выгрузки', <ItemList items={items}/>)
-                                                showMiniDialog(true)
-                                            }} size='small' color='primary'>
-                                                Лист выгрузки
-                                            </Button>
-                                            </>
-                                            :
-                                            null
-                                    }
                                     </>
                                     :
                                     <div className={classes.listInvoices}>
