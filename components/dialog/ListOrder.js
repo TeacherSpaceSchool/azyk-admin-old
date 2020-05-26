@@ -16,8 +16,8 @@ const ListOrder =  React.memo(
         const { classes, invoices, setList } = props;
         let [_list, _setList] = useState(invoices);
         let _setList_ = (list)=>{
-            setList(list)
-            _setList(list)
+            setList([...list])
+            _setList([...list])
         }
 
         return (
