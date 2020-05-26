@@ -113,7 +113,7 @@ const Geo =  React.memo(
                                                     onClick={async() => {
                                                         let _elemenet = (await getOrder({_id: invoice._id})).invoice
                                                         if(_elemenet) {
-                                                            setMiniDialog('Заказ', <Order idx={idx} list={invoices} setList={_setList_} route={false}
+                                                            setMiniDialog('Заказ', <Order idx={idx} list={_list} setList={_setList_} route={false}
                                                                                           element={_elemenet}/>);
                                                             showMiniDialog(true)
                                                         }
@@ -184,7 +184,7 @@ const Geo =  React.memo(
                                                     onClick={async () => {
                                                         let _elemenet = (await getOrder({_id: invoice._id})).invoice
                                                         if(_elemenet) {
-                                                            setMiniDialog('Заказ', <Order setList={_setList_} idx={idx} list={invoices} route={false}
+                                                            setMiniDialog('Заказ', <Order setList={_setList_} idx={idx} list={_list} route={false}
                                                                                           element={_elemenet}/>);
                                                             showMiniDialog(true)
                                                         }

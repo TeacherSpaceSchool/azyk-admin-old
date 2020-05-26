@@ -30,7 +30,7 @@ const ListOrder =  React.memo(
                                  onClick={async() => {
                                      let _elemenet = (await getOrder({_id: element._id})).invoice
                                      if(_elemenet) {
-                                         setMiniDialog('Заказ', <Order idx={idx} list={invoices} route={false}
+                                         setMiniDialog('Заказ', <Order idx={idx} list={_list} route={false}
                                                                        element={_elemenet} setList={_setList_}/>);
                                          showMiniDialog(true)
                                      }

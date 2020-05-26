@@ -40,12 +40,11 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { pdDatePicker } from '../../src/lib'
-
-const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'))
-const ListOrder = dynamic(() => import('../../components/dialog/ListOrder'))
-const GeoRoute = dynamic(() => import('../../components/dialog/GeoRoute'))
-const ItemList = dynamic(() => import('../../components/dialog/ItemList'))
-const AddOrder = dynamic(() => import('../../components/dialog/AddOrder'))
+import Confirmation from '../../components/dialog/Confirmation'
+import ListOrder from '../../components/dialog/ListOrder'
+import GeoRoute from '../../components/dialog/GeoRoute'
+import ItemList from '../../components/dialog/ItemList'
+import AddOrder from '../../components/dialog/AddOrder'
 
 const Route = React.memo((props) => {
     const classes = routeStyle();
@@ -156,6 +155,7 @@ const Route = React.memo((props) => {
             setAllReturnedPrice(returnedPrice)
         })()
     },[selectedOrders])
+    console.log(deliverys)
     return (
         <App checkPagination={checkPagination} pageName={router.query.id==='new'?'Добавить':data.route?data.route.number:'Ничего не найдено'}>
             <Head>
@@ -390,7 +390,9 @@ const Route = React.memo((props) => {
                                                         </Button>
                                                         <Button onClick={async()=>{
                                                             setFullDialog('Список магазинов', <ListOrder
-                                                                setList={(list)=>{deliverys[idx].orders = list; setDeliverys([...deliverys])}} invoices={element.orders}/>)
+                                                                setList={(list)=>{deliverys[idx].orders = list; setDeliverys([...deliverys])}}
+                                                                invoices={element.orders}
+                                                            />)
                                                             showFullDialog(true)
                                                         }} size='small' color='primary'>
                                                             Список магазинов
@@ -486,7 +488,7 @@ const Route = React.memo((props) => {
                                                                 lengthInMeters: deliverys[i].lengthInMeters
                                                             }
                                                         }
-                                                        await addRoute({provider: provider._id, deliverys: deliverys, selectedOrders: selectedOrders.map(element=>element._id), selectDistricts: selectDistricts.map(element=>element._id), selectEcspeditor: selectEcspeditor._id, selectAuto: selectAuto._id, dateDelivery: dateDelivery, dateEnd: dateEnd, dateStart: dateStart, allTonnage: allTonnage, selectProdusers: selectProdusers.map(element=>element._id)})
+                                                        await addRoute({provider: provider._id, deliverys: deliverys, selectedOrders: selectedOrders.map(element=>element._id), selectDistricts: selectDistricts.map(element=>element._id), selectEcspeditor: selectEcspeditor._id, selectAuto: selectAuto._id, dateDelivery: dateDelivery, dateEnd: dateEnd, dateStart: dateStart, allTonnage: parseInt(allTonnage), selectProdusers: selectProdusers.map(element=>element._id)})
                                                         Router.push(`/routes/${provider._id}`)
                                                         await showLoad(false)
                                                     }}>Сохранить маршрут</MenuItem>
