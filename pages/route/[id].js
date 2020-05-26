@@ -155,7 +155,6 @@ const Route = React.memo((props) => {
             setAllReturnedPrice(returnedPrice)
         })()
     },[selectedOrders])
-    console.log(deliverys)
     return (
         <App checkPagination={checkPagination} pageName={router.query.id==='new'?'Добавить':data.route?data.route.number:'Ничего не найдено'}>
             <Head>
@@ -382,7 +381,7 @@ const Route = React.memo((props) => {
                                                             Лист загрузки
                                                         </Button>
                                                         <Button onClick={async()=>{
-                                                            let items = (await listDownload(element.orders.map(order=>order._id))).listDownload
+                                                            let items = (await listUnload(element.orders.map(order=>order._id))).listUnload
                                                             setMiniDialog('Лист выгрузки', <ItemList items={items}/>)
                                                             showMiniDialog(true)
                                                         }} size='small' color='primary'>
