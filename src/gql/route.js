@@ -1,6 +1,5 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
-import { SingletonStore } from '../singleton/store';
 
 export const getRoutes = async({search, sort, filter, date, skip, organization}, client)=>{
     try{
@@ -9,13 +8,16 @@ export const getRoutes = async({search, sort, filter, date, skip, organization},
             .query({
                 variables: {search: search, sort: sort, filter: filter, date: date, skip: skip, organization: organization},
                 query: gql`
-                    query ($organization: ID!, $search: String!, $sort: String!, $filter: String!, $date: String!, $skip: Int) {
+                    query ($organization: ID, $search: String!, $sort: String!, $filter: String!, $date: String!, $skip: Int) {
                         routes(organization: $organization, search: $search, sort: $sort, filter: $filter, date: $date, skip: $skip) {
                             _id
                             createdAt
-                            deliverys {tonnage lengthInMeters}
-                            selectEcspeditor {name}
-                            selectedOrders {_id}
+                            deliverys 
+                                {tonnage lengthInMeters}
+                            selectEcspeditor 
+                                {name}
+                            selectedOrders 
+                                {_id}
                             dateDelivery
                             status
                             number
@@ -222,7 +224,6 @@ export const getUnloadingInvoicesFromRouting = async({orders, organization}, cli
                         }
                     }`,
             })
-        console.log(res.data)
         return res.data
     } catch(err){
         console.error(err)

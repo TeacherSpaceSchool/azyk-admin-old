@@ -26,7 +26,7 @@ const CardOrder = React.memo((props) => {
     }
     return (
         <Card className={classes.card}>
-            <Link href='/route/[id]' as={`/route/${element!==undefined?element._id:'new'}`}>
+            <Link href='/route/[id]' as={`/route/${element._id}`}>
                 <CardActionArea>
                     <CardContent className={classes.column}>
                         <div className={classes.row}>

@@ -98,7 +98,7 @@ const Routes = React.memo((props) => {
 
 Routes.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    if(!['admin', 'организация', 'суперорганизация', 'менеджер', 'экспедитор'].includes(ctx.store.getState().user.profile.role))
+    if(!['admin', 'организация', 'суперорганизация', 'менеджер', 'экспедитор', 'суперэкспедитор'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/'

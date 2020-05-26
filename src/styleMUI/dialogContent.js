@@ -99,6 +99,11 @@ export default theme => ({
         bottom: 70,
         right: 35
     },
+    fabNavigation: {
+        position: 'fixed',
+        bottom: 136,
+        right: 35
+    },
     geo: {
         width: 170,
         textAlign: 'center',

@@ -342,6 +342,14 @@ const Route = React.memo((props) => {
                                                         </div>
                                                         <div className={classes.row}>
                                                             <div className={classes.nameField}>
+                                                                Сумма{element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)?' (факт/итого)':''}:&nbsp;
+                                                            </div>
+                                                            <div className={classes.value}>
+                                                                {element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)?`${element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)} сом/`:''}{element.orders.reduce((accumulator, element) => accumulator + (element.allPrice-element.returnedPrice), 0)} сом
+                                                            </div>
+                                                        </div>
+                                                        <div className={classes.row}>
+                                                            <div className={classes.nameField}>
                                                                 Тоннаж:&nbsp;
                                                             </div>
                                                             <div className={classes.value}>
@@ -566,7 +574,7 @@ const Route = React.memo((props) => {
 
 Route.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    if(!['суперорганизация', 'организация', 'менеджер', 'admin', 'экспедитор'].includes(ctx.store.getState().user.profile.role))
+    if(!['суперорганизация', 'организация', 'менеджер', 'admin', 'экспедитор', 'суперэкспедитор'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'

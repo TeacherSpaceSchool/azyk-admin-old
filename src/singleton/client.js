@@ -82,11 +82,11 @@ export class SingletonApolloClient {
             cache: new InMemoryCache(),
             defaultOptions: {
                 watchQuery: {
-                    fetchPolicy: 'cache-and-network',
+                    fetchPolicy: 'no-cache',
                     errorPolicy: 'ignore',
                 },
                 query: {
-                    fetchPolicy: 'network-only',
+                    fetchPolicy: 'no-cache',
                     errorPolicy: 'all',
                 },
                 mutate: {
