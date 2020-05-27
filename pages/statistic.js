@@ -198,11 +198,6 @@ const list = {
             role: ['admin']
         },
         {
-            name: 'Выгрузка накладных',
-            link: '/statistic/unloadinginvoices',
-            role: ['admin']
-        },
-        {
             name: 'Выгрузка районов',
             link: '/statistic/unloadingdistricts',
             role: ['admin']

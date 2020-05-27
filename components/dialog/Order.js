@@ -272,7 +272,7 @@ const Order =  React.memo(
 
                     <div
                          onClick={()=>{
-                                setFullDialog('Акции', <OrderAdss organization={element.organization._id} setAdss={setAdss} adss={adss}/>)
+                                setFullDialog('Акции', <OrderAdss invoice={element._id} organization={element.organization._id} setAdss={setAdss} adss={adss}/>)
                                 showFullDialog(true)
                          }}
                          className={classes.row}>
