@@ -35,7 +35,7 @@ const BuyBasket =  React.memo(
         const width = isMobileApp? (window.innerWidth-112) : 500
         const address = [client.address[0]];
         let [coment, setComent] = useState('');
-        let [noSplit, setNoSplit] = useState(false);
+        let [inv, setInv] = useState(false);
         let handleComent =  (event) => {
             setComent(event.target.value)
         };
@@ -120,7 +120,7 @@ const BuyBasket =  React.memo(
                 <FormControlLabel
                     style={{width: width}}
                     onChange={(e)=>{
-                        setNoSplit(e.target.checked)
+                        setInv(e.target.checked)
                     }}
                     control={<Checkbox/>}
                     label={'Cчет фактура'}
@@ -142,7 +142,8 @@ const BuyBasket =  React.memo(
 
                                        sessionStorage.catalog = '{}'
                                        await addOrders({
-                                           noSplit: noSplit,
+                                           inv: inv,
+                                           unite: organization.unite,
                                            info: coment,
                                            usedBonus: useBonus,
                                            paymentMethod: paymentMethod,

@@ -60,6 +60,14 @@ const CardOrganization = React.memo((props) => {
                                     {element.name}
                                 </div>
                             </div>
+                            <div className={classes.row}>
+                                <div className={classes.nameField}>
+                                    Категория:&nbsp;
+                                </div>
+                                <div className={classes.value}>
+                                    {element.category}
+                                </div>
+                            </div>
                             {element.phone?
                                 <div className={classes.row}>
                                     <div className={classes.nameField}>

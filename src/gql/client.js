@@ -23,6 +23,7 @@ export const getClients = async(arg, client)=>{
                             info
                             reiting
                             city
+                            category
                             updatedAt
                             phone
                             organization 
@@ -85,6 +86,7 @@ export const getClientsTrash = async(arg, client)=>{
                             info
                             reiting
                             city
+                            category
                             del
                             phone
                             organization 
@@ -138,6 +140,7 @@ export const getClientsWithoutDistrict = async(organization, client)=>{
                             info
                             reiting
                             city
+                            category
                             phone
                             organization 
                                 {_id name}
@@ -171,6 +174,7 @@ export const getClient = async({_id: _id}, client)=>{
                             info
                             reiting
                             city
+                            category
                             phone
                             organization 
                                 {_id name}
@@ -239,8 +243,8 @@ export const setClient = async(element, client)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($_id: ID!, $phone: [String], $login: String, $device: String, $city: String, $image: Upload, $name: String, $email: String, $address: [[String]], $info: String, $newPass: String) {
-                        setClient(_id: $_id, device: $device, phone: $phone, login: $login, city: $city, image: $image, name: $name, email: $email, address: $address, info: $info, newPass: $newPass) {
+                    mutation ($_id: ID!, $phone: [String], $login: String, $device: String, $category: String, $city: String, $image: Upload, $name: String, $email: String, $address: [[String]], $info: String, $newPass: String) {
+                        setClient(_id: $_id, device: $device, phone: $phone, login: $login, category: $category, city: $city, image: $image, name: $name, email: $email, address: $address, info: $info, newPass: $newPass) {
                              data
                         }
                     }`})
@@ -257,8 +261,8 @@ export const addClient = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($image: Upload, $name: String!, $email: String, $city: String!, $address: [[String]]!, $phone: [String]!, $info: String, $password: String!, $login: String!) {
-                        addClient(image: $image, name: $name, email: $email, city: $city, address: $address, phone: $phone, info: $info, password: $password, login: $login) {
+                    mutation ($image: Upload, $name: String!, $email: String, $category: String, $city: String!, $address: [[String]]!, $phone: [String]!, $info: String, $password: String!, $login: String!) {
+                        addClient(image: $image, name: $name, email: $email, category: $category, city: $city, address: $address, phone: $phone, info: $info, password: $password, login: $login) {
                              data
                         }
                     }`})

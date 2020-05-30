@@ -21,6 +21,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
+import Remove from '@material-ui/icons/Remove';
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
 
 const CardAds = React.memo((props) => {
     const classes = cardAdsStyle();
@@ -47,11 +50,7 @@ const CardAds = React.memo((props) => {
         setCount(checkInt(event.target.value))
     };
     let [item, setItem] = useState(element?element.item:undefined);
-    let [targetItem, setTargetItem ] = useState(element?element.targetItem:undefined);
-    let [targetCount, setTargetCount ] = useState(element?element.targetCount:0);
-    let handleTargetCount =  (event) => {
-        setTargetCount(checkInt(event.target.value))
-    };
+    let [targetItems, setTargetItems ] = useState(element?element.targetItems.map(targetItem=>{return {_id: targetItem._id, count: targetItem.count}}):undefined);
     let [targetPrice, setTargetPrice ] = useState(element?element.targetPrice:0);
     let handleTargetPrice =  (event) => {
         setTargetPrice(checkInt(event.target.value))
@@ -59,6 +58,7 @@ const CardAds = React.memo((props) => {
     let [multiplier , setMultiplier] = useState(element?element.multiplier:false);
     let [targetType, setTargetType] = useState(element?element.targetType:'Цена');
     let handleTargetType =  (event) => {
+        setTargetItems([])
         setTargetType(event.target.value)
     };
     const targetTypes = ['Цена', 'Товар']
@@ -176,29 +176,72 @@ const CardAds = React.memo((props) => {
                                     />
                                     :
                                     <>
-                                    <Autocomplete
-                                        className={classes.input}
-                                        options={items}
-                                        getOptionLabel={option => option.name}
-                                        value={targetItem}
-                                        onChange={(event, newValue) => {
-                                            setTargetItem(newValue)
-                                        }}
-                                        noOptionsText='Ничего не найдено'
-                                        renderInput={params => (
-                                            <TextField {...params} label='Целевой товар' fullWidth />
-                                        )}
-                                    />
-                                    <br/>
-                                    <TextField
-                                        label='Целевое количество'
-                                        value={targetCount}
-                                        className={classes.input}
-                                        onChange={handleTargetCount}
-                                        inputProps={{
-                                            'aria-label': 'description',
-                                        }}
-                                    />
+                                    {targetItems.map((element, idx)=>
+                                        <>
+                                        <FormControl className={classes.input} variant='outlined'>
+                                            <InputLabel>Целевой товар</InputLabel>
+                                            <Select
+                                                multiple
+                                                value={targetItems[idx]._id}
+                                                onChange={(event) => {
+                                                    targetItems[idx]._id = event.target.value
+                                                    setTargetItems([...targetItems])
+                                                }}
+                                                input={<Input />}
+                                                MenuProps={{
+                                                    PaperProps: {
+                                                        style: {
+                                                            maxHeight: 226,
+                                                            width: 250,
+                                                        },
+                                                    }
+                                                }}
+                                            >
+                                                {items.map((item) => (
+                                                    <MenuItem key={item.name} value={item._id}>
+                                                        {item.name}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                        <br/>
+                                        <br/>
+                                        <FormControl  key={idx} className={classes.input}>
+                                            <InputLabel>Целевое количество</InputLabel>
+                                            <Input
+                                                placeholder='Целевое количество'
+                                                value={element.count}
+                                                onChange={(event)=>{
+                                                    targetItems[idx].count = checkInt(event.target.value)
+                                                    setTargetItems([...targetItems])
+                                                }}
+                                                inputProps={{
+                                                    'aria-label': 'description',
+                                                }}
+                                                endAdornment={
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            onClick={()=>{
+                                                                targetItems.splice(idx, 1)
+                                                                setTargetItems([...targetItems])
+                                                            }}
+                                                            aria-label='toggle password visibility'
+                                                        >
+                                                            <Remove/>
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                }
+                                            />
+                                        </FormControl>
+                                        <br/>
+                                        <br/>
+                                        </>
+                                    )}
+                                    <Button onClick={async()=>{
+                                        setTargetItems([...targetItems, {_id: [], count: 0}])
+                                    }} size='small' color='primary'>
+                                        Добавить товар
+                                    </Button>
                                     </>
                             }
                         </CardContent>
@@ -208,22 +251,25 @@ const CardAds = React.memo((props) => {
                                         element.del!=='deleted'?
                                         <>
                                         <Button onClick={async()=>{
-                                            let editElement = {_id: element._id}
-                                            if(title.length>0&&title!==element.title)editElement.title = title
-                                            if(url.length>0&&url!==element.url)editElement.url = url
-                                            if(count!==element.count)editElement.count = count
-                                            if(targetCount!==element.targetCount)editElement.targetCount = targetCount
-                                            if(targetPrice!==element.targetPrice)editElement.targetPrice = targetPrice
-                                            if(multiplier!==element.multiplier)editElement.multiplier = multiplier
-                                            if(targetType!==element.targetType)editElement.targetType = targetType
-                                            editElement.item = item?item._id:undefined
-                                            editElement.targetItem = targetItem?targetItem._id:undefined
-                                            if(image)editElement.image = image
-                                            const action = async() => {
-                                                setList((await setAds(editElement, organization)).adss)
+                                            if(!(targetItems.find(element=>!element._id))) {
+                                                let editElement = {_id: element._id}
+                                                if (title.length > 0 && title !== element.title) editElement.title = title
+                                                if (url.length > 0 && url !== element.url) editElement.url = url
+                                                if (count !== element.count) editElement.count = count
+                                                editElement.targetItems = targetItems
+                                                if (targetPrice !== element.targetPrice) editElement.targetPrice = targetPrice
+                                                if (multiplier !== element.multiplier) editElement.multiplier = multiplier
+                                                if (targetType !== element.targetType) editElement.targetType = targetType
+                                                editElement.item = item ? item._id : undefined
+                                                if (image) editElement.image = image
+                                                const action = async () => {
+                                                    setList((await setAds(editElement, organization)).adss)
+                                                }
+                                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                                showMiniDialog(true)
+                                            } else {
+                                                showSnackBar('Заполните все поля')
                                             }
-                                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                            showMiniDialog(true)
                                         }} size='small' color='primary'>
                                             Сохранить
                                         </Button>
@@ -252,7 +298,7 @@ const CardAds = React.memo((props) => {
                                 </Button>
                                         :
                                         <Button onClick={async()=> {
-                                            if (image && url.length > 0 && title.length > 0) {
+                                            if (!(targetItems.find(element=>!element._id)) && image && url.length > 0 && title.length > 0) {
                                                 setImage(undefined)
                                                 setPreview('/static/add.png')
                                                 setTitle('')

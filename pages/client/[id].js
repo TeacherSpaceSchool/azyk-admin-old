@@ -65,6 +65,11 @@ const Client = React.memo((props) => {
         setPhone([...phone])
     };
     let [login, setLogin] = useState(data.client&&data.client.user?data.client.user.login:'');
+    let categorys = ['A','B','C','D','Horeca']
+    let [category, setCategory] = useState(data.client&&data.client.category?data.client.category:'B');
+    let handleCategory =  (event) => {
+        setCategory(event.target.value)
+    };
 
     //привести к геолокации
     if(data.client.address.length>0&&!Array.isArray(data.client.address[0])) data.client.address.map((addres)=>[addres])
@@ -185,6 +190,14 @@ const Client = React.memo((props) => {
                                             'aria-label': 'description',
                                         }}
                                     />
+                                    <FormControl className={classes.input}>
+                                        <InputLabel>Категория</InputLabel>
+                                        <Select value={category} onChange={handleCategory}>
+                                            {categorys.map((element)=>
+                                                <MenuItem key={element} value={element} ola={element}>{element}</MenuItem>
+                                            )}
+                                        </Select>
+                                    </FormControl>
                                     <TextField
                                         label='Логин'
                                         value={login}
@@ -344,6 +357,7 @@ const Client = React.memo((props) => {
                                                         let editElement = {_id: data.client._id}
                                                         if (image) editElement.image = image
                                                         if (name && name.length > 0 && name !== data.client.name) editElement.name = name
+                                                        if (category && category !== data.client.category) editElement.category = category
                                                         editElement.address = address
                                                         if (email && email.length > 0 && email !== data.client.email) editElement.email = email
                                                         if (login && login.length > 0 && data.client.user.login !== login) editElement.login = login
@@ -408,7 +422,7 @@ const Client = React.memo((props) => {
                                                 router.query.id==='new'&&['admin'].includes(profile.role)?
                                                     <Button onClick={async()=>{
                                                         if(name.length>0&&login.length>0&&newPass.length>0&&address.length>0&&address[0][0].length>0&&address[0].length>0&&address[0][2].length>0&&city.length>0&&phone.length>0&&phone[0].length>0){
-                                                            let editElement = {login: login, password: newPass}
+                                                            let editElement = {login: login, password: newPass, category: category}
                                                             if(image!==undefined)editElement.image = image
                                                             if(name.length>0)editElement.name = name
                                                             editElement.address = address
@@ -449,6 +463,14 @@ const Client = React.memo((props) => {
                                 <div style={{width: isMobileApp?'100%':'calc(100% - 300px)'}}>
                                     <div className={classes.name}>
                                         {name}
+                                    </div>
+                                    <div className={classes.row}>
+                                        <div className={classes.nameField}>
+                                            Категория:&nbsp;
+                                        </div>
+                                        <div className={classes.value}>
+                                            {category}
+                                        </div>
                                     </div>
                                     <div className={classes.row}>
                                         <div className={classes.nameField}>
@@ -543,6 +565,7 @@ Client.getInitialProps = async function(ctx) {
                         patent: null,
                         passport: null,
                         certificate: null,
+                        category: 'B'
                     }
             }
         :

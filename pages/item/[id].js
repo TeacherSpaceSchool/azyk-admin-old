@@ -64,6 +64,11 @@ const Item = React.memo((props) => {
     let handleSubCategory =  (event) => {
         setSubCategory({_id: event.target.value, name: event.target.name})
     };
+    const _categorys = ['A','B','C','D','Horeca']
+    let [categorys, setCategorys] = useState(data.item?data.item.categorys:['A','B','C','D','Horeca']);
+    let handleCategorys = (async (event) => {
+        setCategorys(event.target.value)
+    })
     let [weight, setWeight] = useState(data.item&&data.item.weight?data.item.weight:0);
     let [size, setSize] = useState(data.item&&data.item.size?data.item.size:0);
     let [priotiry, setPriotiry] = useState(data.item&&data.item.priotiry?data.item.priotiry:0);
@@ -234,6 +239,31 @@ const Item = React.memo((props) => {
                                             />
                                         </h1>
                                         <div className={classes.price}>
+                                            <FormControl className={isMobileApp?classes.inputM:classes.inputD} variant='outlined'>
+                                                <InputLabel>Категории</InputLabel>
+                                                <Select
+                                                    multiple
+                                                    value={categorys}
+                                                    onChange={handleCategorys}
+                                                    input={<Input />}
+                                                    MenuProps={{
+                                                        PaperProps: {
+                                                            style: {
+                                                                maxHeight: 226,
+                                                                width: 250,
+                                                            },
+                                                        }
+                                                    }}
+                                                >
+                                                    {_categorys.map((category) => (
+                                                        <MenuItem key={category} value={category}>
+                                                            {category}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                        </div>
+                                        <div className={classes.price}>
                                             <TextField
                                                 type={isMobileApp?'number':'text'}
                                                 label='Приоритет'
@@ -383,11 +413,12 @@ const Item = React.memo((props) => {
                                             {
                                                 router.query.id==='new'?
                                                     <Button onClick={async()=>{
-                                                        if (name.length>0&&price>0&&subCategory._id!=undefined&&organization._id!=undefined) {
+                                                        if (categorys.length>0&&name.length>0&&price>0&&subCategory._id!=undefined&&organization._id!=undefined) {
                                                             const action = async() => {
                                                                 await addItem({
                                                                     packaging: checkInt(packaging)>0?checkInt(packaging):1,
                                                                     name: name,
+                                                                    categorys: categorys,
                                                                     stock: checkInt(stock),
                                                                     image: image,
                                                                     info: info,
@@ -416,29 +447,33 @@ const Item = React.memo((props) => {
                                                     :
                                                     <>
                                                     <Button onClick={async()=>{
-                                                        let editElement = {_id: data.item._id}
-                                                        if(stock!==data.item.stock)editElement.stock = checkInt(stock)
-                                                        if(name.length>0&&name!==data.item.name)editElement.name = name
-                                                        if(packaging!==data.item.packaging&&checkInt(packaging)>0)editElement.packaging = checkInt(packaging)
-                                                        if(image!==undefined)editElement.image = image
-                                                        if(info.length>0&&info!==data.item.info)editElement.info = info
-                                                        if(price>0&&price!==data.item.price)editElement.price = checkFloat(price)
-                                                        if(weight!==data.item.weight)editElement.weight = checkFloat(weight)
-                                                        if(size!==data.item.size)editElement.size = checkFloat(size)
-                                                        if(hit!==data.item.hit)editElement.hit = hit
-                                                        if(apiece!==data.item.apiece)editElement.apiece = apiece
-                                                        if(unit!==data.item.unit)editElement.unit = unit
-                                                        if(latest!==data.item.latest)editElement.latest = latest
-                                                        if(organization._id!==data.item.organization._id)editElement.organization = organization._id
-                                                        if(subCategory._id!==data.item.subCategory._id)editElement.subCategory = subCategory._id
-                                                        if(priotiry!==data.item.priotiry)editElement.priotiry = checkInt(priotiry)
-                                                        if(deliveryDays)editElement.deliveryDays = deliveryDays
-                                                        const action = async() => {
-                                                            await setItem(editElement, subCategory._id)
-                                                            //Router.push(`/items/${subCategory._id}`)
+                                                        if (categorys.length>0){
+                                                            let editElement = {_id: data.item._id, categorys: categorys}
+                                                            if(stock!==data.item.stock)editElement.stock = checkInt(stock)
+                                                            if(name.length>0&&name!==data.item.name)editElement.name = name
+                                                            if(packaging!==data.item.packaging&&checkInt(packaging)>0)editElement.packaging = checkInt(packaging)
+                                                            if(image!==undefined)editElement.image = image
+                                                            if(info.length>0&&info!==data.item.info)editElement.info = info
+                                                            if(price>0&&price!==data.item.price)editElement.price = checkFloat(price)
+                                                            if(weight!==data.item.weight)editElement.weight = checkFloat(weight)
+                                                            if(size!==data.item.size)editElement.size = checkFloat(size)
+                                                            if(hit!==data.item.hit)editElement.hit = hit
+                                                            if(apiece!==data.item.apiece)editElement.apiece = apiece
+                                                            if(unit!==data.item.unit)editElement.unit = unit
+                                                            if(latest!==data.item.latest)editElement.latest = latest
+                                                            if(organization._id!==data.item.organization._id)editElement.organization = organization._id
+                                                            if(subCategory._id!==data.item.subCategory._id)editElement.subCategory = subCategory._id
+                                                            if(priotiry!==data.item.priotiry)editElement.priotiry = checkInt(priotiry)
+                                                            if(deliveryDays)editElement.deliveryDays = deliveryDays
+                                                            const action = async() => {
+                                                                await setItem(editElement, subCategory._id)
+                                                                //Router.push(`/items/${subCategory._id}`)
+                                                            }
+                                                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                                            showMiniDialog(true)
+                                                        } else {
+                                                            showSnackBar('Заполните все поля')
                                                         }
-                                                        setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                                        showMiniDialog(true)
                                                     }} size='small' color='primary'>
                                                         Сохранить
                                                     </Button>
@@ -744,6 +779,7 @@ Item.getInitialProps = async function(ctx) {
                         packaging: 1,
                         name: '',
                         info: '',
+                        categorys: ['A','B','C','D','Horeca'],
                         price: 0,
                         subCategory: {_id: ''},
                         organization: {_id: ''},

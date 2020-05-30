@@ -52,6 +52,7 @@ const Route = React.memo((props) => {
     const router = useRouter()
     const { isMobileApp } = props.app;
     const { setMiniDialog, showMiniDialog, showFullDialog, setFullDialog } = props.mini_dialogActions;
+    const { showSnackBar } = props.snackbarActions;
     const { showLoad } = props.appActions;
     let [screen, setScreen] = useState('setting');
     let [provider, setProvider] = useState(data.route?data.route.provider?data.route.provider:{name: 'AZYK.STORE', _id: 'super'}:{});
@@ -63,9 +64,10 @@ const Route = React.memo((props) => {
         setOrders([])
         setSelectedOrders([])
         if(provider){
+            produsers = [...provider._id!=='super'?[provider]:[]]
             let distributer = (await getDistributer({_id: provider._id})).distributer
             if(distributer)
-                setProdusers([...provider._id!=='super'?[provider]:[], ...distributer.provider])
+                setProdusers([...produsers, ...distributer.provider])
             ecspeditors = (await getEcspeditors({_id: provider._id})).ecspeditors
             if(ecspeditors)
                 setEcspeditors([...ecspeditors])
@@ -82,7 +84,7 @@ const Route = React.memo((props) => {
         }
         setProvider(provider)
     })
-    const [produsers, setProdusers] = React.useState(data.route?data.route.selectProdusers:[]);
+    let [produsers, setProdusers] = React.useState(data.route?data.route.selectProdusers:[]);
     let [selectProdusers, setSelectProdusers] = useState(data.route?data.route.selectProdusers:[]);
     let handleSelectProdusers = (async (event) => {
         setSelectProdusers(event.target.value)
@@ -466,8 +468,16 @@ const Route = React.memo((props) => {
                                                     <MenuItem onClick={async()=>{
                                                         close()
                                                         await showLoad(true)
-                                                        let deliverys = (await buildRoute({provider: provider._id, autoTonnage: selectAuto.tonnage, orders: selectedOrders.map(element=>element._id)})).buildRoute
-                                                        setDeliverys(deliverys)
+                                                        if(!(selectedOrders.find(element=>!element.address[1]))) {
+                                                            let deliverys = (await buildRoute({
+                                                                provider: provider._id,
+                                                                autoTonnage: selectAuto.tonnage,
+                                                                orders: selectedOrders.map(element => element._id)
+                                                            })).buildRoute
+                                                            setDeliverys(deliverys)
+                                                        }
+                                                        else
+                                                            showSnackBar('Отсуствует геолокация')
                                                         await showLoad(false)
                                                     }}>Построить маршрут</MenuItem>
                                                     :

@@ -77,7 +77,7 @@ const Geo =  React.memo(
                                                     geometry={leg.map(element=>element.split(', '))}
                                                     options={{
                                                         balloonCloseButton: false,
-                                                        strokeColor: '#0F0',
+                                                        strokeColor: '#000',
                                                         strokeWidth: 4,
                                                         strokeOpacity: 1,
                                                     }}

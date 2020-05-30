@@ -26,6 +26,7 @@ export const getOrganization = async({_id: _id}, client)=>{
                             accessToClient
                             consignation
                             priotiry
+                            unite
                             onlyDistrict
                             onlyIntegrate
                             warehouse
@@ -165,8 +166,8 @@ export const addOrganization = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($miniInfo: String!, $image: Upload!, $priotiry: Int, $minimumOrder: Int, $name: String!, $address: [String]!, $email: [String]!, $phone: [String]!, $info: String!, $consignation: Boolean!, $accessToClient: Boolean!, $onlyDistrict: Boolean!, $onlyIntegrate: Boolean!, $warehouse: String!) {
-                        addOrganization(miniInfo: $miniInfo, image: $image, priotiry: $priotiry, minimumOrder: $minimumOrder, name: $name, address: $address, email: $email, phone: $phone, info: $info, consignation: $consignation, accessToClient: $accessToClient, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate, warehouse: $warehouse) {
+                    mutation ($miniInfo: String!, $image: Upload!, $priotiry: Int, $minimumOrder: Int, $name: String!, $address: [String]!, $email: [String]!, $phone: [String]!, $info: String!, $consignation: Boolean!, $accessToClient: Boolean!, $unite: Boolean!, $onlyDistrict: Boolean!, $onlyIntegrate: Boolean!, $warehouse: String!) {
+                        addOrganization(miniInfo: $miniInfo, image: $image, priotiry: $priotiry, minimumOrder: $minimumOrder, name: $name, address: $address, email: $email, phone: $phone, info: $info, consignation: $consignation, unite: $unite, accessToClient: $accessToClient, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate, warehouse: $warehouse) {
                              data
                         }
                     }`})
@@ -181,8 +182,8 @@ export const setOrganization = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($miniInfo: String, $_id: ID!, $consignation: Boolean, $priotiry: Int, $accessToClient: Boolean, $image: Upload, $minimumOrder: Int, $name: String, $address: [String], $email: [String], $phone: [String], $info: String, $onlyDistrict: Boolean, $onlyIntegrate: Boolean, $warehouse: String) {
-                        setOrganization(miniInfo: $miniInfo, _id: $_id, priotiry: $priotiry, consignation: $consignation, accessToClient: $accessToClient, image: $image, minimumOrder: $minimumOrder, name: $name, address: $address, email: $email, phone: $phone, info: $info, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate, warehouse: $warehouse) {
+                    mutation ($miniInfo: String, $_id: ID!, $consignation: Boolean, $priotiry: Int, $accessToClient: Boolean, $image: Upload, $minimumOrder: Int, $name: String, $address: [String], $email: [String], $phone: [String], $info: String, $unite: Boolean!, $onlyDistrict: Boolean, $onlyIntegrate: Boolean, $warehouse: String) {
+                        setOrganization(miniInfo: $miniInfo, _id: $_id, priotiry: $priotiry, consignation: $consignation, accessToClient: $accessToClient, image: $image, minimumOrder: $minimumOrder, name: $name, address: $address, unite: $unite, email: $email, phone: $phone, info: $info, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate, warehouse: $warehouse) {
                              data
                         }
                     }`})

@@ -12,6 +12,7 @@ import * as snackbarActions from '../redux/actions/snackbar'
 import {getBrands} from '../src/gql/items';
 import Router from 'next/router'
 import BuyBasket from '../components/dialog/BuyBasket'
+import SetPackage from '../components/dialog/SetPackage'
 import { urlMain } from '../redux/constants/other'
 import { getBonusesClient } from '../src/gql/bonusclient'
 import { getClient } from '../src/gql/client'
@@ -122,7 +123,7 @@ const Catalog = React.memo((props) => {
         if(!basket[id])
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(basket[id].count)
-        basket[id].count+=list[idx].apiece?1:list[idx].packaging
+        basket[id].count+=list[idx].apiece?1:(list[idx].packaging?list[idx].packaging:1)
         basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
         setBasket({...basket})
     }
@@ -131,7 +132,7 @@ const Catalog = React.memo((props) => {
         if(basket[id]){
             if(basket[id].count>0) {
                 basket[id].count = checkInt(basket[id].count)
-                basket[id].count -= list[idx].apiece?1:list[idx].packaging
+                basket[id].count -= list[idx].apiece?1:(list[idx].packaging?list[idx].packaging:1)
                 basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
                 setBasket({...basket})
             }
@@ -167,21 +168,19 @@ const Catalog = React.memo((props) => {
         basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
         setBasket({...basket})
     }
-    let addPackaging= async(idx)=>{
+    let setPackage= async(idx, count)=>{
         let id = list[idx]._id
         if(!basket[id])
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(basket[id].count)
-        if(list[idx].packaging){
-            basket[id].count = (parseInt(basket[id].count/list[idx].packaging)+1)*list[idx].packaging
-            basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
-            setBasket({...basket})
-        }
+        basket[id].count = count*(list[idx].packaging?list[idx].packaging:1)
+        basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        setBasket({...basket})
     }
-    let addPackagingConsignment = async(idx)=>{
+    let setPackageConsignment = async(idx, count)=>{
         let id = list[idx]._id
         if(basket[id]){
-            let consignment = (parseInt(basket[id].consignment/list[idx].packaging)+1)*list[idx].packaging
+            let consignment = count*(list[idx].packaging?list[idx].packaging:1)
             if(consignment<=basket[id].count){
                 basket[id].consignment = consignment
                 setBasket({...basket})
@@ -318,17 +317,14 @@ const Catalog = React.memo((props) => {
                                                             КОНС
                                                         </div>
                                                     </div>
-                                                    {row.apiece?
-                                                        <div className={classes.addPackaging} style={{color: '#ffb300'}} onClick={()=>{
-                                                            addPackaging(idx)
-                                                        }}>
-                                                            Добавить упаковку
-                                                        </div>
-                                                        :
-                                                        <div className={classes.addPackaging} style={{color: '#ffb300'}}>
-                                                            Упаковок: {basket[row._id]?(basket[row._id].count/row.packaging).toFixed(1):0}
-                                                        </div>
-                                                    }
+                                                    <div className={classes.addPackaging} style={{color: '#ffb300'}} onClick={()=>{
+                                                        setMiniDialog('Упаковок', <SetPackage
+                                                            action={setPackage}
+                                                            idx={idx}/>)
+                                                        showMiniDialog(true)
+                                                    }}>
+                                                        Упаковок: {basket[row._id]?(basket[row._id].count/(row.packaging?row.packaging:1)).toFixed(1):0}
+                                                    </div>
                                                     {
                                                         basket[row._id]&&basket[row._id].showConsignment?
                                                             <>
@@ -340,9 +336,12 @@ const Catalog = React.memo((props) => {
                                                                 <div className={classes.counterbtncons} onClick={()=>{incrementConsignment(idx)}}>+</div>
                                                             </div>
                                                             <div className={classes.addPackaging} style={{color: '#ffb300'}} onClick={()=>{
-                                                                addPackagingConsignment(idx)
+                                                                setMiniDialog('Упаковок', <SetPackage
+                                                                    action={setPackageConsignment}
+                                                                    idx={idx}/>)
+                                                                showMiniDialog(true)
                                                             }}>
-                                                                Добавить упаковку
+                                                                Упаковок: {basket[row._id]?(basket[row._id].consignment/(row.packaging?row.packaging:1)).toFixed(1):0}
                                                             </div>
                                                             </>
                                                             :
