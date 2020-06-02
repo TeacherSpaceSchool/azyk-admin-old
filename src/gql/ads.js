@@ -65,7 +65,8 @@ export const getAds = async()=>{
                             targetItems
                                 {
                                     _id
-                                    count   
+                                    count  
+                                    sum 
                                 }
                             targetPrice
                             multiplier
@@ -103,6 +104,7 @@ export const getAdss = async({search: search, organization: organization}, clien
                                 {
                                     _id
                                     count   
+                                    sum
                                 }
                             targetPrice
                             multiplier
@@ -140,7 +142,8 @@ export const getAdssTrash = async({search: search, organization: organization}, 
                             targetItems
                                 {
                                     _id
-                                    count   
+                                    count 
+                                    sum  
                                 }
                             targetPrice
                             multiplier

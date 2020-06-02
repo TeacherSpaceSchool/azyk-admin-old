@@ -150,7 +150,7 @@ const Trash = React.memo((props) => {
                                         <CardOrganization list={list} key={element._id} setList={setList} element={element}/>
                                         :
                                     type==='Акции'?
-                                        <CardAds list={list} key={element._id} setList={setList} element={element}/>
+                                        <CardAds edit={true} list={list} key={element._id} setList={setList} element={element}/>
                                             :
                                     type==='Сотрудники'?
                                         <CardEmployment list={list} key={element._id} setList={setList} element={element}/>

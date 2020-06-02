@@ -13,6 +13,16 @@ export default makeStyles({
         height: 'calc((100vw - 40px) / 3)',
         width: 'calc(100vw - 40px)'
     },
+    inputHalf: {
+        marginRight: 10,
+        marginLeft: 10,
+        width: 'calc(50% - 20px)'
+    },
+    row: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'baseline'
+    },
     mediaD: {
         objectFit: 'cover',
         height: 200,

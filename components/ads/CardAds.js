@@ -50,7 +50,7 @@ const CardAds = React.memo((props) => {
         setCount(checkInt(event.target.value))
     };
     let [item, setItem] = useState(element?element.item:undefined);
-    let [targetItems, setTargetItems ] = useState(element?element.targetItems.map(targetItem=>{return {_id: targetItem._id, count: targetItem.count}}):undefined);
+    let [targetItems, setTargetItems ] = useState(element?element.targetItems.map(targetItem=>{return {_id: targetItem._id, count: targetItem.count, sum: targetItem.sum}}):undefined);
     let [targetPrice, setTargetPrice ] = useState(element?element.targetPrice:0);
     let handleTargetPrice =  (event) => {
         setTargetPrice(checkInt(event.target.value))
@@ -176,69 +176,87 @@ const CardAds = React.memo((props) => {
                                     />
                                     :
                                     <>
-                                    {targetItems.map((element, idx)=>
-                                        <>
-                                        <FormControl className={classes.input} variant='outlined'>
-                                            <InputLabel>Целевой товар</InputLabel>
-                                            <Select
-                                                multiple
-                                                value={targetItems[idx]._id}
-                                                onChange={(event) => {
-                                                    targetItems[idx]._id = event.target.value
-                                                    setTargetItems([...targetItems])
-                                                }}
-                                                input={<Input />}
-                                                MenuProps={{
-                                                    PaperProps: {
-                                                        style: {
-                                                            maxHeight: 226,
-                                                            width: 250,
-                                                        },
-                                                    }
-                                                }}
-                                            >
-                                                {items.map((item) => (
-                                                    <MenuItem key={item.name} value={item._id}>
-                                                        {item.name}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                        <br/>
-                                        <br/>
-                                        <FormControl  key={idx} className={classes.input}>
-                                            <InputLabel>Целевое количество</InputLabel>
-                                            <Input
-                                                placeholder='Целевое количество'
-                                                value={element.count}
-                                                onChange={(event)=>{
-                                                    targetItems[idx].count = checkInt(event.target.value)
-                                                    setTargetItems([...targetItems])
-                                                }}
-                                                inputProps={{
-                                                    'aria-label': 'description',
-                                                }}
-                                                endAdornment={
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            onClick={()=>{
-                                                                targetItems.splice(idx, 1)
+                                    {targetItems?targetItems.map((element, idx)=>{
+                                        return(<>
+                                            <FormControl className={classes.input} variant='outlined'>
+                                                <InputLabel>Целевой товар</InputLabel>
+                                                <Select
+                                                    multiple
+                                                    value={element._id}
+                                                    onChange={(event) => {
+                                                        targetItems[idx]._id = event.target.value
+                                                        setTargetItems([...targetItems])
+                                                    }}
+                                                    input={<Input />}
+                                                    MenuProps={{
+                                                        PaperProps: {
+                                                            style: {
+                                                                maxHeight: 226,
+                                                                width: 250,
+                                                            },
+                                                        }
+                                                    }}
+                                                >
+                                                    {items?items.map((item) => (
+                                                        <MenuItem key={item.name} value={item._id}>
+                                                            {item.name}
+                                                        </MenuItem>
+                                                    )):null}
+                                                </Select>
+                                            </FormControl>
+                                            <br/>
+                                            <br/>
+                                            <div className={classes.row}>
+                                                <FormControl  key={idx} className={classes.inputHalf}>
+                                                    <InputLabel>Целевое количество</InputLabel>
+                                                    <Input
+                                                        placeholder='Целевое количество'
+                                                        value={element.count}
+                                                        onChange={(event)=>{
+                                                            targetItems[idx].count = checkInt(event.target.value)
+                                                            setTargetItems([...targetItems])
+                                                        }}
+                                                        inputProps={{
+                                                            'aria-label': 'description',
+                                                        }}
+                                                        endAdornment={
+                                                            <InputAdornment position="end">
+                                                                <IconButton
+                                                                    onClick={()=>{
+                                                                        targetItems.splice(idx, 1)
+                                                                        setTargetItems([...targetItems])
+                                                                    }}
+                                                                    aria-label='toggle password visibility'
+                                                                >
+                                                                    <Remove/>
+                                                                </IconButton>
+                                                            </InputAdornment>
+                                                        }
+                                                    />
+                                                </FormControl>
+                                                <FormControlLabel
+                                                    className={classes.inputHalf}
+                                                    control={
+                                                        <Switch
+                                                            checked={element.sum}
+                                                            onChange={()=>{
+                                                                targetItems[idx].sum = !targetItems[idx].sum
                                                                 setTargetItems([...targetItems])
                                                             }}
-                                                            aria-label='toggle password visibility'
-                                                        >
-                                                            <Remove/>
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                }
-                                            />
-                                        </FormControl>
-                                        <br/>
-                                        <br/>
-                                        </>
-                                    )}
+                                                            color='primary'
+                                                            inputProps={{ 'aria-label': 'primary checkbox' }}
+                                                        />
+                                                    }
+                                                    label='Суммировать'
+                                                />
+                                            </div>
+                                            <br/>
+                                            <br/>
+                                        </>)
+                                        }
+                                    ):null}
                                     <Button onClick={async()=>{
-                                        setTargetItems([...targetItems, {_id: [], count: 0}])
+                                        setTargetItems([...targetItems, {_id: [], count: 0, sum: false}])
                                     }} size='small' color='primary'>
                                         Добавить товар
                                     </Button>
@@ -298,7 +316,7 @@ const CardAds = React.memo((props) => {
                                 </Button>
                                         :
                                         <Button onClick={async()=> {
-                                            if (!(targetItems.find(element=>!element._id)) && image && url.length > 0 && title.length > 0) {
+                                            if (item && count && image && url.length > 0 && title.length > 0) {
                                                 setImage(undefined)
                                                 setPreview('/static/add.png')
                                                 setTitle('')
@@ -306,7 +324,7 @@ const CardAds = React.memo((props) => {
                                                 setCount(0)
                                                 setItem(undefined)
                                                 const action = async() => {
-                                                    setList((await addAds({count: count, item: item?item._id:undefined, organization: organization, image: image, url: url, title: title, targetItem: targetItem, targetCount: targetCount, targetPrice: targetPrice, multiplier: multiplier, targetType: targetType}, organization)).adss)
+                                                    setList((await addAds({count: count, item: item?item._id:undefined, organization: organization, image: image, url: url, title: title, targetItems: targetItems, targetPrice: targetPrice, multiplier: multiplier, targetType: targetType}, organization)).adss)
                                                 }
                                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                 showMiniDialog(true)

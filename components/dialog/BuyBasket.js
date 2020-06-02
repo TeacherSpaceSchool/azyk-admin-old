@@ -117,14 +117,19 @@ const BuyBasket =  React.memo(
                         :
                         null
                 }
-                <FormControlLabel
-                    style={{width: width}}
-                    onChange={(e)=>{
-                        setInv(e.target.checked)
-                    }}
-                    control={<Checkbox/>}
-                    label={'Cчет фактура'}
-                />
+                {
+                    agent||['A','Horeca'].includes(client.category)?
+                        <FormControlLabel
+                            style={{width: width}}
+                            onChange={(e)=>{
+                                setInv(e.target.checked)
+                            }}
+                            control={<Checkbox/>}
+                            label={'Cчет фактура'}
+                        />
+                        :
+                        null
+                }
                 <div style={{width: width}} className={classes.itogo}><b>Итого:</b>{` ${useBonus?(allPrice*address.length)-bonus.addedBonus:allPrice*address.length} сом`}</div>
                 <br/>
                 <div>
