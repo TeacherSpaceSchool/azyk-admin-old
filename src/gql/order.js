@@ -258,8 +258,8 @@ export const isOrderToday = async(args, client)=>{
             .query({
                 variables: args,
                 query: gql`
-                    query ($organization: ID!) {
-                        isOrderToday(organization: $organization) 
+                    query ($organization: ID!, $clients: ID!, $dateDelivery: Date!) {
+                        isOrderToday(organization: $organization, clients: $clients, dateDelivery: $dateDelivery) 
                     }`,
             })
         return res.data
@@ -288,15 +288,15 @@ export const getOrderHistorys = async(invoice, client)=>{
     }
 }
 
-export const getOrdersForRouting = async({produsers, clients, dateStart, dateEnd, dateDelivery})=>{
+export const getOrdersForRouting = async(arg)=>{
     try{
         const client = new SingletonApolloClient().getClient();
         let res = await client
             .query({
-                variables: {produsers: produsers, clients: clients, dateStart: dateStart, dateEnd: dateEnd, dateDelivery: dateDelivery},
+                variables: arg,
                 query: gql`
-                    query($produsers: [ID]!, $clients: [ID]!, $dateStart: Date!, $dateEnd: Date, $dateDelivery: Date!){
-                        invoicesForRouting(produsers: $produsers, clients: $clients, dateStart: $dateStart, dateEnd: $dateEnd, dateDelivery: $dateDelivery){
+                    query($produsers: [ID]!, $clients: [ID]!, $dateDelivery: Date, $dateStart: Date, $dateEnd: Date){
+                        invoicesForRouting(produsers: $produsers, clients: $clients, dateDelivery: $dateDelivery, dateStart: $dateStart, dateEnd: $dateEnd){
                             _id
                             agent 
                                 {_id name}
@@ -454,8 +454,8 @@ export const addOrders = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($info: String, $inv: Boolean, $unite: Boolean, $usedBonus: Boolean, $paymentMethod: String, $address: [[String]], $organization: ID!, $client: ID!) {
-                        addOrders(usedBonus: $usedBonus, inv: $inv, unite: $unite, info: $info, paymentMethod: $paymentMethod, address: $address, organization: $organization, client: $client) {
+                    mutation ($dateDelivery: Date!, $info: String, $inv: Boolean, $unite: Boolean, $usedBonus: Boolean, $paymentMethod: String, $address: [[String]], $organization: ID!, $client: ID!) {
+                        addOrders(dateDelivery: $dateDelivery, usedBonus: $usedBonus, inv: $inv, unite: $unite, info: $info, paymentMethod: $paymentMethod, address: $address, organization: $organization, client: $client) {
                              data
                         }
                     }`})

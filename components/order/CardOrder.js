@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
-import { pdDDMMYYHHMM } from '../../src/lib'
+import { pdDDMMYYHHMM, pdDDMMYYYYWW } from '../../src/lib'
 import Order from '../dialog/Order'
 import Confirmation from '../../components/dialog/Confirmation'
 import { deleteOrders, restoreOrders } from '../../src/gql/order'
@@ -82,10 +82,41 @@ const CardOrder = React.memo((props) => {
                         <div className={classes.value}>{pdDDMMYYHHMM(element.createdAt)}</div>
                     </div>
                     {
+                        element.dateDelivery?
+                            <div className={classes.row}>
+                                <div className={classes.nameField}>Дата доставки:&nbsp;</div>
+                                <div className={classes.value}>{pdDDMMYYYYWW(element.dateDelivery)}</div>
+                            </div>
+                            :
+                            null
+
+                    }
+                    {
                         ['admin', 'организация', 'менеджер'].includes(profile.role)&&element.updatedAt!==element.createdAt?
                             <div className={classes.row}>
                                 <div className={classes.nameField}>Изменен:&nbsp;</div>
                                 <div className={classes.value} style={{whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden'}}>{`${pdDDMMYYHHMM(element.updatedAt)}${element.editor?`, ${element.editor}`:''}`}</div>
+                            </div>
+                            :
+                            null
+                    }
+                    <div className={classes.row}>
+                        <div className={classes.nameField}>Адрес:&nbsp;</div>
+                        <div style={{color: element.address[1]?'rgba(0, 0, 0, 0.87)':'red'}} className={classes.value}>{`${element.address[2]?`${element.address[2]}, `:''}${element.address[0]}`}</div>
+                    </div>
+                    <div className={classes.row}>
+                        <div className={classes.nameField}>Получатель:&nbsp;</div>
+                        <div className={classes.value}>{element.client.name}</div>
+                    </div>
+                    <div className={classes.row}>
+                        <div className={classes.nameField}>Производитель:&nbsp;</div>
+                        <div className={classes.value}>{element.organization.name}</div>
+                    </div>
+                    {
+                        element.sale&&element.sale.name?
+                            <div className={classes.row}>
+                                <div className={classes.nameField}>Дистрибьютор: &nbsp;</div>
+                                <div className={classes.value}>{element.sale.name}</div>
                             </div>
                             :
                             null
@@ -113,37 +144,6 @@ const CardOrder = React.memo((props) => {
                             <div className={classes.row}>
                                 <div className={classes.nameField}>Экспедитор:&nbsp;</div>
                                 <div className={classes.value}>{`${element.forwarder.name}, р${element.track}`}</div>
-                            </div>
-                            :
-                            null
-                    }
-                    {
-                        element.dateDelivery?
-                            <div className={classes.row}>
-                                <div className={classes.nameField}>Время доставки:&nbsp;</div>
-                                <div className={classes.value}>{pdDDMMYYHHMM(element.dateDelivery)}</div>
-                            </div>
-                            :
-                            null
-
-                    }
-                    <div className={classes.row}>
-                        <div className={classes.nameField}>Адрес:&nbsp;</div>
-                        <div style={{color: element.address[1]?'rgba(0, 0, 0, 0.87)':'red'}} className={classes.value}>{`${element.address[2]?`${element.address[2]}, `:''}${element.address[0]}`}</div>
-                    </div>
-                    <div className={classes.row}>
-                        <div className={classes.nameField}>Получатель:&nbsp;</div>
-                        <div className={classes.value}>{element.client.name}</div>
-                    </div>
-                    <div className={classes.row}>
-                        <div className={classes.nameField}>Производитель:&nbsp;</div>
-                        <div className={classes.value}>{element.organization.name}</div>
-                    </div>
-                    {
-                        element.sale&&element.sale.name?
-                            <div className={classes.row}>
-                                <div className={classes.nameField}>Дистрибьютор: &nbsp;</div>
-                                <div className={classes.value}>{element.sale.name}</div>
                             </div>
                             :
                             null

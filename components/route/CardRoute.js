@@ -11,7 +11,7 @@ import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
 import { deleteRoute } from '../../src/gql/route'
 import Link from 'next/link';
-import { pdDDMMYY } from '../../src/lib'
+import { pdDDMMYYYYWW } from '../../src/lib'
 import Confirmation from '../dialog/Confirmation'
 
 const CardOrder = React.memo((props) => {
@@ -35,12 +35,8 @@ const CardOrder = React.memo((props) => {
                             <div className={classes.status} style={{background: statusColor[element.status]}}>{element.status}</div>
                         </div>
                         <div className={classes.row}>
-                            <div className={classes.nameField}>Дата заказов:&nbsp;</div>
-                            <div className={classes.value}>{`${pdDDMMYY(element.dateStart)}${element.dateEnd?`-${pdDDMMYY(element.dateEnd)}`:''}`}</div>
-                        </div>
-                        <div className={classes.row}>
                             <div className={classes.nameField}>Дата развозки:&nbsp;</div>
-                            <div className={classes.value}>{pdDDMMYY(element.dateDelivery)}</div>
+                            <div className={classes.value}>{pdDDMMYYYYWW(element.dateDelivery)}</div>
                         </div>
                         <div className={classes.row}>
                             <div className={classes.nameField}>Заказов:&nbsp;</div>

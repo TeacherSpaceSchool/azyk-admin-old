@@ -40,6 +40,7 @@ const Organization = React.memo((props) => {
     let [accessToClient, setAccessToClient] = useState(data.organization&&data.organization.accessToClient!==null?data.organization.accessToClient:false);
     let [onlyDistrict, setOnlyDistrict] = useState(data.organization&&data.organization.onlyDistrict!==null?data.organization.onlyDistrict:false);
     let [unite, setUnite] = useState(data.organization&&data.organization.unite!=null?data.organization.unite:true);
+    let [superagent, setSuperagent] = useState(data.organization&&data.organization.superagent!=null?data.organization.superagent:true);
     let [onlyIntegrate, setOnlyIntegrate] = useState(data.organization&&data.organization.onlyIntegrate!==null?data.organization.onlyIntegrate:false);
     let [warehouse, setWarehouse] = useState(data.organization&&data.organization.warehouse!==null?data.organization.warehouse:'');
     let [consignation, setConsignation] = useState(data.organization&&data.organization.consignation!==null?data.organization.consignation:false);
@@ -176,6 +177,17 @@ const Organization = React.memo((props) => {
                                                     />
                                                 }
                                                 label='Объединять заказы'
+                                            />
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={superagent}
+                                                        onChange={()=>{setSuperagent(!superagent)}}
+                                                        color="primary"
+                                                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                                                    />
+                                                }
+                                                label='Суперагент'
                                             />
                                             <FormControlLabel
                                                 control={
@@ -351,7 +363,7 @@ const Organization = React.memo((props) => {
                                                 <Button onClick={async()=>{
                                                     if (image!==undefined&&name.length>0&&email.length>0&&address.length>0&&phone.length>0&&info.length>0) {
                                                         const action = async() => {
-                                                            await addOrganization({miniInfo: miniInfo, priotiry: checkInt(priotiry),consignation: consignation, onlyDistrict: onlyDistrict, unite: unite, onlyIntegrate: onlyIntegrate, warehouse: warehouse, accessToClient: accessToClient, image: image, name: name, address: address, email: email, phone: phone, info: info, minimumOrder: checkInt(minimumOrder)})
+                                                            await addOrganization({miniInfo: miniInfo, priotiry: checkInt(priotiry),consignation: consignation, onlyDistrict: onlyDistrict, unite: unite, superagent: superagent, onlyIntegrate: onlyIntegrate, warehouse: warehouse, accessToClient: accessToClient, image: image, name: name, address: address, email: email, phone: phone, info: info, minimumOrder: checkInt(minimumOrder)})
                                                             Router.push('/organizations')
                                                         }
                                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
@@ -376,6 +388,7 @@ const Organization = React.memo((props) => {
                                                     if(accessToClient!==data.organization.accessToClient)editElement.accessToClient = accessToClient
                                                     if(onlyDistrict!==data.organization.onlyDistrict)editElement.onlyDistrict = onlyDistrict
                                                     if(unite!==data.organization.unite)editElement.unite = unite
+                                                    if(superagent!==data.organization.superagent)editElement.superagent = superagent
                                                     if(onlyIntegrate!==data.organization.onlyIntegrate)editElement.onlyIntegrate = onlyIntegrate
                                                     if(warehouse!==data.organization.warehouse)editElement.warehouse = warehouse
                                                     if(consignation!==data.organization.consignation)editElement.consignation = consignation

@@ -7,12 +7,12 @@ import { addOrders } from '../../src/gql/order'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
 import * as userActions from '../../redux/actions/user'
-/*import FormLabel from '@material-ui/core/FormLabel';
+import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';*/
+import Select from '@material-ui/core/Select';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
@@ -25,6 +25,8 @@ import WhatshotIcon from '@material-ui/icons/Whatshot';
 import { addBasket } from '../../src/gql/basket';
 import { addAgentHistoryGeo } from '../../src/gql/agentHistoryGeo'
 import {getGeoDistance} from '../../src/lib'
+import { getDeliveryDate } from '../../src/gql/deliveryDate';
+import { pdDDMMYYYYWW } from '../../src/lib';
 
 const BuyBasket =  React.memo(
     (props) =>{
@@ -41,6 +43,12 @@ const BuyBasket =  React.memo(
         };
         let [paymentMethod, setPaymentMethod] = useState('Наличные');
         let [useBonus, setUseBonus] = useState(false);
+        let [deliveryDate, setDeliveryDate] = useState(undefined);
+        let handleDeliveryDate =  (event) => {
+            setDeliveryDate(event.target.value)
+        };
+        let [deliveryDates, setDeliveryDates] = useState([true, true, true, true, true, true, false]);
+        let [week, setWeek] = useState([]);
         let [unlock, setUnlock] = useState(false);
         /*let paymentMethods = [
             'Наличные'
@@ -50,11 +58,39 @@ const BuyBasket =  React.memo(
         };*/
         useEffect(()=>{
             (async()=>{
-                for (let i = 0; i < basket.length; i++) {
-                    if(basket[i].count>0)
-                        await addBasket({item: basket[i]._id, count: basket[i].count, consignment: basket[i].consignment})
+                if(!unlock) {
+                    deliveryDates = (await getDeliveryDate({
+                        client: client._id,
+                        organization: organization._id
+                    })).deliveryDate
+                    if (deliveryDates) {
+                        deliveryDates = deliveryDates.days
+                        if (!agent)
+                            deliveryDates[6] = false
+                        setDeliveryDates([...deliveryDates])
+                    }
+                    for (let i = 0; i < 7; i++) {
+                        let day = new Date()
+                        day.setHours(3, 0, 0, 0)
+                        day.setDate(day.getDate()+i+1)
+                        let dayWeek = day.getDay() === 0 ? 6 : (day.getDay() - 1)
+                        week[dayWeek] = day
+                        if(!deliveryDate&&deliveryDates[dayWeek]){
+                            deliveryDate = day
+                            setDeliveryDate(deliveryDate)
+                        }
+                    }
+                    setWeek([...week])
+                    for (let i = 0; i < basket.length; i++) {
+                        if (basket[i].count > 0)
+                            await addBasket({
+                                item: basket[i]._id,
+                                count: basket[i].count,
+                                consignment: basket[i].consignment
+                            })
+                    }
+                    setUnlock(true)
                 }
-                setUnlock(true)
             })()
         },[])
         return (
@@ -88,6 +124,24 @@ const BuyBasket =  React.memo(
                     }}
                 />
                 <br/>
+                {
+                    week.length>0?
+                        <>
+                        <FormControl style={{width: width}} className={isMobileApp?classes.inputM:classes.inputD}>
+                            <InputLabel>День доставки</InputLabel>
+                            <Select value={deliveryDate} onChange={handleDeliveryDate}>
+                                {week.map((element, idx)=>{
+                                    if(deliveryDates[idx])
+                                        return <MenuItem value={element}>{pdDDMMYYYYWW(element)}</MenuItem>
+                                }
+                                )}
+                            </Select>
+                        </FormControl>
+                        <br/>
+                        </>
+                        :
+                        null
+                }
                 {/*<FormControl style={{width: width}} className={isMobileApp?classes.inputM:classes.inputD}>
                     <InputLabel>Способ оплаты</InputLabel>
                     <Select value={paymentMethod} onChange={handlePaymentMethod}>
@@ -135,7 +189,7 @@ const BuyBasket =  React.memo(
                 <div>
                     <Button variant='contained' color='primary' onClick={async()=>{
                         if(unlock) {
-                            if (agent || !organization.minimumOrder === 0 || organization.minimumOrder < allPrice) {
+                            if (agent || !organization.minimumOrder === 0 || organization.minimumOrder <= allPrice) {
                                if (paymentMethod.length > 0) {
                                    const action = async () => {
                                        if (agent&&geo&&client.address[0][1].includes(', ')) {
@@ -154,7 +208,8 @@ const BuyBasket =  React.memo(
                                            paymentMethod: paymentMethod,
                                            address: address,
                                            organization: organization._id,
-                                           client: client._id
+                                           client: client._id,
+                                           dateDelivery: deliveryDate
                                        })
                                        Router.push('/orders')
                                        showMiniDialog(false);

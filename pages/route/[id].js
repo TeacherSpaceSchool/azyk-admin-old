@@ -4,7 +4,7 @@ import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getOrganizations } from '../../src/gql/organization'
 import { getOrdersForRouting } from '../../src/gql/order'
-import { getRoute, deleteRoute, addRoute, buildRoute, listDownload, listUnload, getUnloadingInvoicesFromRouting } from '../../src/gql/route'
+import { getRoute, addRoute, buildRoute, listDownload, listUnload, getUnloadingInvoicesFromRouting } from '../../src/gql/route'
 import { getDistricts } from '../../src/gql/district'
 import { getDistributer } from '../../src/gql/distributer'
 import { getEcspeditors } from '../../src/gql/employment'
@@ -51,6 +51,7 @@ const Route = React.memo((props) => {
     const { data } = props;
     const router = useRouter()
     const { isMobileApp } = props.app;
+    const { profile } = props.user;
     const { setMiniDialog, showMiniDialog, showFullDialog, setFullDialog } = props.mini_dialogActions;
     const { showSnackBar } = props.snackbarActions;
     const { showLoad } = props.appActions;
@@ -64,10 +65,9 @@ const Route = React.memo((props) => {
         setOrders([])
         setSelectedOrders([])
         if(provider){
-            produsers = [...provider._id!=='super'?[provider]:[]]
             let distributer = (await getDistributer({_id: provider._id})).distributer
-            if(distributer)
-                setProdusers([...produsers, ...distributer.provider])
+            produsers = [...provider._id!=='super'?[provider]:[], ...distributer?distributer.provider:[]]
+            setProdusers([...produsers])
             ecspeditors = (await getEcspeditors({_id: provider._id})).ecspeditors
             if(ecspeditors)
                 setEcspeditors([...ecspeditors])
@@ -99,8 +99,6 @@ const Route = React.memo((props) => {
     let [orders, setOrders] = React.useState(data.route?data.route.selectedOrders:[]);
     let [autos, setAutos] = React.useState([]);
     let [selectAuto, setSelectAuto] = React.useState(data.route?data.route.selectAuto:{});
-    let [dateStart, setDateStart] = useState(data.route?pdDatePicker(new Date(data.route.dateStart)):undefined);
-    let [dateEnd, setDateEnd] = useState(data.route?data.route.dateEnd?pdDatePicker(new Date(data.route.dateEnd)):undefined:undefined);
     let [allPrice, setAllPrice] = useState(0);
     let [allSize, setAllSize] = useState(0);
     let [allTonnage, setAllTonnage] = useState(0);
@@ -124,17 +122,27 @@ const Route = React.memo((props) => {
     };
     useEffect(()=>{
         (async ()=>{
-            if(router.query.id==='new'&&selectProdusers.length>0&&provider&&provider._id&&selectDistricts.length>0&&dateStart&&dateDelivery) {
+            if(router.query.id==='new'&&profile.organization) {
+                for(let i=0;i<data.organizations.length;i++){
+                    if(data.organizations[i]._id===profile.organization)
+                        handleProvider(data.organizations[i])
+                }
+            }
+        })()
+    },[])
+    useEffect(()=>{
+        (async ()=>{
+            if(router.query.id==='new'&&selectProdusers.length>0&&provider&&provider._id&&selectDistricts.length>0&&dateDelivery) {
                 await showLoad(true)
                 let clients = []
                 for(let i=0;i<selectDistricts.length;i++){
                     clients = [...clients, ...selectDistricts[i].client.map(element=>element._id)]
                 }
-                setOrders((await getOrdersForRouting({produsers: selectProdusers.map(element=>element._id), clients: clients, dateStart: dateStart, dateEnd: dateEnd, dateDelivery:dateDelivery})).invoicesForRouting)
+                setOrders((await getOrdersForRouting({produsers: selectProdusers.map(element=>element._id), clients: clients, dateDelivery:dateDelivery})).invoicesForRouting)
                 await showLoad(false)
             }
         })()
-    },[selectProdusers, provider, selectDistricts, dateStart, dateEnd, dateDelivery])
+    },[selectProdusers, provider, selectDistricts, dateDelivery])
     useEffect(()=>{
         (async ()=>{
             let tonnage = 0;
@@ -228,30 +236,6 @@ const Route = React.memo((props) => {
                                             </Select>
                                         </FormControl>
                                     </div>
-                                    <FormControl className={classes.input} variant='outlined'>
-                                        <InputLabel>Районы</InputLabel>
-                                        <Select
-                                            multiple
-                                            disabled={router.query.id!=='new'}
-                                            value={selectDistricts}
-                                            onChange={handleSelectDistricts}
-                                            input={<Input />}
-                                            MenuProps={{
-                                                PaperProps: {
-                                                    style: {
-                                                        maxHeight: 226,
-                                                        width: 250,
-                                                    },
-                                                }
-                                            }}
-                                        >
-                                            {districts.map((district) => (
-                                                <MenuItem key={district.name} value={district}>
-                                                    {district.name}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
                                     <div className={classes.row}>
                                         <Autocomplete
                                             className={classes.inputHalf}
@@ -264,7 +248,7 @@ const Route = React.memo((props) => {
                                             }}
                                             noOptionsText='Ничего не найдено'
                                             renderInput={params => (
-                                                <TextField {...params} label='Экспедитора' variant='outlined' fullWidth />
+                                                <TextField {...params} label='Экспедитор' variant='outlined' fullWidth />
                                             )}
                                         />
                                         <Autocomplete
@@ -283,32 +267,32 @@ const Route = React.memo((props) => {
                                         />
                                     </div>
                                     <div className={classes.row}>
+                                        <FormControl className={classes.inputHalf} variant='outlined'>
+                                            <InputLabel>Районы</InputLabel>
+                                            <Select
+                                                multiple
+                                                disabled={router.query.id!=='new'}
+                                                value={selectDistricts}
+                                                onChange={handleSelectDistricts}
+                                                input={<Input />}
+                                                MenuProps={{
+                                                    PaperProps: {
+                                                        style: {
+                                                            maxHeight: 226,
+                                                            width: 250,
+                                                        },
+                                                    }
+                                                }}
+                                            >
+                                                {districts.map((district) => (
+                                                    <MenuItem key={district.name} value={district}>
+                                                        {district.name}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
                                         <TextField
-                                            className={classes.inputThird}
-                                            disabled={router.query.id!=='new'}
-                                            label='Начало'
-                                            type='date'
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                            format='MM/dd/yy'
-                                            value={dateStart}
-                                            onChange={ event => setDateStart(event.target.value) }
-                                        />
-                                        <TextField
-                                            className={classes.inputThird}
-                                            label='Конец'
-                                            disabled={router.query.id!=='new'}
-                                            type='date'
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                            value={dateEnd}
-                                            format='MM/dd/yy'
-                                            onChange={ event => setDateEnd(event.target.value) }
-                                        />
-                                        <TextField
-                                            className={classes.inputThird}
+                                            className={classes.inputHalf}
                                             label='Развозка'
                                             disabled={router.query.id!=='new'}
                                             type='date'
@@ -468,16 +452,22 @@ const Route = React.memo((props) => {
                                                     <MenuItem onClick={async()=>{
                                                         close()
                                                         await showLoad(true)
-                                                        if(!(selectedOrders.find(element=>!element.address[1]))) {
-                                                            let deliverys = (await buildRoute({
-                                                                provider: provider._id,
-                                                                autoTonnage: selectAuto.tonnage,
-                                                                orders: selectedOrders.map(element => element._id)
-                                                            })).buildRoute
-                                                            setDeliverys(deliverys)
+                                                        let tonnageError = selectedOrders.find(element=>element.allTonnage>selectAuto.tonnage)
+                                                        if(!tonnageError) {
+                                                            let geoError = selectedOrders.find(element=>!element.address[1])
+                                                            if(!geoError) {
+                                                                let deliverys = (await buildRoute({
+                                                                    provider: provider._id,
+                                                                    autoTonnage: selectAuto.tonnage,
+                                                                    orders: selectedOrders.map(element => element._id)
+                                                                })).buildRoute
+                                                                setDeliverys(deliverys)
+                                                            }
+                                                            else
+                                                                showSnackBar(`Заказ №${geoError.number} отсуствует геолокация`)
                                                         }
                                                         else
-                                                            showSnackBar('Отсуствует геолокация')
+                                                            showSnackBar(`Заказ №${tonnageError.number} слишком большой`)
                                                         await showLoad(false)
                                                     }}>Построить маршрут</MenuItem>
                                                     :
@@ -497,7 +487,7 @@ const Route = React.memo((props) => {
                                                                 lengthInMeters: deliverys[i].lengthInMeters
                                                             }
                                                         }
-                                                        await addRoute({provider: provider._id, deliverys: deliverys, selectedOrders: selectedOrders.map(element=>element._id), selectDistricts: selectDistricts.map(element=>element._id), selectEcspeditor: selectEcspeditor._id, selectAuto: selectAuto._id, dateDelivery: dateDelivery, dateEnd: dateEnd, dateStart: dateStart, allTonnage: parseInt(allTonnage), selectProdusers: selectProdusers.map(element=>element._id)})
+                                                        await addRoute({provider: provider._id, deliverys: deliverys, selectedOrders: selectedOrders.map(element=>element._id), selectDistricts: selectDistricts.map(element=>element._id), selectEcspeditor: selectEcspeditor._id, selectAuto: selectAuto._id, dateDelivery: dateDelivery, allTonnage: parseInt(allTonnage), selectProdusers: selectProdusers.map(element=>element._id)})
                                                         Router.push(`/routes/${provider._id}`)
                                                         await showLoad(false)
                                                     }}>Сохранить маршрут</MenuItem>
@@ -585,7 +575,7 @@ const Route = React.memo((props) => {
 
 Route.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    if(!['суперорганизация', 'организация', 'менеджер', 'admin', 'экспедитор', 'суперэкспедитор'].includes(ctx.store.getState().user.profile.role))
+    if(!['суперорганизация', 'организация', 'менеджер', 'admin', 'экспедитор', 'суперэкспедитор', 'агент'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'

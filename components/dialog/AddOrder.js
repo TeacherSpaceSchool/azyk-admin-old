@@ -34,9 +34,8 @@ import routeStyle from '../../src/styleMUI/route/route'
 const AddOrder =  React.memo(
     (props) =>{
         const classes = routeStyle();
-        const { districts, produsers, dateDelivery, mainSelectedOrders, setMainSelectedOrders, mainOrders, setMainOrders} = props;
+        const { districts, produsers, mainSelectedOrders, setMainSelectedOrders, mainOrders, setMainOrders} = props;
         const { showFullDialog } = props.mini_dialogActions;
-        const { showLoad } = props.appActions;
         let [screen, setScreen] = useState('setting');
         let [dateStart, setDateStart] = useState();
         let [dateEnd, setDateEnd] = useState();
@@ -64,7 +63,7 @@ const AddOrder =  React.memo(
                     for(let i=0;i<selectDistricts.length;i++){
                         clients = [...clients, ...selectDistricts[i].client.map(element=>element._id)]
                     }
-                    orders = (await getOrdersForRouting({produsers: selectProdusers.map(element=>element._id), clients: clients, dateStart: dateStart, dateEnd: dateEnd, dateDelivery:dateDelivery})).invoicesForRouting
+                    orders = (await getOrdersForRouting({produsers: selectProdusers.map(element=>element._id), clients: clients, dateStart: dateStart, dateEnd: dateEnd})).invoicesForRouting
                     orders = orders.filter(order=>mainOrders.findIndex(element1=>element1._id===order._id)===-1)
                     setOrders(orders)
                     //await showLoad(false)

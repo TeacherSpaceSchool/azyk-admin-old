@@ -23,6 +23,26 @@ export const getDeliveryDates = async({clients, organization}, client)=>{
     }
 }
 
+export const getDeliveryDate = async({client, organization})=>{
+    try{
+        let res = await (new SingletonApolloClient().getClient())
+            .query({
+                variables: { client: client, organization: organization },
+                query: gql`
+                     query ($client: ID!, $organization: ID!) {
+                        deliveryDate(client: $client, organization: $organization) {
+                            client
+                            days
+                            organization
+                         }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const saveDeliveryDates = async(clients, organization, days)=>{
     try{
         const client = new SingletonApolloClient().getClient()

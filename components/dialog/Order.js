@@ -8,7 +8,7 @@ import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
 import Button from '@material-ui/core/Button';
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
-import { pdDDMMYYHHMM, pdDDMMYYHHMMCancel } from '../../src/lib'
+import { pdDDMMYYHHMM, pdDDMMYYHHMMCancel, pdDDMMYYYYWW } from '../../src/lib'
 import Confirmation from './Confirmation'
 import Geo from '../../components/dialog/Geo'
 import OrderAdss from '../../components/dialog/OrderAdss'
@@ -172,11 +172,12 @@ const Order =  React.memo(
                 {
                     element.dateDelivery?
                         <div className={classes.row}>
-                            <div className={classes.nameField}>Время доставки:&nbsp;</div>
-                            <div className={classes.value}>{pdDDMMYYHHMM(element.dateDelivery)}</div>
+                            <div className={classes.nameField}>Дата доставки:&nbsp;</div>
+                            <div className={classes.value}>{pdDDMMYYYYWW(element.dateDelivery)}</div>
                         </div>
                         :
                         null
+
                 }
                 {
                     (['admin', 'суперагент'].includes(profile.role)||allowOrganization)&&element.orders[0].updatedAt!==element.orders[0].createdAt?
@@ -186,35 +187,6 @@ const Order =  React.memo(
                                <div className={classes.value}>{`${pdDDMMYYHHMM(element.orders[0].updatedAt)}${element.editor?`, ${element.editor}`:''}`}</div>
                             </div>
                        </a>
-                        :
-                        null
-                }
-                {
-                    element.agent&&element.agent.name?
-                        <a href={`/employment/${element.agent._id}`} target='_blank'>
-                            <div className={classes.row}>
-                                <div className={classes.nameField}>Агент: &nbsp;</div>
-                                <div className={classes.value}>{element.agent.name}</div>
-                            </div>
-                        </a>
-                        :
-                        null
-                }
-                {
-                    element.track!==undefined?
-                        <div className={classes.row}>
-                            <div className={classes.nameField}>Рейс:&nbsp;</div>
-                            <div className={classes.value}>{element.track}</div>
-                        </div>
-                        :
-                        null
-                }
-                {
-                    element.forwarder&&element.forwarder.name?
-                        <div className={classes.row}>
-                            <div className={classes.nameField}>Экспедитор:&nbsp;</div>
-                            <div className={classes.value}>{element.forwarder.name}</div>
-                        </div>
                         :
                         null
                 }
@@ -247,6 +219,35 @@ const Order =  React.memo(
                         <div className={classes.value}>{element.organization.name}</div>
                     </div>
                 </a>
+                {
+                    element.agent&&element.agent.name?
+                        <a href={`/employment/${element.agent._id}`} target='_blank'>
+                            <div className={classes.row}>
+                                <div className={classes.nameField}>Агент: &nbsp;</div>
+                                <div className={classes.value}>{element.agent.name}</div>
+                            </div>
+                        </a>
+                        :
+                        null
+                }
+                {
+                    element.track!==undefined?
+                        <div className={classes.row}>
+                            <div className={classes.nameField}>Рейс:&nbsp;</div>
+                            <div className={classes.value}>{element.track}</div>
+                        </div>
+                        :
+                        null
+                }
+                {
+                    element.forwarder&&element.forwarder.name?
+                        <div className={classes.row}>
+                            <div className={classes.nameField}>Экспедитор:&nbsp;</div>
+                            <div className={classes.value}>{element.forwarder.name}</div>
+                        </div>
+                        :
+                        null
+                }
                 {
                     element.sale?
                         <a href={`/organization/${element.sale._id}`} target='_blank'>

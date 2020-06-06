@@ -83,7 +83,7 @@ const Routes = React.memo((props) => {
                     )}
                 ):null}
             </div>
-            {['admin', 'организация', 'менеджер'].includes(profile.role)?
+            {['admin', 'организация', 'суперорганизация', 'агент', 'менеджер'].includes(profile.role)?
                 <Link href='/route/[id]' as={`/route/new`}>
                     <Fab color='primary' aria-label='add' className={classes.fab}>
                         <AddIcon />
@@ -98,7 +98,7 @@ const Routes = React.memo((props) => {
 
 Routes.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    if(!['admin', 'организация', 'суперорганизация', 'менеджер', 'экспедитор', 'суперэкспедитор'].includes(ctx.store.getState().user.profile.role))
+    if(!['admin', 'организация', 'суперорганизация', 'менеджер', 'агент', 'экспедитор', 'суперэкспедитор'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/'

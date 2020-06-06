@@ -39,7 +39,6 @@ const Catalog = React.memo((props) => {
     useEffect(()=>{
         (async()=>{
             //await deleteBasketAll()
-
             if(sessionStorage.catalog&&sessionStorage.catalog!=='{}'){
                 setBasket(JSON.parse(sessionStorage.catalog))
             }

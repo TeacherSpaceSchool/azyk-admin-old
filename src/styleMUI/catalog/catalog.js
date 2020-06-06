@@ -7,6 +7,12 @@ export default makeStyles({
         display: 'flex',
         flexDirection: 'row'
     },
+    unit:{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 30,
+    },
     column:{
         display: 'flex',
         flexDirection: 'column',

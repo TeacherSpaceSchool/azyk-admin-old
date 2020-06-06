@@ -21,8 +21,6 @@ export const getRoutes = async({search, sort, filter, date, skip, organization},
                             dateDelivery
                             status
                             number
-                            dateStart
-                            dateEnd
                             allTonnage
                         }
                         sortRoute {
@@ -165,8 +163,6 @@ export const getRoute = async({_id}, client)=>{
                             dateDelivery
                             status
                             number
-                            dateStart
-                            dateEnd
                             allTonnage
                         }
                     }`,
@@ -315,14 +311,14 @@ export const deleteRoute = async({_id, selectedOrders})=>{
     }
 }
 
-export const addRoute = async({deliverys, provider, selectProdusers, selectDistricts, selectEcspeditor, selectAuto, selectedOrders, dateDelivery, dateStart, dateEnd, allTonnage})=>{
+export const addRoute = async({deliverys, provider, selectProdusers, selectDistricts, selectEcspeditor, selectAuto, selectedOrders, dateDelivery, allTonnage})=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
-            variables: {deliverys: deliverys, provider: provider, selectProdusers: selectProdusers, selectDistricts: selectDistricts, selectEcspeditor: selectEcspeditor, selectAuto: selectAuto, selectedOrders: selectedOrders, dateDelivery: dateDelivery, dateStart: dateStart, dateEnd: dateEnd, allTonnage: allTonnage},
+            variables: {deliverys: deliverys, provider: provider, selectProdusers: selectProdusers, selectDistricts: selectDistricts, selectEcspeditor: selectEcspeditor, selectAuto: selectAuto, selectedOrders: selectedOrders, dateDelivery: dateDelivery, allTonnage: allTonnage},
             mutation : gql`
-                    mutation ($deliverys: [DeliveryInput]!, $provider: ID!, $selectProdusers: [ID]!, $selectDistricts: [ID]!, $selectEcspeditor: ID!, $selectAuto: ID!, $selectedOrders: [ID]!, $dateDelivery: Date!, $dateStart: Date!, $dateEnd: Date, $allTonnage: Int!) {
-                        addRoute(deliverys: $deliverys, provider: $provider, selectProdusers: $selectProdusers, selectDistricts: $selectDistricts, selectEcspeditor: $selectEcspeditor, selectAuto: $selectAuto, selectedOrders: $selectedOrders, dateDelivery: $dateDelivery, dateStart: $dateStart, dateEnd: $dateEnd, allTonnage: $allTonnage) {
+                    mutation ($deliverys: [DeliveryInput]!, $provider: ID!, $selectProdusers: [ID]!, $selectDistricts: [ID]!, $selectEcspeditor: ID!, $selectAuto: ID!, $selectedOrders: [ID]!, $dateDelivery: Date!, $allTonnage: Int!) {
+                        addRoute(deliverys: $deliverys, provider: $provider, selectProdusers: $selectProdusers, selectDistricts: $selectDistricts, selectEcspeditor: $selectEcspeditor, selectAuto: $selectAuto, selectedOrders: $selectedOrders, dateDelivery: $dateDelivery, allTonnage: $allTonnage) {
                              data
                         }
                     }`})

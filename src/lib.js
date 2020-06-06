@@ -35,6 +35,15 @@ export const getGeoDistance = (lat1, lon1, lat2, lon2) => {
     ) / 2;
     return parseInt(diam * Math.asin(Math.sqrt(a)))
 }
+export const weekDay = [
+    'Bоскресенье',
+    'Понедельник',
+    'Вторник',
+    'Среда',
+    'Четверг',
+    'Пятница',
+    'Суббота',
+]
 export const checkFloat = (float) => {
     return isNaN(parseFloat(float))?0:parseFloat(float)
 }
@@ -48,6 +57,12 @@ export const pdDDMMYY = (date) =>
 {
     date = new Date(date)
     date = `${date.getDate()<10?'0':''}${date.getDate()}.${date.getMonth()<9?'0':''}${date.getMonth()+1}.${date.getYear()-100}`
+    return date
+}
+export const pdDDMMYYYYWW = (date) =>
+{
+    date = new Date(date)
+    date = `${date.getDate()<10?'0':''}${date.getDate()}.${date.getMonth()<9?'0':''}${date.getMonth()+1}.${date.getFullYear()}, ${weekDay[date.getDay()]}`
     return date
 }
 export const pdDatePicker = (date) =>
