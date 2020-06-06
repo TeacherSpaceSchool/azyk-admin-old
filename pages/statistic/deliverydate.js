@@ -49,10 +49,20 @@ const LogistiOorder = React.memo((props) => {
     let [filtredClients, setFiltredClients] = useState([]);
     let [selectedClients, setSelectedClients] = useState([]);
     let [district, setDistrict] = useState(undefined);
-    let [forwarder, setForwarder] = useState(profile.organization?{_id: profile.organization}:undefined);
+    let [forwarder, setForwarder] = useState(undefined);
     let [organizations, setOrganizations] = useState([]);
     let [organization, setOrganization] = useState(undefined);
     let [days, setDays] = useState([true, true, true, true, true, true, true]);
+    useEffect(()=>{
+        (async ()=>{
+            if(profile.organization) {
+                for(let i=0;i<data.activeOrganization.length;i++){
+                    if(data.activeOrganization[i]._id===profile.organization)
+                        setForwarder(data.activeOrganization[i])
+                }
+            }
+        })()
+    },[])
     useEffect(()=>{
         (async()=>{
             await showLoad(true)
@@ -166,24 +176,19 @@ const LogistiOorder = React.memo((props) => {
                         />
                     </div>
                     <div className={classes.row}>
-                        {
-                            profile.role!=='агент'?
-                                <Autocomplete
-                                    className={classes.input}
-                                    options={districts}
-                                    getOptionLabel={option => option.name}
-                                    value={district}
-                                    onChange={(event, newValue) => {
-                                        setDistrict(newValue)
-                                    }}
-                                    noOptionsText='Ничего не найдено'
-                                    renderInput={params => (
-                                        <TextField {...params} label='Район' fullWidth />
-                                    )}
-                                />
-                                :
-                                null
-                        }
+                        <Autocomplete
+                            className={classes.input}
+                            options={districts}
+                            getOptionLabel={option => option.name}
+                            value={district}
+                            onChange={(event, newValue) => {
+                                setDistrict(newValue)
+                            }}
+                            noOptionsText='Ничего не найдено'
+                            renderInput={params => (
+                                <TextField {...params} label='Район' fullWidth />
+                            )}
+                        />
                     </div>
                     <div className={classes.row}>
                         <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>{days[0] = !days[0];setDays([...days])}} size='small' color={days[0]?'primary':''}>
