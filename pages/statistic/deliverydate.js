@@ -52,7 +52,7 @@ const LogistiOorder = React.memo((props) => {
     let [forwarder, setForwarder] = useState(undefined);
     let [organizations, setOrganizations] = useState([]);
     let [organization, setOrganization] = useState(undefined);
-    let [days, setDays] = useState([true, true, true, true, true, true, true]);
+    let [days, setDays] = useState([true, true, true, true, true, true, false]);
     useEffect(()=>{
         (async ()=>{
             if(profile.organization) {
@@ -218,7 +218,7 @@ const LogistiOorder = React.memo((props) => {
             <div className={classes.listInvoices}>
                 {filtredClients?filtredClients.map((element, idx)=> {
                     if (idx <= pagination) {
-                        let deliveryDate = deliveryDates[element._id] ? deliveryDates[element._id].days : [true, true, true, true, true, true, true];
+                        let deliveryDate = deliveryDates[element._id] ? deliveryDates[element._id].days : [true, true, true, true, true, true, false];
                         return (
                             <div key={idx} style={{alignItems: 'baseline'}} className={classes.column1}>
                                 <div className={classes.row1}>

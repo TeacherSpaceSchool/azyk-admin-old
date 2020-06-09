@@ -56,6 +56,11 @@ const list = {
             role: ['admin', 'суперорганизация']
         },
         {
+            name: 'Статистика AZYK.STORE',
+            link: '/statistic/statisticAzykStore',
+            role: ['admin']
+        },
+        {
             name: 'Статистика агентов',
             link: '/statistic/agents',
             role: ['admin', 'суперорганизация']
@@ -172,6 +177,11 @@ const list = {
         {
             name: 'Интеграция 1С',
             link: '/statistic/integrates',
+            role: ['admin']
+        },
+        {
+            name: 'Принятая интеграции 1С',
+            link: '/statistic/receiveData',
             role: ['admin']
         },
 

@@ -39,6 +39,27 @@ export const getStatisticOrder = async({company, dateStart, dateType, online}, c
     }
 }
 
+export const getStatisticAzykStore = async({district, dateStart, dateType}, client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                variables: {district: district, dateStart: dateStart, dateType: dateType},
+                query: gql`
+                    query ($district: ID!, $dateStart: Date, $dateType: String) {
+                        statisticAzykStore(district: $district, dateStart: $dateStart, dateType: $dateType) {
+                            columns
+                            row 
+                                {_id data}
+                        }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const getStatisticReturned = async({company, dateStart, dateType}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
