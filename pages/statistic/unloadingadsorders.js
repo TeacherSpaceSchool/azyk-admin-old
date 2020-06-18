@@ -66,7 +66,7 @@ const UnloadingAdsOrders = React.memo((props) => {
                         }
                         <TextField
                             className={classes.input}
-                            label='Дата начала'
+                            label='Дата доставки'
                             type='date'
                             InputLabelProps={{
                                 shrink: true,

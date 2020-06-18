@@ -116,15 +116,17 @@ const App = React.memo(props => {
                         setList([..._list])
                     }
                     else if (subscriptionOrderRes.data.reloadOrder.type === 'DELETE') {
-                        let index = 0
+                        let index = undefined
                         let _list = [...list]
                         for (let i = 0; i < _list.length; i++) {
                             if (_list[i]._id === subscriptionOrderRes.data.reloadOrder.invoice._id) {
                                 index = i
                             }
                         }
-                        _list.splice(index, 1);
-                        setList([..._list])
+                        if(index) {
+                            _list.splice(index, 1);
+                            setList([..._list])
+                        }
                     }
                 }
                 else {

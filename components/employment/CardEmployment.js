@@ -23,52 +23,52 @@ const CardEmployment = React.memo((props) => {
         <Card className={isMobileApp?classes.cardM:classes.cardD}>
             <Link href='/employment/[id]' as={`/employment/${element.user._id}`}>
                 <CardActionArea>
-                   <CardContent>
-                            <div className={classes.row}>
-                                <div className={classes.nameField}>
-                                    Имя:&nbsp;
+                            <CardContent>
+                                <div className={classes.row}>
+                                    <div className={classes.nameField}>
+                                        Имя:&nbsp;
+                                    </div>
+                                    <div className={classes.value}>
+                                        {element.name}
+                                    </div>
                                 </div>
-                                <div className={classes.value}>
-                                    {element.name}
+                                <div className={classes.row}>
+                                    <div className={classes.nameField}>
+                                        Телефон:&nbsp;
+                                    </div>
+                                    <div>
+                                        {element.phone.map((phone, idx)=>
+                                            idx<4?
+                                                <div key={`phone${idx}`} className={classes.value}>
+                                                    {phone}
+                                                </div>
+                                                :
+                                                idx===4?
+                                                    '...'
+                                                    :
+                                                    null
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        <div className={classes.row}>
-                            <div className={classes.nameField}>
-                                Телефон:&nbsp;
-                            </div>
-                            <div>
-                                {element.phone.map((phone, idx)=>
-                                    idx<4?
-                                        <div key={`phone${idx}`} className={classes.value}>
-                                            {phone}
-                                        </div>
-                                        :
-                                        idx===4?
-                                            '...'
-                                            :
-                                            null
-                                )}
-                            </div>
-                        </div>
-                            <div className={classes.row}>
-                                <div className={classes.nameField}>
-                                    Организация:&nbsp;
+                                <div className={classes.row}>
+                                    <div className={classes.nameField}>
+                                        Организация:&nbsp;
+                                    </div>
+                                    <div className={classes.value}>
+                                        {element.organization?element.organization.name:'AZYK.STORE'}
+                                    </div>
                                 </div>
-                                <div className={classes.value}>
-                                    {element.organization?element.organization.name:'AZYK.STORE'}
+                                <div className={classes.row}>
+                                    <div className={classes.nameField}>
+                                        Роль:&nbsp;
+                                    </div>
+                                    <div className={classes.value}>
+                                        {element.user.role}
+                                    </div>
                                 </div>
-                            </div>
-                            <div className={classes.row}>
-                                <div className={classes.nameField}>
-                                    Роль:&nbsp;
-                                </div>
-                                <div className={classes.value}>
-                                    {element.user.role}
-                                </div>
-                            </div>
-                    </CardContent>
-            </CardActionArea>
-</Link>
+                            </CardContent>
+                        </CardActionArea>
+            </Link>
             {
                 element.del!=='deleted'&&(profile.role === 'admin' || ['суперорганизация', 'организация'].includes(profile.role)) && profile._id!==element.user._id ?
                     <CardActions>
@@ -82,16 +82,21 @@ const CardEmployment = React.memo((props) => {
                         }} size='small' color='primary'>
                             {status==='active'?'Отключить':'Включить'}
                         </Button>
-                        <Button onClick={async()=>{
-                            const action = async() => {
-                                const list = (await deleteEmployment([element._id], element.organization?element.organization._id:'super')).employments
-                                setList(list)
-                            }
-                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                            showMiniDialog(true)
-                        }} size='small' color='primary'>
-                            Удалить
-                        </Button>
+                        {
+                            profile.role === 'admin'?
+                                <Button onClick={async()=>{
+                                    const action = async() => {
+                                        const list = (await deleteEmployment([element._id], element.organization?element.organization._id:'super')).employments
+                                        setList(list)
+                                    }
+                                    setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                    showMiniDialog(true)
+                                }} size='small' color='primary'>
+                                    Удалить
+                                </Button>
+                                :
+                                null
+                        }
                     </CardActions>
                     :
                     null

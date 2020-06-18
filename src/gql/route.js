@@ -226,14 +226,14 @@ export const getUnloadingInvoicesFromRouting = async({orders, organization}, cli
     }
 }
 
-export const buildRoute = async({autoTonnage, orders, provider})=>{
+export const buildRoute = async({autoTonnage, orders, provider, length})=>{
     try{
         const client = new SingletonApolloClient().getClient()
         let res = await client.mutate({
-            variables: {autoTonnage: autoTonnage, orders: orders, provider: provider},
+            variables: {autoTonnage: autoTonnage, orders: orders, provider: provider, length: length},
             mutation : gql`
-                    mutation ($autoTonnage: Int!, $orders: [ID]!, $provider: ID!) {
-                        buildRoute(autoTonnage: $autoTonnage, orders: $orders, provider: $provider) {
+                    mutation ($autoTonnage: Int!, $orders: [ID]!, $provider: ID!, $length: Int) {
+                        buildRoute(autoTonnage: $autoTonnage, orders: $orders, provider: $provider, length: $length) {
                             legs
                             lengthInMeters
                             orders{

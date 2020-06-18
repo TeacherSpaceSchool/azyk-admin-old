@@ -55,7 +55,7 @@ const CardOrder = React.memo((props) => {
             </Link>
             <CardActions>
                 {
-                    ['организация', 'менеджер', 'admin'].includes(profile.role)?
+                    !['экспедитор', 'суперэкспедитор'].includes(profile.role)?
                         <Button onClick={async()=>{
                             const action = async() => {
                                 await deleteRoute({_id: element._id, selectedOrders: element.selectedOrders?element.selectedOrders.map(element=>element._id):[]})

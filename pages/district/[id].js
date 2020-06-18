@@ -250,7 +250,7 @@ const District = React.memo((props) => {
                                 />
                             }
                             <br/>
-                            {/*['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role)?*/
+                            {['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role)?
                                 <div style={{ justifyContent: 'center' }} className={classes.row}>
                                     <div style={{background: selectType==='Все'?'#ffb300':'#ffffff'}} onClick={()=>{setSelectType('Все')}} className={classes.selectType}>
                                         Все
@@ -262,8 +262,8 @@ const District = React.memo((props) => {
                                         {`Выбр. ${client.length}`}
                                     </div>
                                 </div>
-                                /*:
-                                null*/
+                                :
+                                null
                             }
                             <br/>
                             <div className={classes.listInvoices}>
@@ -272,7 +272,7 @@ const District = React.memo((props) => {
                                         return (
                                             <div key={idx} style={isMobileApp ? {alignItems: 'baseline'} : {}}
                                                      className={isMobileApp ? classes.column : classes.row}>
-                                                {/*['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role)?*/
+                                                {['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role)?
                                                     <Checkbox checked={client.includes(element)}
                                                               onChange={() => {
                                                                   if (!client.includes(element)) {
@@ -285,8 +285,8 @@ const District = React.memo((props) => {
                                                                   setClient([...client])
                                                               }}
                                                     />
-                                                    /*:
-                                                    null*/
+                                                    :
+                                                    null
                                                 }
                                                     <LazyLoad scrollContainer={'.App-body'} key={element._id}
                                                               height={height} offset={[height, 0]} debounce={0}
@@ -307,7 +307,7 @@ const District = React.memo((props) => {
                                     Карта
                                 </Button>
                                 {
-                                    /*['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role)?*/
+                                    ['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role)?
                                         router.query.id==='new'?
                                             <Button onClick={async()=>{
                                                 if (name.length>0) {
@@ -364,8 +364,8 @@ const District = React.memo((props) => {
                                                 null
                                             }
                                             </>
-                                        /*:
-                                        null*/
+                                        :
+                                        null
                                 }
                             </div>
                             </>

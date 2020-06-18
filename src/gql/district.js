@@ -79,6 +79,7 @@ export const getDistrict = async({_id}, client)=>{
                                     reiting
                                     city
                                     phone
+                                    category
                                     organization 
                                         {_id name}
                                     user 

@@ -205,7 +205,7 @@ const Client = React.memo((props) => {
                                                 }}
                                             >
                                                 {(organization._id==='super'?superRoles:roles).map((element)=>{
-                                                    //if(!['admin', 'суперорганизация', 'организация'].includes(profile.role))
+                                                    //if(!['admin'].includes(profile.role))
                                                         return <MenuItem key={element} value={element}>{element}</MenuItem>
                                                 })
                                                 }
@@ -256,7 +256,7 @@ const Client = React.memo((props) => {
                                                     </Button>
 
                                                     {
-                                                        profile._id!==data.employment.user._id&&['admin', 'суперорганизация', 'организация'].includes(profile.role)?
+                                                        profile._id!==data.employment.user._id&&['admin'].includes(profile.role)?
                                                             <>
                                                             <Button onClick={async()=>{
                                                                 const action = async() => {

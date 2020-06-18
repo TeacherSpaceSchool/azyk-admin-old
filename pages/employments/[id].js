@@ -65,7 +65,7 @@ const Employment = React.memo((props) => {
                         )}
                 ):null}
             </div>
-            {['admin', 'суперорганизация', 'организация'].includes(profile.role)?
+            {['admin'].includes(profile.role)?
                 <Link href={`/employment/[id]`} as={`/employment/new`}>
                     <Fab color='primary' aria-label='add' className={classes.fab}>
                         <AddIcon />

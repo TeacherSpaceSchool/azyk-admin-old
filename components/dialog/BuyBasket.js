@@ -50,12 +50,10 @@ const BuyBasket =  React.memo(
         let [deliveryDates, setDeliveryDates] = useState([true, true, true, true, true, true, false]);
         let [week, setWeek] = useState([]);
         let [unlock, setUnlock] = useState(false);
-        /*let paymentMethods = [
-            'Наличные'
-        ]
+        let paymentMethods = ['Наличные', 'Перечисление', 'Консигнация']
         let handlePaymentMethod =  (event) => {
             setPaymentMethod(event.target.value)
-        };*/
+        };
         useEffect(()=>{
             (async()=>{
                 if(!unlock) {
@@ -146,15 +144,22 @@ const BuyBasket =  React.memo(
                         :
                         null
                 }
-                {/*<FormControl style={{width: width}} className={isMobileApp?classes.inputM:classes.inputD}>
-                    <InputLabel>Способ оплаты</InputLabel>
-                    <Select value={paymentMethod} onChange={handlePaymentMethod}>
-                        {paymentMethods.map((element)=>
-                            <MenuItem key={element} value={element} >{element}</MenuItem>
-                        )}
-                    </Select>
-                </FormControl>
-                <br/>*/}
+                {
+                    agent?
+                        <>
+                        <FormControl style={{width: width}} className={isMobileApp?classes.inputM:classes.inputD}>
+                            <InputLabel>Способ оплаты</InputLabel>
+                            <Select value={paymentMethod} onChange={handlePaymentMethod}>
+                                {paymentMethods.map((element)=>
+                                    <MenuItem key={element} value={element} >{element}</MenuItem>
+                                )}
+                            </Select>
+                        </FormControl>
+                        <br/>
+                        </>
+                        :
+                        null
+                }
                 {
                     !agent&&organization.minimumOrder>0?
                         <>

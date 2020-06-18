@@ -19,6 +19,7 @@ export const getReceivedDatas = async({search}, client)=>{
                             agent
                             phone
                             type
+                            status
                             organization {name}
                         }
                     }`,
@@ -37,6 +38,22 @@ export const deleteReceivedData = async(ids)=>{
             mutation : gql`
                     mutation ($_ids: [ID]!) {
                         deleteReceivedData(_ids: $_ids) {
+                             data
+                        }
+                    }`})
+    } catch(err){
+        console.error(err)
+    }
+}
+
+export const addReceivedDataClient = async(id)=>{
+    try{
+        const client = new SingletonApolloClient().getClient()
+        await client.mutate({
+            variables: {_id: id},
+            mutation : gql`
+                    mutation ($_id: ID!) {
+                        addReceivedDataClient(_id: $_id) {
                              data
                         }
                     }`})

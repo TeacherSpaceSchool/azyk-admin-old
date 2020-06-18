@@ -27,7 +27,6 @@ import * as appActions from '../../redux/actions/app'
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Router from 'next/router'
-import dynamic from 'next/dynamic'
 import { urlMain } from '../../redux/constants/other'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import initialApp from '../../src/initialApp'
@@ -39,8 +38,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { pdDatePicker } from '../../src/lib'
-import Confirmation from '../../components/dialog/Confirmation'
+import { pdDatePicker, checkInt } from '../../src/lib'
 import ListOrder from '../../components/dialog/ListOrder'
 import GeoRoute from '../../components/dialog/GeoRoute'
 import ItemList from '../../components/dialog/ItemList'
@@ -107,6 +105,7 @@ const Route = React.memo((props) => {
     let [showStat, setShowStat] = useState(false);
     let [deliverys, setDeliverys] = useState(data.route?data.route.deliverys:[]);
     let [pagination, setPagination] = useState(100);
+    let [length, setLength] = useState('');
     const checkPagination = ()=>{
         if(pagination<orders.length){
             setPagination(pagination+100)
@@ -267,7 +266,9 @@ const Route = React.memo((props) => {
                                         />
                                     </div>
                                     <div className={classes.row}>
-                                        <FormControl className={classes.inputHalf} variant='outlined'>
+                                        <FormControl
+                                            className={classes.inputThird}
+                                            variant='outlined'>
                                             <InputLabel>Районы</InputLabel>
                                             <Select
                                                 multiple
@@ -292,7 +293,7 @@ const Route = React.memo((props) => {
                                             </Select>
                                         </FormControl>
                                         <TextField
-                                            className={classes.inputHalf}
+                                            className={classes.inputThird}
                                             label='Развозка'
                                             disabled={router.query.id!=='new'}
                                             type='date'
@@ -302,6 +303,16 @@ const Route = React.memo((props) => {
                                             value={dateDelivery}
                                             format='MM/dd/yy'
                                             onChange={ event => setDateDelivery(event.target.value) }
+                                        />
+                                        <TextField
+                                            type={isMobileApp?'number':'text'}
+                                            label='Максимально заказов'
+                                            value={length}
+                                            className={classes.inputThird}
+                                            onChange={(event)=>{setLength(event.target.value)}}
+                                            inputProps={{
+                                                'aria-label': 'description',
+                                            }}
                                         />
                                     </div>
                                     <br/>
@@ -366,13 +377,13 @@ const Route = React.memo((props) => {
                                                         }} size='small' color='primary'>
                                                             Лист загрузки
                                                         </Button>
-                                                        <Button onClick={async()=>{
+                                                        {/*<Button onClick={async()=>{
                                                             let items = (await listUnload(element.orders.map(order=>order._id))).listUnload
                                                             setMiniDialog('Лист выгрузки', <ItemList items={items}/>)
                                                             showMiniDialog(true)
                                                         }} size='small' color='primary'>
                                                             Лист выгрузки
-                                                        </Button>
+                                                        </Button>*/}
                                                         <Button onClick={async()=>{
                                                             setFullDialog('Список магазинов', <ListOrder
                                                                 setList={(list)=>{deliverys[idx].orders = list; setDeliverys([...deliverys])}}
@@ -425,7 +436,7 @@ const Route = React.memo((props) => {
                             }
                         </CardContent>
                         {
-                            orders.length>0&&router.query.id==='new'?
+                            router.query.id==='new'?
                                 <>
                                 <Fab onClick={open} color='primary' aria-label='add' className={classes.fab}>
                                     <SettingsIcon />
@@ -459,8 +470,17 @@ const Route = React.memo((props) => {
                                                                 let deliverys = (await buildRoute({
                                                                     provider: provider._id,
                                                                     autoTonnage: selectAuto.tonnage,
+                                                                    length: checkInt(length),
                                                                     orders: selectedOrders.map(element => element._id)
                                                                 })).buildRoute
+                                                                let resultSelectedOrders = []
+                                                                for(let i=0; i<deliverys.length; i++){
+                                                                    for(let i1=0; i1<deliverys[i].orders.length; i1++) {
+                                                                        resultSelectedOrders.push(deliverys[i].orders[i1]._id)
+                                                                    }
+                                                                }
+                                                                selectedOrders = selectedOrders.filter(element => resultSelectedOrders.includes(element._id))
+                                                                setSelectedOrders([...selectedOrders])
                                                                 setDeliverys(deliverys)
                                                             }
                                                             else
@@ -497,14 +517,20 @@ const Route = React.memo((props) => {
                                             </>
                                             :
                                             <>
-                                            <MenuItem onClick={async()=>{
-                                                setSelectedOrders([...orders])
-                                                close()
-                                            }}>Выбрать все</MenuItem>
-                                            <MenuItem onClick={async()=>{
-                                                setSelectedOrders([])
-                                                close()
-                                            }}>Отменить выбор</MenuItem>
+                                            {orders.length>0?
+                                                <>
+                                                <MenuItem onClick={async()=>{
+                                                    setSelectedOrders([...orders])
+                                                    close()
+                                                }}>Выбрать все</MenuItem>
+                                                <MenuItem onClick={async()=>{
+                                                    setSelectedOrders([])
+                                                    close()
+                                                }}>Отменить выбор</MenuItem>
+                                                </>
+                                                :
+                                                null
+                                            }
                                             <MenuItem onClick={async()=>{
                                                 setFullDialog('Добавить заказ', <AddOrder districts={districts} produsers={produsers} dateDelivery={dateDelivery} mainSelectedOrders={selectedOrders} setMainSelectedOrders={setSelectedOrders} mainOrders={orders} setMainOrders={setOrders}/>)
                                                 showFullDialog(true)

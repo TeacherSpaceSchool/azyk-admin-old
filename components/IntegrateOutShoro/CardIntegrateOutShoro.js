@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
-import { pdDDMMYY } from '../../src/lib'
+import { pdDDMMYY, pdDDMMYYHHMM } from '../../src/lib'
 import Confirmation from '../../components/dialog/Confirmation'
 import { deleteOutXMLReturnedShoro, deleteOutXMLShoro, restoreOutXMLReturnedShoro, restoreOutXMLShoro, deleteOutXMLClientShoro } from '../../src/gql/integrateOutShoro'
 import {alert} from '../../layouts/App';
@@ -41,6 +41,14 @@ const CardIntegrateOutShoro = React.memo((props) => {
                             :null
                     }
                     {
+                        element.guid?
+                            <div className={classes.row}>
+                                <div className={classes.nameField}>GUID:&nbsp;</div>
+                                <div className={classes.value}>{element.guid}</div>
+                            </div>
+                            :null
+                    }
+                    {
                         element.client&&element.client.name?
                             <div className={classes.row}>
                                 <div className={classes.nameField}>Клиенты:&nbsp;</div>
@@ -53,9 +61,18 @@ const CardIntegrateOutShoro = React.memo((props) => {
                         <div className={classes.value}>{pdDDMMYY(element.date?element.date:element.createdAt)}</div>
                     </div>
                     {
+                        element.updatedAt?
+                            <div className={classes.row}>
+                                <div className={classes.nameField}>Изменен:&nbsp;</div>
+                                <div className={classes.value}>{pdDDMMYYHHMM(element.updatedAt)}</div>
+                            </div>
+                            :
+                            null
+                    }
+                    {
                         element.exc?
                             <div className={classes.row}>
-                                <div className={classes.nameField}>Ошибка: &nbsp;</div>
+                                <div className={classes.nameField}>Ошибка:&nbsp;</div>
                                 <div className={classes.value}>{element.exc}</div>
                             </div>
                             :
