@@ -178,11 +178,11 @@ Distributer.getInitialProps = async function(ctx) {
     if('admin'!==ctx.store.getState().user.profile.role)
         if(ctx.res) {
             ctx.res.writeHead(302, {
-                Location: '/'
+                Location: '/contact'
             })
             ctx.res.end()
         } else
-                Router.push('/')
+                Router.push('/contact')
     let distributer = (await getDistributer({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).distributer
     let organization = (await getOrganization({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organization
 

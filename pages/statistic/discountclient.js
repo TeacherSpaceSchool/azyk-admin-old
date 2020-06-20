@@ -14,7 +14,7 @@ import CardClientPlaceholder from '../../components/client/CardClientPlaceholder
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import { getActiveOrganization } from '../../src/gql/statistic'
 import { getDistricts, getDistrict } from '../../src/gql/district'
-import { getDeliveryDates, saveDeliveryDates } from '../../src/gql/deliveryDate'
+import { getDiscountClients, saveDiscountClients } from '../../src/gql/discountClient'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import { bindActionCreators } from 'redux'
@@ -28,13 +28,14 @@ import MenuItem from '@material-ui/core/MenuItem';
 import * as snackbarActions from '../../redux/actions/snackbar'
 import dynamic from 'next/dynamic'
 import { getDistributer } from '../../src/gql/distributer'
+import { checkInt } from '../../src/lib'
 import clients from '../clients';
 import Button from '@material-ui/core/Button';
 
 const height = 225
 const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'))
 
-const LogistiOorder = React.memo((props) => {
+const DiscountClient = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     let { isMobileApp, search } = props.app;
@@ -45,14 +46,14 @@ const LogistiOorder = React.memo((props) => {
     let [pagination, setPagination] = useState(100);
     let [districts, setDistricts] = useState([]);
     let [allClients, setAllClients] = useState([]);
-    let [deliveryDates, setDeliveryDates] = useState([]);
+    let [discountClients, setDiscountClients] = useState([]);
     let [filtredClients, setFiltredClients] = useState([]);
     let [selectedClients, setSelectedClients] = useState([]);
     let [district, setDistrict] = useState(undefined);
     let [forwarder, setForwarder] = useState(undefined);
     let [organizations, setOrganizations] = useState([]);
     let [organization, setOrganization] = useState(undefined);
-    let [days, setDays] = useState([true, true, true, true, true, true, false]);
+    let [discount, setDiscount] = useState(0);
     useEffect(()=>{
         (async ()=>{
             if(profile.organization) {
@@ -91,12 +92,12 @@ const LogistiOorder = React.memo((props) => {
                 await showLoad(true)
                 let _district = (await getDistrict({_id: district._id})).district
                 setAllClients(_district.client)
-                deliveryDates = {}
-                let  _deliveryDates =  (await getDeliveryDates({clients: district.client.map(element=>element._id), organization: organization._id})).deliveryDates
-                for(let i=0; i<_deliveryDates.length; i++) {
-                    deliveryDates[_deliveryDates[i].client] = _deliveryDates[i]
+                discountClients = {}
+                let  _discountClients =  (await getDiscountClients({clients: district.client.map(element=>element._id), organization: organization._id})).discountClients
+                for(let i=0; i<_discountClients.length; i++) {
+                    discountClients[_discountClients[i].client] = _discountClients[i]
                 }
-                setDeliveryDates({...deliveryDates})
+                setDiscountClients({...discountClients})
                 await showLoad(false)
             }
         })()
@@ -130,16 +131,16 @@ const LogistiOorder = React.memo((props) => {
         setAnchorEl(null);
     };
     return (
-        <App pageName='Дни доставки' checkPagination={checkPagination} searchShow={true}>
+        <App pageName='Скидки клиента' checkPagination={checkPagination} searchShow={true}>
             <Head>
-                <title>Дни доставки</title>
+                <title>Скидки клиента</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
-                <meta property='og:title' content='Дни доставки' />
+                <meta property='og:title' content='Скидки клиента' />
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
-                <meta property='og:url' content={`${urlMain}/statistic/deliverydate`} />
-                <link rel='canonical' href={`${urlMain}/statistic/deliverydate.`}/>
+                <meta property='og:url' content={`${urlMain}/statistic/discountclient`} />
+                <link rel='canonical' href={`${urlMain}/statistic/discountclient.`}/>
             </Head>
             <Card className={classes.page}>
                 <CardContent className={classes.column} style={isMobileApp?{}:{justifyContent: 'start', alignItems: 'flex-start'}}>
@@ -189,36 +190,23 @@ const LogistiOorder = React.memo((props) => {
                                 <TextField {...params} label='Район' fullWidth />
                             )}
                         />
-                    </div>
-                    <div className={classes.row}>
-                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>{days[0] = !days[0];setDays([...days])}} size='small' color={days[0]?'primary':''}>
-                            ПН
-                        </Button>
-                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>{days[1] = !days[1];setDays([...days])}} size='small' color={days[1]?'primary':''}>
-                            ВТ
-                        </Button>
-                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>{days[2] = !days[2];setDays([...days])}} size='small' color={days[2]?'primary':''}>
-                            СР
-                        </Button>
-                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>{days[3] = !days[3];setDays([...days])}} size='small' color={days[3]?'primary':''}>
-                            ЧТ
-                        </Button>
-                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>{days[4] = !days[4];setDays([...days])}} size='small' color={days[4]?'primary':''}>
-                            ПТ
-                        </Button>
-                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>{days[5] = !days[5];setDays([...days])}} size='small' color={days[5]?'primary':''}>
-                            СБ
-                        </Button>
-                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>{days[6] = !days[6];setDays([...days])}} size='small' color={days[6]?'primary':''}>
-                            ВС
-                        </Button>
+                        <TextField
+                            label='Скидка'
+                            value={discount}
+                            className={classes.input}
+                            onChange={(event)=>{
+                                setDiscount(checkInt(event.target.value))}
+                            }
+                            inputProps={{
+                                'aria-label': 'description',
+                            }}
+                        />
                     </div>
                 </CardContent>
             </Card>
             <div className={classes.listInvoices}>
                 {filtredClients?filtredClients.map((element, idx)=> {
                     if (idx <= pagination) {
-                        let deliveryDate = deliveryDates[element._id] ? deliveryDates[element._id].days : [true, true, true, true, true, true, false];
                         return (
                             <div key={idx} style={{alignItems: 'baseline'}} className={classes.column1}>
                                 <div className={classes.row1}>
@@ -233,13 +221,7 @@ const LogistiOorder = React.memo((props) => {
                                                       setSelectedClients([...selectedClients])
                                                   }}
                                         />
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[0]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[1]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[2]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[3]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[4]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[5]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[6]?'#ffb300':'white'}}/>
+                                        <h2 style={{color: '#ffb300'}}>{discountClients[element._id]?discountClients[element._id].discount:0}%</h2>
                                     </div>
                                     <LazyLoad scrollContainer={'.App-body'} key={element._id}
                                               height={height} offset={[height, 0]} debounce={0}
@@ -275,15 +257,15 @@ const LogistiOorder = React.memo((props) => {
                     if(selectedClients.length>0){
                         const action = async() => {
                             if(selectedClients.length>0) {
-                                await saveDeliveryDates(selectedClients, organization._id, days)
+                                await saveDiscountClients(selectedClients, organization._id, discount)
                                 for (let i = 0; i < selectedClients.length; i++) {
-                                    deliveryDates[selectedClients[i]] = {
+                                    discountClients[selectedClients[i]] = {
                                         client: selectedClients[i],
-                                        days: days,
+                                        discount: discount,
                                         organization: organization._id
                                     }
                                 }
-                                setDeliveryDates({...deliveryDates})
+                                setDiscountClients({...discountClients})
                             }
                         }
                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
@@ -310,7 +292,7 @@ const LogistiOorder = React.memo((props) => {
     )
 })
 
-LogistiOorder.getInitialProps = async function(ctx) {
+DiscountClient.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = 'Заказы'
     if(!['admin', 'суперорганизация', 'организация', 'агент', 'менеджер'].includes(ctx.store.getState().user.profile.role))
@@ -323,7 +305,7 @@ LogistiOorder.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            activeOrganization: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
+            ...(await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined))
         }
     };
 };
@@ -344,4 +326,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LogistiOorder);
+export default connect(mapStateToProps, mapDispatchToProps)(DiscountClient);

@@ -26,6 +26,7 @@ import { addBasket } from '../../src/gql/basket';
 import { addAgentHistoryGeo } from '../../src/gql/agentHistoryGeo'
 import {getGeoDistance} from '../../src/lib'
 import { getDeliveryDate } from '../../src/gql/deliveryDate';
+import { getDiscountClient } from '../../src/gql/discountClient';
 import { pdDDMMYYYYWW } from '../../src/lib';
 
 const BuyBasket =  React.memo(
@@ -43,6 +44,7 @@ const BuyBasket =  React.memo(
         };
         let [paymentMethod, setPaymentMethod] = useState('Наличные');
         let [useBonus, setUseBonus] = useState(false);
+        let [discount, setDiscount] = useState(undefined);
         let [deliveryDate, setDeliveryDate] = useState(undefined);
         let handleDeliveryDate =  (event) => {
             setDeliveryDate(event.target.value)
@@ -57,6 +59,11 @@ const BuyBasket =  React.memo(
         useEffect(()=>{
             (async()=>{
                 if(!unlock) {
+                    discount = (await getDiscountClient({
+                        client: client._id,
+                        organization: organization._id
+                    })).discountClient
+                    setDiscount(discount?discount.discount:0)
                     deliveryDates = (await getDeliveryDate({
                         client: client._id,
                         organization: organization._id
@@ -168,7 +175,7 @@ const BuyBasket =  React.memo(
                         :null
                 }
                 {
-                    bonus&&bonus.addedBonus?
+                    /*bonus&&bonus.addedBonus?
                         <FormControlLabel
                             style={{width: width}}
                             onChange={(e)=>{
@@ -178,7 +185,7 @@ const BuyBasket =  React.memo(
                             label={`Использовать бонус ${bonus.addedBonus} сом`}
                         />
                         :
-                        null
+                        null*/
                 }
                 {
                     agent||['A','Horeca'].includes(client.category)?
@@ -193,7 +200,8 @@ const BuyBasket =  React.memo(
                         :
                         null
                 }
-                <div style={{width: width}} className={classes.itogo}><b>Итого:</b>{` ${useBonus?(allPrice*address.length)-bonus.addedBonus:allPrice*address.length} сом`}</div>
+                {discount?<div style={{width: width}} className={classes.itogo}><b>Скидка: &nbsp;</b>{discount}%</div>:null}
+                <div style={{width: width}} className={classes.itogo}><b>Итого:</b>{` ${allPrice-allPrice/100*discount} сом`}</div>
                 <br/>
                 <div>
                     <Button variant='contained' color='primary' onClick={async()=>{

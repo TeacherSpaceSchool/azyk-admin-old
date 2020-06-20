@@ -86,11 +86,11 @@ AgentRoutes.getInitialProps = async function(ctx) {
     if(!['admin', 'суперорганизация', 'организация', 'менеджер'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
-                Location: '/'
+                Location: '/contact'
             })
             ctx.res.end()
         } else
-            Router.push('/')
+            Router.push('/contact')
     return {
         data: {
             ...(await getAgentRoutes({organization: ctx.query.id, search: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined))

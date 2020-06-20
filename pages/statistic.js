@@ -142,6 +142,11 @@ const list = {
             link: '/statistic/error',
             role: ['admin']
         },
+        {
+            name: 'Скидки клиентов',
+            link: '/statistic/discountclient',
+            role: ['admin', 'суперорганизация', 'организация', 'менеджер', 'агент']
+        },
     ],
     integrate: [
         {
@@ -399,11 +404,11 @@ Statistic.getInitialProps = async function(ctx) {
     if(!['admin', 'суперорганизация', 'организация', 'менеджер', 'агент'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
-                Location: '/'
+                Location: '/contact'
             })
             ctx.res.end()
         } else
-            Router.push('/')
+            Router.push('/contact')
     let showList = {
         statistic: [],
         tools: [],

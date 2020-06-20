@@ -101,11 +101,11 @@ Routes.getInitialProps = async function(ctx) {
     if(!['admin', 'организация', 'суперорганизация', 'менеджер', 'агент', 'экспедитор', 'суперэкспедитор'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
-                Location: '/'
+                Location: '/contact'
             })
             ctx.res.end()
         } else
-            Router.push('/')
+            Router.push('/contact')
     return {
         data: await getRoutes({organization: ctx.query.id, skip: 0, search: '', sort: '-createdAt', filter: '', date: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     };

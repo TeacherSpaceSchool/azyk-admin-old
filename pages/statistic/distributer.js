@@ -164,11 +164,11 @@ DistributerStatistic.getInitialProps = async function(ctx) {
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
-                Location: '/'
+                Location: '/contact'
             })
             ctx.res.end()
         } else
-            Router.push('/')
+            Router.push('/contact')
     let distributers = (await getDistributers({search: '', sort: 'name'},ctx.req?await getClientGqlSsr(ctx.req):undefined)).distributers
     distributers = distributers.filter(distributer=>distributer.sales.length>0)
     return {

@@ -178,6 +178,15 @@ const CardOrder = React.memo((props) => {
                             :
                             null
                     }
+                    {
+                        element.discount?
+                            <div className={classes.row}>
+                                <div className={classes.nameField}>Скидка:&nbsp;</div>
+                                <div className={classes.value}>{element.discount}%</div>
+                            </div>
+                            :
+                            null
+                    }
                     <div className={classes.row}>
                         <div className={classes.nameField}>Сумма{element.returnedPrice?' (факт./итого)':''}:</div>
                         <div className={classes.value}>

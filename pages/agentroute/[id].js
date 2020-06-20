@@ -378,11 +378,11 @@ AgentRoute.getInitialProps = async function(ctx) {
     if(!['суперорганизация', 'организация', 'admin', 'менеджер', 'суперагент', 'агент', 'суперагент'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
-                Location: '/'
+                Location: '/contact'
             })
             ctx.res.end()
         } else
-                Router.push('/')
+                Router.push('/contact')
     return {
         data: {
             ...ctx.query.id!=='new'?await getAgentRoute({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined): {agentRoute: {organization: {}, clients: [[],[],[],[],[],[],[]], name: '', district: {}}},

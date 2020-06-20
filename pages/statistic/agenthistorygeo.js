@@ -176,11 +176,11 @@ AgentHistoryGeo.getInitialProps = async function(ctx) {
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
-                Location: '/'
+                Location: '/contact'
             })
             ctx.res.end()
         } else
-            Router.push('/')
+            Router.push('/contact')
     return {
         data: {
             ...await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined),

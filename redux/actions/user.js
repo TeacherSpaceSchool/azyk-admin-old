@@ -115,7 +115,7 @@ export function signin(payload) {
                     type: SHOW_MINI_DIALOG,
                     payload: false
                 })
-                //await Router.push('/')
+                //await Router.push('/contact')
                 await register(true)
                 window.location.reload()
 
@@ -179,7 +179,7 @@ export function logout(reload) {
         })
         if(reload) {
             await unregister()
-            await Router.push('/')
+            await Router.push('/contact')
             window.location.reload()
         }
         else

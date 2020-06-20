@@ -33,6 +33,7 @@ export const getOrders = async(args, client)=>{
                             info
                             address
                             paymentMethod
+                            discount
                             adss
                                 { 
                                     _id
@@ -107,6 +108,7 @@ export const getOrdersFromDistrict = async(args, client)=>{
                             info
                             address
                             paymentMethod
+                            discount
                             adss
                                 { 
                                     _id
@@ -182,6 +184,7 @@ export const getOrdersTrash = async(args, client)=>{
                             info
                             address
                             paymentMethod
+                            discount
                             adss
                                 { 
                                     _id
@@ -319,6 +322,7 @@ export const getOrdersForRouting = async(arg)=>{
                             info
                             address
                             paymentMethod
+                            discount
                             adss
                                 { 
                                     _id
@@ -413,6 +417,7 @@ export const getOrder = async({_id})=>{
                             info
                             address
                             paymentMethod
+                            discount
                             adss
                                 { 
                                     _id
@@ -577,6 +582,7 @@ export const setOrder = async(element)=>{
                             info
                             address
                             paymentMethod
+                            discount
                             adss
                                 { 
                                     _id
@@ -673,6 +679,7 @@ export const subscriptionOrder = gql`
                             info
                             address
                             paymentMethod
+                            discount
                             adss
                                 { 
                                     _id

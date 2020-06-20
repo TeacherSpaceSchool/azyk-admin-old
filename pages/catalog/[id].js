@@ -294,11 +294,11 @@ Catalog.getInitialProps = async function(ctx) {
     if('client'!==ctx.store.getState().user.profile.role)
         if(ctx.res) {
             ctx.res.writeHead(302, {
-                Location: '/'
+                Location: '/contact'
             })
             ctx.res.end()
         } else
-            Router.push('/')
+            Router.push('/contact')
     await deleteBasketAll(ctx.req?await getClientGqlSsr(ctx.req):undefined)
     if(ctx.query.search){
         ctx.store.getState().app.search = ctx.query.search

@@ -219,11 +219,11 @@ Orders.getInitialProps = async function(ctx) {
     if(!['admin', 'суперорганизация', 'организация', 'менеджер', 'client', 'агент', 'суперагент'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
-                Location: '/'
+                Location: '/contact'
             })
             ctx.res.end()
         } else
-            Router.push('/')
+            Router.push('/contact')
     ctx.store.getState().app.sort = '-createdAt'
     return {
         data: await getOrders({search: '', sort: '-createdAt', filter: '', date: '', skip: 0}, ctx.req?await getClientGqlSsr(ctx.req):undefined)

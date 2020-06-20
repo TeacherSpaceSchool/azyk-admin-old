@@ -17,6 +17,7 @@ import IconButton from '@material-ui/core/IconButton';
 import CancelIcon from '@material-ui/icons/Cancel';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import {getAdss, checkAdss} from '../../src/gql/ads'
 
 const Order =  React.memo(
     (props) =>{
@@ -62,22 +63,24 @@ const Order =  React.memo(
             setChangeOrders(true)
         }
         let increment = (idx)=>{
+            let price = orders[idx].allPrice/orders[idx].count
             if(orders[idx].item.apiece)
                 orders[idx].count+=1
             else
                 orders[idx].count+=orders[idx].item.packaging
-            orders[idx].allPrice = Math.round(orders[idx].count * (!orders[idx].item.stock?orders[idx].item.price:orders[idx].item.stock))
+            orders[idx].allPrice = Math.round(orders[idx].count * price)
             orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
             orders[idx].allSize = orders[idx].count * orders[idx].item.size
             setOrders([...orders])
             canculateAllPrice()
         }
         let decrement = (idx)=>{
+            let price = orders[idx].allPrice/orders[idx].count
             if(orders[idx].count>1&&orders[idx].item.apiece) {
-                let takePrice = (orders[idx].allPrice / (!orders[idx].item.stock?orders[idx].item.price:orders[idx].item.stock))
+                let takePrice = (orders[idx].allPrice / price)
                 if(!element.organization.minimumOrder||((allPrice-takePrice)>=element.organization.minimumOrder)) {
                     orders[idx].count -= 1
-                    orders[idx].allPrice = Math.round(orders[idx].count * (!orders[idx].item.stock?orders[idx].item.price:orders[idx].item.stock))
+                    orders[idx].allPrice = Math.round(orders[idx].count * price)
                     orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
                     orders[idx].allSize = orders[idx].count * orders[idx].item.size
                     setOrders([...orders])
@@ -86,10 +89,10 @@ const Order =  React.memo(
                     showSnackBar('Сумма не может быть меньше минимальной')
             }
             else if(orders[idx].count>orders[idx].item.packaging&&!orders[idx].item.apiece) {
-                let takePrice = orders[idx].item.packaging * (!orders[idx].item.stock?orders[idx].item.price:orders[idx].item.stock)
+                let takePrice = orders[idx].item.packaging * price
                 if(!element.organization.minimumOrder||((allPrice-takePrice)>=element.organization.minimumOrder)) {
                     orders[idx].count -= orders[idx].item.packaging
-                    orders[idx].allPrice = Math.round(orders[idx].count * (!orders[idx].item.stock?orders[idx].item.price:orders[idx].item.stock))
+                    orders[idx].allPrice = Math.round(orders[idx].count * price)
                     orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
                     orders[idx].allSize = orders[idx].count * orders[idx].item.size
                     setOrders([...orders])
@@ -99,17 +102,19 @@ const Order =  React.memo(
             }
         }
         let incrementConsignation = (idx)=>{
+            let price = orders[idx].allPrice/orders[idx].count
             if(orders[idx].consignment<orders[idx].count){
                 orders[idx].consignment+=1
-                orders[idx].consignmentPrice = Math.round(orders[idx].consignment*(!orders[idx].item.stock?orders[idx].item.price:orders[idx].item.stock))
+                orders[idx].consignmentPrice = Math.round(orders[idx].consignment*price)
                 setOrders([...orders])
                 canculateAllPrice()
             }
         }
         let decrementConsignation = (idx)=>{
             if(orders[idx].consignment>0) {
+                let price = orders[idx].allPrice/orders[idx].count
                 orders[idx].consignment -= 1
-                orders[idx].consignmentPrice = Math.round(orders[idx].consignment*(!orders[idx].item.stock?orders[idx].item.price:orders[idx].item.stock))
+                orders[idx].consignmentPrice = Math.round(orders[idx].consignment*price)
                 setOrders([...orders])
                 canculateAllPrice()
             }
@@ -279,7 +284,8 @@ const Order =  React.memo(
                          className={classes.row}>
                         <div className={classes.nameField}>Акции:&nbsp;</div>
                         <div style={{cursor: 'pointer', ...(!adss[0]?{color: 'red'}:{color: '#ffb300'})}}>
-                            {adss.length>0?adss.map((ads, idx)=>
+                            {adss.length>0?
+                                adss.map((ads, idx)=>
                                     idx<4? <div key={`ads${idx}`} className={classes.value}>
                                             {ads.title}
                                         </div>
@@ -288,15 +294,41 @@ const Order =  React.memo(
                                             '...'
                                             :
                                             null
-                            ):<div className={classes.value}>нет</div>}
-                            </div>
+                                )
+                                :
+                                <div className={classes.value}>нет</div>}
                         </div>
-
+                    </div>
+                {
+                    profile.role!=='client'?
+                     <div style={{color: '#ffb300', cursor: 'pointer'}} className={classes.value} onClick={async()=>{
+                            let allAdss = (await getAdss({search: '', organization: element.organization._id})).adss
+                            let _checkAdss = (await checkAdss(element._id)).checkAdss
+                            for(let i=0; i<_checkAdss.length; i++){
+                                let index = adss.findIndex(element=>element._id===_checkAdss[i])
+                                if(index===-1) {
+                                    adss.push(allAdss[allAdss.findIndex(element => element._id === _checkAdss[i])])
+                                }
+                            }
+                            setAdss([...adss])
+                        }}>Подобрать акции</div>
+                        :
+                        null
+                }
                 {
                     element.usedBonus&&element.usedBonus>0?
                         <div className={classes.row}>
                             <div className={classes.nameField}>Использованный бонус:&nbsp;</div>
                             <div className={classes.value}>{element.usedBonus}&nbsp;сом</div>
+                        </div>
+                        :
+                        null
+                }
+                {
+                    element.discount?
+                        <div className={classes.row}>
+                            <div className={classes.nameField}>Скидка:&nbsp;</div>
+                            <div className={classes.value}>{element.discount}%</div>
                         </div>
                         :
                         null
@@ -385,8 +417,9 @@ const Order =  React.memo(
                                                 {
                                                     orders[idx].item.apiece?
                                                         <div className={classes.addPackaging} style={{color: '#ffb300'}} onClick={()=>{
+                                                            let price = orders[idx].allPrice/orders[idx].count
                                                             orders[idx].count = (parseInt(orders[idx].count/order.item.packaging)+1)*order.item.packaging
-                                                            orders[idx].allPrice = orders[idx].count * (!orders[idx].item.stock?orders[idx].item.price:orders[idx].item.stock)
+                                                            orders[idx].allPrice = orders[idx].count * price
                                                             orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
                                                             setOrders([...orders])
                                                             canculateAllPrice()
@@ -435,7 +468,8 @@ const Order =  React.memo(
                                                             }
                                                             else
                                                                 orders[idx].consignment = orders[idx].count
-                                                            orders[idx].consignmentPrice = orders[idx].consignment * (!orders[idx].item.stock?orders[idx].item.price:orders[idx].item.stock)
+                                                            let price = orders[idx].allPrice/orders[idx].count
+                                                            orders[idx].consignmentPrice = orders[idx].consignment * price
                                                             setOrders([...orders])
                                                             canculateAllPrice()
                                                         }}>
@@ -512,7 +546,8 @@ const Order =  React.memo(
                                                                     }
                                                                     else
                                                                         orders[idx].consignment = orders[idx].count
-                                                                    orders[idx].consignmentPrice = orders[idx].consignment * (!orders[idx].item.stock?orders[idx].item.price:orders[idx].item.stock)
+                                                                    let price = orders[idx].allPrice/orders[idx].count
+                                                                    orders[idx].consignmentPrice = orders[idx].consignment * price
                                                                     setOrders([...orders])
                                                                     canculateAllPrice()
                                                                 }}>

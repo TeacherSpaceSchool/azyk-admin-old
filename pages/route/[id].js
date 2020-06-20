@@ -305,6 +305,7 @@ const Route = React.memo((props) => {
                                             onChange={ event => setDateDelivery(event.target.value) }
                                         />
                                         <TextField
+                                            disabled={router.query.id!=='new'}
                                             type={isMobileApp?'number':'text'}
                                             label='Максимально заказов'
                                             value={length}

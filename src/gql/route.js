@@ -76,6 +76,7 @@ export const getRoute = async({_id}, client)=>{
                                     info
                                     address
                                     paymentMethod
+                                    discount
                                     adss
                                         { 
                                             _id
@@ -133,6 +134,7 @@ export const getRoute = async({_id}, client)=>{
                                     info
                                     address
                                     paymentMethod
+                                    discount
                                     adss
                                         { 
                                             _id
@@ -259,6 +261,7 @@ export const buildRoute = async({autoTonnage, orders, provider, length})=>{
                                 info
                                 address
                                 paymentMethod
+                                discount
                                 adss
                                     { 
                                         _id
