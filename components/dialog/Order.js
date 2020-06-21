@@ -63,24 +63,24 @@ const Order =  React.memo(
             setChangeOrders(true)
         }
         let increment = (idx)=>{
-            let price = orders[idx].allPrice/orders[idx].count
+            let price = Math.round(orders[idx].allPrice/orders[idx].count)
             if(orders[idx].item.apiece)
                 orders[idx].count+=1
             else
                 orders[idx].count+=orders[idx].item.packaging
-            orders[idx].allPrice = Math.round(orders[idx].count * price)
+            orders[idx].allPrice = orders[idx].count * price
             orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
             orders[idx].allSize = orders[idx].count * orders[idx].item.size
             setOrders([...orders])
             canculateAllPrice()
         }
         let decrement = (idx)=>{
-            let price = orders[idx].allPrice/orders[idx].count
+            let price = Math.round(orders[idx].allPrice/orders[idx].count)
             if(orders[idx].count>1&&orders[idx].item.apiece) {
                 let takePrice = (orders[idx].allPrice / price)
                 if(!element.organization.minimumOrder||((allPrice-takePrice)>=element.organization.minimumOrder)) {
                     orders[idx].count -= 1
-                    orders[idx].allPrice = Math.round(orders[idx].count * price)
+                    orders[idx].allPrice = orders[idx].count * price
                     orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
                     orders[idx].allSize = orders[idx].count * orders[idx].item.size
                     setOrders([...orders])
@@ -92,7 +92,7 @@ const Order =  React.memo(
                 let takePrice = orders[idx].item.packaging * price
                 if(!element.organization.minimumOrder||((allPrice-takePrice)>=element.organization.minimumOrder)) {
                     orders[idx].count -= orders[idx].item.packaging
-                    orders[idx].allPrice = Math.round(orders[idx].count * price)
+                    orders[idx].allPrice = orders[idx].count * price
                     orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
                     orders[idx].allSize = orders[idx].count * orders[idx].item.size
                     setOrders([...orders])
@@ -102,19 +102,19 @@ const Order =  React.memo(
             }
         }
         let incrementConsignation = (idx)=>{
-            let price = orders[idx].allPrice/orders[idx].count
+            let price = Math.round(orders[idx].allPrice/orders[idx].count)
             if(orders[idx].consignment<orders[idx].count){
                 orders[idx].consignment+=1
-                orders[idx].consignmentPrice = Math.round(orders[idx].consignment*price)
+                orders[idx].consignmentPrice = orders[idx].consignment*price
                 setOrders([...orders])
                 canculateAllPrice()
             }
         }
         let decrementConsignation = (idx)=>{
             if(orders[idx].consignment>0) {
-                let price = orders[idx].allPrice/orders[idx].count
+                let price = Math.round(orders[idx].allPrice/orders[idx].count)
                 orders[idx].consignment -= 1
-                orders[idx].consignmentPrice = Math.round(orders[idx].consignment*price)
+                orders[idx].consignmentPrice = orders[idx].consignment*price
                 setOrders([...orders])
                 canculateAllPrice()
             }

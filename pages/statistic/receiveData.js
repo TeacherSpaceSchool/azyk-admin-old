@@ -22,15 +22,15 @@ const ReceiveData = React.memo((props) => {
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const classes = pageListStyle();
     const { data } = props;
-    const { search } = props.app;
+    const { search, filter } = props.app;
     let [list, setList] = useState(data.receivedDatas);
     useEffect(()=>{
         (async()=>{
-            setList((await getReceivedDatas({search: search})).receivedDatas)
+            setList((await getReceivedDatas({search: search, filter: filter})).receivedDatas)
             setPagination(100)
             forceCheck()
         })()
-    },[search])
+    },[search, filter])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -38,7 +38,7 @@ const ReceiveData = React.memo((props) => {
         }
     }
     return (
-        <App checkPagination={checkPagination} searchShow={true} pageName='Принятая интеграции 1С'>
+        <App checkPagination={checkPagination} filters={data.filterReceivedData} searchShow={true} pageName='Принятая интеграции 1С'>
             <Head>
                 <title>Принятая интеграции 1С</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -85,7 +85,7 @@ ReceiveData.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getReceivedDatas({search: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            ...await getReceivedDatas({search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         },
     };
 };

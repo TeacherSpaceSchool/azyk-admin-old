@@ -47,30 +47,54 @@ const CardReceiveData = React.memo((props) => {
                         {element.name}
                     </div>
                 </div>
-                <div className={classes.row}>
-                    <div className={classes.nameField}>
-                        Адрес:&nbsp;
+                {
+                    element.position?
+                        <div className={classes.row}>
+                            <div className={classes.nameField}>
+                                Должность:&nbsp;
+                            </div>
+                            <div className={classes.value}>
+                                {element.position}
+                            </div>
+                        </div>
+                        :null
+                }
+                {
+                    element.addres?
+                        <div className={classes.row}>
+                            <div className={classes.nameField}>
+                                Адрес:&nbsp;
+                            </div>
+                            <div className={classes.value}>
+                                {element.addres}
+                            </div>
+                        </div>
+                        :null
+                }
+                {
+                    element.agent?
+                        <div className={classes.row}>
+                            <div className={classes.nameField}>
+                                Агент:&nbsp;
+                            </div>
+                            <div className={classes.value}>
+                                {element.agent}
+                            </div>
+                        </div>
+                        :null
+                }
+                {
+                    element.phone?
+                    <div className={classes.row}>
+                        <div className={classes.nameField}>
+                            Телефон:&nbsp;
+                        </div>
+                        <div className={classes.value}>
+                            {element.phone}
+                        </div>
                     </div>
-                    <div className={classes.value}>
-                        {element.addres}
-                    </div>
-                </div>
-                <div className={classes.row}>
-                    <div className={classes.nameField}>
-                        Агент:&nbsp;
-                    </div>
-                    <div className={classes.value}>
-                        {element.agent}
-                    </div>
-                </div>
-                <div className={classes.row}>
-                    <div className={classes.nameField}>
-                        Телефон:&nbsp;
-                    </div>
-                    <div className={classes.value}>
-                        {element.phone}
-                    </div>
-                </div>
+                        :null
+                }
                 <div className={classes.row}>
                     <div className={classes.nameField}>
                         Тип:&nbsp;

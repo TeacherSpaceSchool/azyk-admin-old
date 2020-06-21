@@ -45,6 +45,10 @@ const CardAds = React.memo((props) => {
     let handleTitle =  (event) => {
         setTitle(event.target.value)
     };
+    let [id, setId] = useState(element?element.id:'');
+    let handleId =  (event) => {
+        setId(event.target.value)
+    };
     let [count, setCount] = useState(element?element.count:0);
     let handleCount=  (event) => {
         setCount(checkInt(event.target.value))
@@ -91,17 +95,17 @@ const CardAds = React.memo((props) => {
                                 />
                                 <br/>
                                 <br/>
-                                <TextField
-                                    label='URL'
-                                    value={url}
-                                    className={classes.input}
-                                    onChange={handleUrl}
-                                    inputProps={{
-                                        'aria-label': 'description',
-                                    }}
-                                />
-                                <br/>
-                                <br/>
+                            <TextField
+                                label='URL'
+                                value={url}
+                                className={classes.input}
+                                onChange={handleUrl}
+                                inputProps={{
+                                    'aria-label': 'description',
+                                }}
+                            />
+                            <br/>
+                            <br/>
                                 <Autocomplete
                                     className={classes.input}
                                     options={items}
@@ -165,6 +169,18 @@ const CardAds = React.memo((props) => {
                             <br/>
                             {
                                 targetType==='Цена'?
+                                    <>
+                                    <TextField
+                                        label='ID'
+                                        value={id}
+                                        className={classes.input}
+                                        onChange={handleId}
+                                        inputProps={{
+                                            'aria-label': 'description',
+                                        }}
+                                    />
+                                    <br/>
+                                    <br/>
                                     <TextField
                                         label='Целевая цена'
                                         value={targetPrice}
@@ -174,6 +190,7 @@ const CardAds = React.memo((props) => {
                                             'aria-label': 'description',
                                         }}
                                     />
+                                    </>
                                     :
                                     <>
                                     {targetItems?targetItems.map((element, idx)=>{
@@ -272,6 +289,7 @@ const CardAds = React.memo((props) => {
                                             if(!(targetItems.find(element=>!element._id))) {
                                                 let editElement = {_id: element._id}
                                                 if (title.length > 0 && title !== element.title) editElement.title = title
+                                                if (id.length > 0 && id !== element.id) editElement.id = id
                                                 if (url.length > 0 && url !== element.url) editElement.url = url
                                                 if (count !== element.count) editElement.count = count
                                                 editElement.targetItems = targetItems
@@ -321,10 +339,11 @@ const CardAds = React.memo((props) => {
                                                 setPreview('/static/add.png')
                                                 setTitle('')
                                                 setUrl('')
+                                                setId('')
                                                 setCount(0)
                                                 setItem(undefined)
                                                 const action = async() => {
-                                                    setList((await addAds({count: count, item: item?item._id:undefined, organization: organization, image: image, url: url, title: title, targetItems: targetItems, targetPrice: targetPrice, multiplier: multiplier, targetType: targetType}, organization)).adss)
+                                                    setList((await addAds({id: id, count: count, item: item?item._id:undefined, organization: organization, image: image, url: url, title: title, targetItems: targetItems, targetPrice: targetPrice, multiplier: multiplier, targetType: targetType}, organization)).adss)
                                                 }
                                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                 showMiniDialog(true)

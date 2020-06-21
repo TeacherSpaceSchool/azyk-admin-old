@@ -52,6 +52,7 @@ export const getAds = async()=>{
                     query {
                         ads {
                             _id
+                            id
                             image
                             count
                             item
@@ -92,6 +93,7 @@ export const getAdss = async({search: search, organization: organization}, clien
                             _id
                             image
                             url
+                            id
                             title
                             createdAt
                             count
@@ -130,6 +132,7 @@ export const getAdssTrash = async({search: search, organization: organization}, 
                             _id
                             image
                             url
+                            id
                             title
                             del
                             count
@@ -196,8 +199,8 @@ export const addAds = async(element, organization)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($image: Upload!, $url: String!, $title: String!, $organization: ID!, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
-                        addAds(image: $image, url: $url, title: $title, organization: $organization, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
+                    mutation ($image: Upload!, $url: String!, $id: String, $title: String!, $organization: ID!, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
+                        addAds(image: $image, url: $url, id: $id, title: $title, organization: $organization, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
                              data
                         }
                     }`})
@@ -228,8 +231,8 @@ export const setAds = async(element, organization)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($_id: ID!, $image: Upload, $url: String, $title: String, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
-                        setAds(_id: $_id, image: $image, url: $url, title: $title, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
+                    mutation ($id: String, $_id: ID!, $image: Upload, $url: String, $title: String, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
+                        setAds(id: $id, _id: $_id, image: $image, url: $url, title: $title, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
                              data
                         }
                     }`})

@@ -2,15 +2,15 @@ import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
 import { SingletonStore } from '../singleton/store';
 
-export const getReceivedDatas = async({search}, client)=>{
+export const getReceivedDatas = async({search, filter}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {search: search},
+                variables: {search, filter},
                 query: gql`
-                    query ($search: String!) {
-                        receivedDatas(search: $search) {
+                    query ($search: String!, $filter: String!) {
+                        receivedDatas(search: $search, filter: $filter) {
                             _id
                             createdAt
                             guid
@@ -19,8 +19,13 @@ export const getReceivedDatas = async({search}, client)=>{
                             agent
                             phone
                             type
+                            position
                             status
                             organization {name}
+                        }
+                        filterReceivedData {
+                           name
+                           value
                         }
                     }`,
             })
