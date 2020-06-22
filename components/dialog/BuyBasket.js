@@ -240,6 +240,9 @@ const BuyBasket =  React.memo(
                                 showSnackBar('Сумма заказа должна быть выше минимальной')
                             }
                         }
+                        else {
+                            showSnackBar('Подождите...')
+                        }
                     }} className={classes.button}>
                         Купить
                     </Button>

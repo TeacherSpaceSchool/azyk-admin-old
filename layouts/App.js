@@ -6,8 +6,6 @@ import SnackBar from '../components/app/SnackBar'
 import Drawer from '../components/app/Drawer'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { addFavoriteItem } from '../src/gql/items'
-import { addBasket } from '../src/gql/basket'
 import * as userActions from '../redux/actions/user'
 import * as appActions from '../redux/actions/app'
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -15,9 +13,9 @@ import '../scss/app.scss'
 import Router from 'next/router'
 import { useRouter } from 'next/router';
 import { subscriptionOrder } from '../src/gql/order';
-import { subscriptionReturned } from '../src/gql/returned';
 import { useSubscription } from '@apollo/react-hooks';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
+import * as snackbarActions from '../redux/actions/snackbar'
 
 export const mainWindow = React.createRef();
 export const alert = React.createRef();
@@ -31,6 +29,8 @@ const App = React.memo(props => {
     const router = useRouter();
     const [unread, setUnread] = useState({});
     const [reloadPage, setReloadPage] = useState(false);
+    const [isOffline, setIsOffline] = useState(false);
+    const { showSnackBar } = props.snackbarActions;
     useEffect( ()=>{
         if(authenticated&&!profile.role)
             setProfile()
@@ -43,8 +43,14 @@ const App = React.memo(props => {
         }
     },[mainWindow])
 
-    Router.events.on('routeChangeStart', async (url, err)=>{
+    useEffect( ()=>{
+        if(process.browser) {
+            window.addEventListener('offline', ()=>{setIsOffline(true);showSnackBar('Нет подключения к Интернету')})
+            window.addEventListener('online', ()=>{setIsOffline(false)})
+        }
+    },[process.browser])
 
+    Router.events.on('routeChangeStart', async (url, err)=>{
         if(router.asPath!==url&&(router.asPath.includes('items')||router.asPath.includes('brand'))) {
             if(!sessionStorage.scrollPostionStore)
                 sessionStorage.scrollPostionStore = JSON.stringify({})
@@ -53,8 +59,6 @@ const App = React.memo(props => {
             scrollPostionStore[router.asPath] = appBody.scrollTop
             sessionStorage.scrollPostionStore = JSON.stringify(scrollPostionStore)
         }
-
-
         if (!router.pathname.includes(url)&&!router.asPath.includes(url)&&!reloadPage)
             setReloadPage(true)
         if (err&&err.cancelled&&reloadPage)
@@ -209,7 +213,7 @@ const App = React.memo(props => {
             <FullDialog/>
             <Dialog />
             <SnackBar/>
-            {load||reloadPage?
+            {isOffline||load||reloadPage?
                 <div className='load'>
                     <CircularProgress/>
                 </div>
@@ -231,7 +235,8 @@ function mapStateToProps (state) {
 function mapDispatchToProps(dispatch) {
     return {
         userActions: bindActionCreators(userActions, dispatch),
-        appActions: bindActionCreators(appActions, dispatch)
+        appActions: bindActionCreators(appActions, dispatch),
+        snackbarActions: bindActionCreators(snackbarActions, dispatch),
     }
 }
 
