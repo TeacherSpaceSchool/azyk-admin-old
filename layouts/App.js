@@ -29,7 +29,6 @@ const App = React.memo(props => {
     const router = useRouter();
     const [unread, setUnread] = useState({});
     const [reloadPage, setReloadPage] = useState(false);
-    const [isOffline, setIsOffline] = useState(false);
     const { showSnackBar } = props.snackbarActions;
     useEffect( ()=>{
         if(authenticated&&!profile.role)
@@ -45,8 +44,7 @@ const App = React.memo(props => {
 
     useEffect( ()=>{
         if(process.browser) {
-            window.addEventListener('offline', ()=>{setIsOffline(true);showSnackBar('Нет подключения к Интернету')})
-            window.addEventListener('online', ()=>{setIsOffline(false)})
+            window.addEventListener('offline', ()=>{showSnackBar('Нет подключения к Интернету')})
         }
     },[process.browser])
 
@@ -213,7 +211,7 @@ const App = React.memo(props => {
             <FullDialog/>
             <Dialog />
             <SnackBar/>
-            {isOffline||load||reloadPage?
+            {load||reloadPage?
                 <div className='load'>
                     <CircularProgress/>
                 </div>
