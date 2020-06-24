@@ -33,6 +33,7 @@
     "classnames": "^2.2.6",
     "core-js": "^3.6.4",
     "graphql": "^14.5.8",
+    "idb": "^5.0.4",
     "isomorphic-unfetch": "^3.0.0",
     "js-cookie": "^2.2.1",
     "lozad": "^1.14.0",
