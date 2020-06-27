@@ -13,36 +13,38 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import { bindActionCreators } from 'redux'
 import * as appActions from '../../redux/actions/app'
+import { pdDatePicker } from '../../src/lib'
 
 const OrderGeoStatistic = React.memo((props) => {
 
     const { data } = props;
-    const { isMobileApp, date } = props.app;
+    const { isMobileApp } = props.app;
     const { profile } = props.user;
     const { showLoad } = props.appActions;
     let [load, setLoad] = useState(true);
+    let [dateStart, setDateStart] = useState(pdDatePicker(new Date()));
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
             appBody[0].style.paddingBottom = '0px'
         }
     },[process.browser])
-    let [organization, setOrganization] = useState(null);
+    let [organization, setOrganization] = useState(profile.organization?{_id: profile.organization}:null);
     let [statisticOrderGeo, setStatisticOrderGeo] = useState(undefined);
     useEffect(()=>{
         (async()=>{
-            if(profile.role==='admin'&&organization&&date) {
+            if(organization&&dateStart) {
                 await showLoad(true)
-                setStatisticOrderGeo((await getStatisticGeoOrder({organization: organization._id, dateStart: date})).statisticGeoOrder)
+                setStatisticOrderGeo((await getStatisticGeoOrder({organization: organization._id, dateStart: dateStart})).statisticGeoOrder)
                 await showLoad(false)
             }
         })()
-    },[organization, date])
+    },[organization, dateStart])
 
     return (
         <>
         <YMaps>
-            <App dates={true} pageName='Карта заказов'>
+            <App pageName='Карта заказов'>
                 <Head>
                     <title>Карта заказов</title>
                     <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -82,19 +84,51 @@ const OrderGeoStatistic = React.memo((props) => {
                 }
             </App>
         </YMaps>
-        <Autocomplete
-            style={{width: 150, position: 'fixed', top: 74, right: 10, padding: 10, borderRadius: 5, boxShadow: '0 0 10px rgba(0,0,0,0.5)', background: '#fff'}}
-            options={data.activeOrganization}
-            getOptionLabel={option => option.name}
-            value={organization}
-            onChange={(event, newValue) => {
-                setOrganization(newValue)
-            }}
-            noOptionsText='Ничего не найдено'
-            renderInput={params => (
-                <TextField {...params} label='Организация' fullWidth />
-            )}
-        />
+        {
+            !profile.organization?
+                <>
+                <Autocomplete
+                    style={{width: 150, position: 'fixed', top: 74, right: 10, padding: 10, borderRadius: 5, boxShadow: '0 0 10px rgba(0,0,0,0.5)', background: '#fff'}}
+                    options={data.activeOrganization}
+                    getOptionLabel={option => option.name}
+                    value={organization}
+                    onChange={(event, newValue) => {
+                        setOrganization(newValue)
+                    }}
+                    noOptionsText='Ничего не найдено'
+                    renderInput={params => (
+                        <TextField {...params} label='Организация' fullWidth />
+                    )}
+                />
+                <TextField
+                    style={{width: 150, position: 'fixed', top: 74, right: 180, padding: 10, borderRadius: 5, boxShadow: '0 0 10px rgba(0,0,0,0.5)', background: '#fff'}}
+                    label='Дата доставки'
+                    type='date'
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    value={dateStart}
+                    inputProps={{
+                        'aria-label': 'description',
+                    }}
+                    onChange={ event => setDateStart(event.target.value) }
+                />
+                </>
+                :
+                <TextField
+                    style={{width: 150, position: 'fixed', top: 74, right: 10, padding: 10, borderRadius: 5, boxShadow: '0 0 10px rgba(0,0,0,0.5)', background: '#fff'}}
+                    label='Дата доставки'
+                    type='date'
+                    InputLabelProps={{
+                        shrink: true,
+                    }}
+                    value={dateStart}
+                    inputProps={{
+                        'aria-label': 'description',
+                    }}
+                    onChange={ event => setDateStart(event.target.value) }
+                />
+        }
         {
             statisticOrderGeo?
                 <div className='count'>
@@ -108,7 +142,7 @@ const OrderGeoStatistic = React.memo((props) => {
 
 OrderGeoStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    if(!['admin'].includes(ctx.store.getState().user.profile.role))
+    if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'

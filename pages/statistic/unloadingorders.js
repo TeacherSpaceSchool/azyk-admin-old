@@ -20,8 +20,9 @@ import * as appActions from '../../redux/actions/app'
 const UnloadingOrders = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
+    const { profile } = props.user;
     let [date, setDate] = useState(null);
-    let [organization, setOrganization] = useState({_id: 'all'});
+    let [organization, setOrganization] = useState(profile.organization?{_id: profile.organization}:{_id: 'all'});
     const { isMobileApp } = props.app;
     useEffect(()=>{
         if(process.browser){
@@ -45,19 +46,24 @@ const UnloadingOrders = React.memo((props) => {
             <Card className={classes.page}>
                 <CardContent className={classes.column} style={isMobileApp?{}:{justifyContent: 'start', alignItems: 'flex-start'}}>
                     <div className={classes.row}>
-                        <Autocomplete
-                            className={classes.input}
-                            options={data.activeOrganization}
-                            getOptionLabel={option => option.name}
-                            value={organization}
-                            onChange={(event, newValue) => {
-                                setOrganization(newValue)
-                            }}
-                            noOptionsText='Ничего не найдено'
-                            renderInput={params => (
-                                <TextField {...params} label='Организация' fullWidth />
-                            )}
-                        />
+                        {
+                            !profile.organization ?
+                                <Autocomplete
+                                    className={classes.input}
+                                    options={data.activeOrganization}
+                                    getOptionLabel={option => option.name}
+                                    value={organization}
+                                    onChange={(event, newValue) => {
+                                        setOrganization(newValue)
+                                    }}
+                                    noOptionsText='Ничего не найдено'
+                                    renderInput={params => (
+                                        <TextField {...params} label='Организация' fullWidth/>
+                                    )}
+                                />
+                                :
+                                null
+                        }
                         <TextField
                             className={classes.input}
                             label='Дата доставки'
@@ -93,7 +99,7 @@ const UnloadingOrders = React.memo((props) => {
 
 UnloadingOrders.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    if(!['admin'].includes(ctx.store.getState().user.profile.role))
+    if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'

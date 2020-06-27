@@ -72,7 +72,7 @@ const Route = React.memo((props) => {
             autos = (await getAutos({search: '', sort: 'name', organization: provider._id})).autos
             if(autos)
                 setAutos([...autos])
-            setDistricts((await getDistricts({search: '', sort: 'name', organization: provider._id})).districts)
+            setDistricts([{name: 'Все', _id: 'super', client: [] }, ...(await getDistricts({search: '', sort: 'name', organization: provider._id})).districts])
         }
         else {
             setProdusers([])

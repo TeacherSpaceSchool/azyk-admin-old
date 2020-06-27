@@ -12,7 +12,7 @@ export default async (ctx)=>{
         ctx.store.getState().user.authenticated = checkAuth(ctx.req.headers.cookie)
         if (ctx.store.getState().user.authenticated) {
             ctx.store.getState().user.profile = await getProfile(await getClientGqlSsr(ctx.req))
-            if (ctx.store.getState().user.profile.client) {
+            if (ctx.store.getState().user.profile&&ctx.store.getState().user.profile.client) {
                 let deviceModel
                 if(ua.device.model)
                     deviceModel = ua.device.model

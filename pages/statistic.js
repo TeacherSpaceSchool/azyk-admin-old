@@ -48,7 +48,7 @@ const list = {
         {
             name: 'Карта заказов',
             link: '/statistic/ordergeo',
-            role: ['admin',]
+            role: ['admin', 'суперорганизация']
         },
         {
             name: 'Рабочие часы',
@@ -200,7 +200,7 @@ const list = {
         {
             name: 'Выгрузка заказов',
             link: '/statistic/unloadingorders',
-            role: ['admin']
+            role: ['admin', 'суперорганизация']
         },
         {
             name: 'Выгрузка клиентов',
