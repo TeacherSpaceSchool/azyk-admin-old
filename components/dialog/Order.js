@@ -77,8 +77,7 @@ const Order =  React.memo(
         let decrement = (idx)=>{
             let price = Math.round(orders[idx].allPrice/orders[idx].count)
             if(orders[idx].count>1&&orders[idx].item.apiece) {
-                let takePrice = (orders[idx].allPrice / price)
-                if(!element.organization.minimumOrder||((allPrice-takePrice)>=element.organization.minimumOrder)) {
+                if(!element.organization.minimumOrder||((allPrice-price)>=element.organization.minimumOrder)) {
                     orders[idx].count -= 1
                     orders[idx].allPrice = orders[idx].count * price
                     orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
@@ -89,8 +88,7 @@ const Order =  React.memo(
                     showSnackBar('Сумма не может быть меньше минимальной')
             }
             else if(orders[idx].count>orders[idx].item.packaging&&!orders[idx].item.apiece) {
-                let takePrice = orders[idx].item.packaging * price
-                if(!element.organization.minimumOrder||((allPrice-takePrice)>=element.organization.minimumOrder)) {
+                if(!element.organization.minimumOrder||((allPrice-price*orders[idx].item.packaging)>=element.organization.minimumOrder)) {
                     orders[idx].count -= orders[idx].item.packaging
                     orders[idx].allPrice = orders[idx].count * price
                     orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
