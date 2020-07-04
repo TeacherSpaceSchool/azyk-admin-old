@@ -11,8 +11,7 @@ import initialApp from '../../src/initialApp'
 import Table from '../../components/app/Table'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import { pdDatePicker } from '../../src/lib'
-import { getStatisticAzykStore } from '../../src/gql/statistic'
-import { getDistricts } from '../../src/gql/district'
+import { getStatisticAzykStoreOrder, getSuperagentOrganization } from '../../src/gql/statistic'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -28,21 +27,19 @@ const AzykStoreStatistic = React.memo((props) => {
     let [dateType, setDateType] = useState('day');
     let [statisticOrder, setStatisticOrder] = useState(undefined);
     let [showStat, setShowStat] = useState(false);
-    let [district, setDistrict] = useState(undefined);
+    let [organization, setOrganization] = useState(undefined);
     const { showLoad } = props.appActions;
     useEffect(()=>{
         (async()=>{
-            if(district) {
-                await showLoad(true)
-                setStatisticOrder((await getStatisticAzykStore({
-                    district: district._id,
-                    dateStart: dateStart ? dateStart : null,
-                    dateType: dateType,
-                })).statisticAzykStore)
-                await showLoad(false)
-            }
+            await showLoad(true)
+            setStatisticOrder((await getStatisticAzykStoreOrder({
+                ...organization?{company: organization._id}:{},
+                dateStart: dateStart ? dateStart : null,
+                dateType: dateType,
+            })).statisticAzykStoreOrder)
+            await showLoad(false)
         })()
-    },[district, dateStart, dateType])
+    },[organization, dateStart, dateType])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
@@ -50,16 +47,16 @@ const AzykStoreStatistic = React.memo((props) => {
         }
     },[process.browser])
     return (
-        <App pageName='Статистика AZYK.STORE'>
+        <App pageName='Статистика заказов AZYK.STORE'>
             <Head>
-                <title>Статистика AZYK.STORE</title>
+                <title>Статистика заказов AZYK.STORE</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
-                <meta property='og:title' content='Статистика AZYK.STORE' />
+                <meta property='og:title' content='Статистика заказов AZYK.STORE' />
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
-                <meta property='og:url' content={`${urlMain}/statistic/statisticAzykStore`} />
-                <link rel='canonical' href={`${urlMain}/statistic/statisticAzykStore`}/>
+                <meta property='og:url' content={`${urlMain}/statistic/orderAzykStore`} />
+                <link rel='canonical' href={`${urlMain}/statistic/orderAzykStore`}/>
             </Head>
             <Card className={classes.page}>
                 <CardContent className={classes.column} style={isMobileApp?{}:{justifyContent: 'start', alignItems: 'flex-start'}}>
@@ -80,15 +77,15 @@ const AzykStoreStatistic = React.memo((props) => {
                     <div className={classes.row}>
                         <Autocomplete
                             className={classes.input}
-                            options={data.districts}
+                            options={data.superagentOrganization}
                             getOptionLabel={option => option.name}
-                            value={district}
+                            value={organization}
                             onChange={(event, newValue) => {
-                                setDistrict(newValue)
+                                setOrganization(newValue)
                             }}
                             noOptionsText='Ничего не найдено'
                             renderInput={params => (
-                                <TextField {...params} label='Район' fullWidth/>
+                                <TextField {...params} label='Организация' fullWidth/>
                             )}
                         />
                         <TextField
@@ -157,7 +154,7 @@ AzykStoreStatistic.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getDistricts({search: '', sort: '-name', organization: 'super'}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            ...await getSuperagentOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };
 };

@@ -39,15 +39,36 @@ export const getStatisticOrder = async({company, dateStart, dateType, online}, c
     }
 }
 
-export const getStatisticAzykStore = async({district, dateStart, dateType}, client)=>{
+export const getStatisticAzykStoreOrder = async({company, dateStart, dateType}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {district: district, dateStart: dateStart, dateType: dateType},
+                variables: {company: company, dateStart: dateStart, dateType: dateType},
                 query: gql`
-                    query ($district: ID!, $dateStart: Date, $dateType: String) {
-                        statisticAzykStore(district: $district, dateStart: $dateStart, dateType: $dateType) {
+                    query ($company: ID, $dateStart: Date, $dateType: String) {
+                        statisticAzykStoreOrder(company: $company, dateStart: $dateStart, dateType: $dateType) {
+                            columns
+                            row 
+                                {_id data}
+                        }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
+export const getStatisticAzykStoreAgent = async({company, dateStart, dateType, filter}, client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                variables: {company: company, dateStart: dateStart, dateType: dateType, filter: filter},
+                query: gql`
+                    query ($company: ID, $dateStart: Date, $dateType: String, $filter: String) {
+                        statisticAzykStoreAgent(company: $company, dateStart: $dateStart, dateType: $dateType, filter: $filter) {
                             columns
                             row 
                                 {_id data}
@@ -539,6 +560,25 @@ export const getActiveOrganization = async(client)=>{
                 query: gql`
                     query {
                         activeOrganization {
+                            name
+                            _id
+                        }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
+export const getSuperagentOrganization = async(client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                query: gql`
+                    query {
+                        superagentOrganization {
                             name
                             _id
                         }

@@ -56,8 +56,13 @@ const list = {
             role: ['admin', 'суперорганизация']
         },
         {
-            name: 'Статистика AZYK.STORE',
-            link: '/statistic/statisticAzykStore',
+            name: 'Статистика агентов AZYK.STORE',
+            link: '/statistic/agentAzykStore',
+            role: ['admin']
+        },
+        {
+            name: 'Статистика заказов AZYK.STORE',
+            link: '/statistic/orderAzykStore',
             role: ['admin']
         },
         {

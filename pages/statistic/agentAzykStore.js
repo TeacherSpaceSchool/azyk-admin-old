@@ -11,19 +11,18 @@ import initialApp from '../../src/initialApp'
 import Table from '../../components/app/Table'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import { pdDatePicker } from '../../src/lib'
-import { getStatisticOrder, getActiveOrganization } from '../../src/gql/statistic'
+import { getStatisticAzykStoreAgent, getSuperagentOrganization } from '../../src/gql/statistic'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { bindActionCreators } from 'redux'
 import * as appActions from '../../redux/actions/app'
 
-const OrderStatistic = React.memo((props) => {
+const AzykStoreStatistic = React.memo((props) => {
 
     const classes = pageListStyle();
     const { data } = props;
     const { isMobileApp, filter } = props.app;
-    const { profile } = props.user;
     let [dateStart, setDateStart] = useState(pdDatePicker(new Date()));
     let [dateType, setDateType] = useState('day');
     let [statisticOrder, setStatisticOrder] = useState(undefined);
@@ -32,14 +31,14 @@ const OrderStatistic = React.memo((props) => {
     const { showLoad } = props.appActions;
     useEffect(()=>{
         (async()=>{
-                await showLoad(true)
-                setStatisticOrder((await getStatisticOrder({
-                    company: organization ? organization._id : undefined,
-                    dateStart: dateStart ? dateStart : null,
-                    dateType: dateType,
-                    online: filter
-                })).statisticOrder)
-                await showLoad(false)
+            await showLoad(true)
+            setStatisticOrder((await getStatisticAzykStoreAgent({
+                ...organization?{company: organization._id}:{},
+                dateStart: dateStart ? dateStart : null,
+                dateType: dateType,
+                filter: filter
+            })).statisticAzykStoreAgent)
+            await showLoad(false)
         })()
     },[organization, dateStart, dateType, filter])
     useEffect(()=>{
@@ -48,18 +47,18 @@ const OrderStatistic = React.memo((props) => {
             appBody[0].style.paddingBottom = '0px'
         }
     },[process.browser])
-    const filters = [{name: 'Все', value: false}, {name: organization&&organization._id==='super'? 'Суперагент' : 'Online', value: true}]
+    const filters = [{name: 'Организация', value: 'организация'}, {name: 'Агент', value: 'агент'}]
     return (
-        <App pageName='Статистика заказов' filters={filters}>
+        <App pageName='Статистика заказов AZYK.STORE' filters={filters}>
             <Head>
-                <title>Статистика заказов</title>
+                <title>Статистика заказов AZYK.STORE</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
-                <meta property='og:title' content='Статистика заказов' />
+                <meta property='og:title' content='Статистика заказов AZYK.STORE' />
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
-                <meta property='og:url' content={`${urlMain}/statistic/order`} />
-                <link rel='canonical' href={`${urlMain}/statistic/order`}/>
+                <meta property='og:url' content={`${urlMain}/statistic/orderAzykStore`} />
+                <link rel='canonical' href={`${urlMain}/statistic/orderAzykStore`}/>
             </Head>
             <Card className={classes.page}>
                 <CardContent className={classes.column} style={isMobileApp?{}:{justifyContent: 'start', alignItems: 'flex-start'}}>
@@ -78,24 +77,19 @@ const OrderStatistic = React.memo((props) => {
                         </Button>
                     </div>
                     <div className={classes.row}>
-                        {
-                            profile.role === 'admin' ?
-                                <Autocomplete
-                                    className={classes.input}
-                                    options={data.activeOrganization}
-                                    getOptionLabel={option => option.name}
-                                    value={organization}
-                                    onChange={(event, newValue) => {
-                                        setOrganization(newValue)
-                                    }}
-                                    noOptionsText='Ничего не найдено'
-                                    renderInput={params => (
-                                        <TextField {...params} label='Организация' fullWidth/>
-                                    )}
-                                />
-                                :
-                                null
-                        }
+                        <Autocomplete
+                            className={classes.input}
+                            options={data.superagentOrganization}
+                            getOptionLabel={option => option.name}
+                            value={organization}
+                            onChange={(event, newValue) => {
+                                setOrganization(newValue)
+                            }}
+                            noOptionsText='Ничего не найдено'
+                            renderInput={params => (
+                                <TextField {...params} label='Организация' fullWidth/>
+                            )}
+                        />
                         <TextField
                             className={classes.input}
                             label='Дата начала'
@@ -121,7 +115,7 @@ const OrderStatistic = React.memo((props) => {
                 {
                     statisticOrder?
                         <>
-                        {`${organization?'Районов':'Компаний'}: ${statisticOrder.row[0].data[0]}`}
+                        {`Компаний: ${statisticOrder.row[0].data[0]}`}
                         {
                             showStat?
                                 <>
@@ -149,10 +143,10 @@ const OrderStatistic = React.memo((props) => {
     )
 })
 
-OrderStatistic.getInitialProps = async function(ctx) {
+AzykStoreStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    ctx.store.getState().app.filter = false
-    if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
+    ctx.store.getState().app.filter = 'организация'
+    if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'
@@ -162,7 +156,7 @@ OrderStatistic.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            ...await getSuperagentOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };
 };
@@ -182,4 +176,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(OrderStatistic);
+export default connect(mapStateToProps, mapDispatchToProps)(AzykStoreStatistic);
