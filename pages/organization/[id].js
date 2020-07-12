@@ -40,8 +40,10 @@ const Organization = React.memo((props) => {
     let [accessToClient, setAccessToClient] = useState(data.organization&&data.organization.accessToClient!==null?data.organization.accessToClient:false);
     let [onlyDistrict, setOnlyDistrict] = useState(data.organization&&data.organization.onlyDistrict!==null?data.organization.onlyDistrict:false);
     let [unite, setUnite] = useState(data.organization&&data.organization.unite!=null?data.organization.unite:true);
+    let [pass, setPass] = useState(data.organization&&data.organization.pass?data.organization.pass:'');
     let [superagent, setSuperagent] = useState(data.organization&&data.organization.superagent!=null?data.organization.superagent:true);
     let [onlyIntegrate, setOnlyIntegrate] = useState(data.organization&&data.organization.onlyIntegrate!==null?data.organization.onlyIntegrate:false);
+    let [autoAccept, setAutoAccept] = useState(data.organization&&data.organization.autoAccept!==null?data.organization.autoAccept:false);
     let [warehouse, setWarehouse] = useState(data.organization&&data.organization.warehouse!==null?data.organization.warehouse:'');
     let [consignation, setConsignation] = useState(data.organization&&data.organization.consignation!==null?data.organization.consignation:false);
     let [minimumOrder, setMinimumOrder] = useState(data.organization!==null?data.organization.minimumOrder:0);
@@ -200,6 +202,17 @@ const Organization = React.memo((props) => {
                                                 }
                                                 label='Только по интеграции'
                                             />
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={autoAccept}
+                                                        onChange={()=>{setAutoAccept(!autoAccept)}}
+                                                        color="primary"
+                                                        inputProps={{ 'aria-label': 'primary checkbox' }}
+                                                    />
+                                                }
+                                                label='Автоприем заказов'
+                                            />
                                             <br/>
                                             <div className={classes.geo} style={{color: warehouse&&warehouse.length>0?'#ffb300':'red'}} onClick={()=>{
                                                 setFullDialog('Геолокация', <Geo change={true} geo={warehouse} setAddressGeo={setWarehouse}/>)
@@ -253,6 +266,15 @@ const Organization = React.memo((props) => {
                                             }}
                                         />
                                     </FormControl>
+                                    <TextField
+                                        label='Интеграция'
+                                        value={pass}
+                                        className={isMobileApp?classes.inputM:classes.inputD}
+                                        onChange={(event)=>{setPass(event.target.value)}}
+                                        inputProps={{
+                                            'aria-label': 'description',
+                                        }}
+                                    />
                                     {address.map((element, idx)=>
                                         <FormControl  key={idx} className={isMobileApp?classes.inputM:classes.inputD}>
                                             <InputLabel>Адрес{idx+1}</InputLabel>
@@ -363,7 +385,7 @@ const Organization = React.memo((props) => {
                                                 <Button onClick={async()=>{
                                                     if (image!==undefined&&name.length>0&&email.length>0&&address.length>0&&phone.length>0&&info.length>0) {
                                                         const action = async() => {
-                                                            await addOrganization({miniInfo: miniInfo, priotiry: checkInt(priotiry),consignation: consignation, onlyDistrict: onlyDistrict, unite: unite, superagent: superagent, onlyIntegrate: onlyIntegrate, warehouse: warehouse, accessToClient: accessToClient, image: image, name: name, address: address, email: email, phone: phone, info: info, minimumOrder: checkInt(minimumOrder)})
+                                                            await addOrganization({pass: pass, miniInfo: miniInfo, priotiry: checkInt(priotiry),consignation: consignation, onlyDistrict: onlyDistrict, unite: unite, superagent: superagent, onlyIntegrate: onlyIntegrate, autoAccept: autoAccept, warehouse: warehouse, accessToClient: accessToClient, image: image, name: name, address: address, email: email, phone: phone, info: info, minimumOrder: checkInt(minimumOrder)})
                                                             Router.push('/organizations')
                                                         }
                                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
@@ -379,6 +401,7 @@ const Organization = React.memo((props) => {
                                                 <Button onClick={async()=>{
                                                     let editElement = {_id: data.organization._id}
                                                     if(image!==undefined)editElement.image = image
+                                                    if(pass!==data.organization.pass)editElement.pass = pass
                                                     if(name.length>0&&name!==data.organization.name)editElement.name = name
                                                     if(address.length>0&&address!==data.organization.address)editElement.address = address
                                                     if(email.length>0&&email!==data.organization.email)editElement.email = email
@@ -390,6 +413,7 @@ const Organization = React.memo((props) => {
                                                     if(unite!==data.organization.unite)editElement.unite = unite
                                                     if(superagent!==data.organization.superagent)editElement.superagent = superagent
                                                     if(onlyIntegrate!==data.organization.onlyIntegrate)editElement.onlyIntegrate = onlyIntegrate
+                                                    if(autoAccept!==data.organization.autoAccept)editElement.autoAccept = autoAccept
                                                     if(warehouse!==data.organization.warehouse)editElement.warehouse = warehouse
                                                     if(consignation!==data.organization.consignation)editElement.consignation = consignation
                                                     if(minimumOrder!==data.organization.minimumOrder)editElement.minimumOrder = checkInt(minimumOrder)
@@ -531,7 +555,7 @@ Organization.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...ctx.query.id!=='new'?await getOrganization({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{organization:{name: '',image: '/static/add.png',address: [],email: [],phone: [],info: '',miniInfo: '',priotiry: 0,minimumOrder: 0,consignation: false,accessToClient: false, onlyDistrict: false, onlyIntegrate: false, warehouse: ''}}
+            ...ctx.query.id!=='new'?await getOrganization({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{organization:{name: '',image: '/static/add.png',address: [],email: [],phone: [],info: '',miniInfo: '',priotiry: 0,minimumOrder: 0,consignation: false,accessToClient: false, onlyDistrict: false, onlyIntegrate: false, autoAccept: false, warehouse: ''}}
         }
 
     };

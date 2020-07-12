@@ -4,9 +4,9 @@ import App from '../layouts/App';
 import { connect } from 'react-redux'
 import { getOrganizations } from '../src/gql/organization'
 import pageListStyle from '../src/styleMUI/organization/orgaizationsList'
-import Link from 'next/link';
 import { urlMain } from '../redux/constants/other'
 import LazyLoad from 'react-lazyload';
+import Link from 'next/link';
 import CardOrganization from '../components/organization/CardOrganization'
 import CardOrganizationPlaceholder from '../components/organization/CardOrganizationPlaceholder'
 import { getClientGqlSsr } from '../src/getClientGQL'

@@ -1,24 +1,40 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
-import App from '../../layouts/App';
-import pageListStyle from '../../src/styleMUI/blog/blogList'
-import {getOrganizations} from '../../src/gql/organization'
+import React, { useState, useEffect } from 'react';
+import App from '../../../layouts/App';
+import pageListStyle from '../../../src/styleMUI/blog/blogList'
+import {outXMLAdsShoros, districtsOutXMLAdsShoros} from '../../../src/gql/outxmladsazyk'
+import CardOutXMLAds from '../../../components/outXmlAds/CardOutXMLAds'
 import { connect } from 'react-redux'
-import { urlMain } from '../../redux/constants/other'
+import { urlMain } from '../../../redux/constants/other'
 import LazyLoad from 'react-lazyload';
-import Link from 'next/link';
-import CardOrganization from '../../components/organization/CardOrganization'
-import CardOrganizationPlaceholder from '../../components/organization/CardOrganizationPlaceholder'
-import { getClientGqlSsr } from '../../src/getClientGQL'
-import initialApp from '../../src/initialApp'
+import { forceCheck } from 'react-lazyload';
+import CardOutXMLAdsPlaceholder from '../../../components/outXmlAds/CardOutXMLAdsPlaceholder'
+import { getClientGqlSsr } from '../../../src/getClientGQL'
+import initialApp from '../../../src/initialApp'
 import Router from 'next/router'
+import { useRouter } from 'next/router'
+const height = 189
 
 const OutXMLAds = React.memo((props) => {
+    const router = useRouter()
     const classes = pageListStyle();
     const { data } = props;
-    let [list, setList] = useState(data.organizations);
+    let [list, setList] = useState(data.outXMLAdsShoros);
+    let [districts, setDistricts] = useState(data.districts);
+    const { search, sort } = props.app;
     const { profile } = props.user;
-    let height = 80
+    useEffect(()=>{
+        (async()=>{
+            setList(await outXMLAdsShoros({organization: router.query.id, search: search}))
+        })()
+    },[sort, search])
+    useEffect(()=>{
+        (async()=>{
+            setDistricts(await districtsOutXMLAdsShoros({organization: router.query.id}))
+            setPagination(100)
+            forceCheck()
+        })()
+    },[list])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -38,20 +54,17 @@ const OutXMLAds = React.memo((props) => {
                 <link rel='canonical' href={`${urlMain}/outxmlads`}/>
             </Head>
             <div className='count'>
-                {`Всего организаций: ${list.length}`}
+                {`Всего интеграции: ${list.length}`}
             </div>
             <div className={classes.page}>
+                {districts.length>0?<CardOutXMLAds organization={router.query.id} districts={districts} list={list} setList={setList}/>:null}
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
-                        return(
-                            <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOrganizationPlaceholder height={height}/>}>
-                                <Link href='/statistic/outxmlads/[id]' as={`/statistic/outxmlads/${element._id}`}>
-                                    <a>
-                                        <CardOrganization key={element._id} setList={setList} element={element}/>
-                                    </a>
-                                </Link>
-                            </LazyLoad>
-                        )}
+                        if(idx<=pagination)
+                            return(
+                                <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOutXMLAdsPlaceholder height={height}/>}>
+                                    <CardOutXMLAds key={element._id} list={list} setList={setList}  districts={districts} idx={idx} element={element}/>
+                                </LazyLoad>
+                            )}
                 ):null}
             </div>
         </App>
@@ -70,8 +83,8 @@ OutXMLAds.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            organizations:
-            (await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
+            outXMLAdsShoros: await outXMLAdsShoros({search: '', organization: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            districts: await districtsOutXMLAdsShoros({organization: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };
 };

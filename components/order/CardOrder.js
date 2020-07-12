@@ -122,13 +122,13 @@ const CardOrder = React.memo((props) => {
                             null*/
                     }
                     {
-                        /*['агент', 'организация', 'менеджер', 'admin'].includes(profile.role)&&element.district?
+                        ['агент', 'организация', 'менеджер', 'admin'].includes(profile.role)&&element.district?
                             <div className={classes.row}>
                                 <div className={classes.nameField}>Район: &nbsp;</div>
                                 <div className={classes.value}>{element.district}</div>
                             </div>
                             :
-                            null*/
+                            null
                     }
                     {
                         element.agent&&element.agent.name?
@@ -140,13 +140,13 @@ const CardOrder = React.memo((props) => {
                             null
                     }
                     {
-                        /*element.forwarder&&element.forwarder.name?
+                        element.forwarder&&element.forwarder.name?
                             <div className={classes.row}>
                                 <div className={classes.nameField}>Экспедитор:&nbsp;</div>
                                 <div className={classes.value}>{`${element.forwarder.name}, р${element.track}`}</div>
                             </div>
                             :
-                            null*/
+                            null
                     }
                     {
                         element.adss&&element.adss.length>0?

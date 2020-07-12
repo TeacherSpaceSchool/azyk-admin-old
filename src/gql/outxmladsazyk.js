@@ -2,14 +2,15 @@ import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
 import { SingletonStore } from '../singleton/store';
 
-export const districtsOutXMLAdsShoros = async(client)=>{
+export const districtsOutXMLAdsShoros = async({organization}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
+                variables: {organization: organization},
                 query: gql`
-                    query {
-                        districtsOutXMLAdsShoros{
+                    query($organization: ID!) {
+                        districtsOutXMLAdsShoros(organization: $organization){
                             _id
                             name
                           }
@@ -21,18 +22,20 @@ export const districtsOutXMLAdsShoros = async(client)=>{
     }
 }
 
-export const outXMLAdsShoros = async({search: search, sort: sort}, client)=>{
+export const outXMLAdsShoros = async({search, sort, organization}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {search: search, sort: sort},
+                variables: {search: search, sort: sort, organization: organization},
                 query: gql`
-                    query ($search: String!) {
-                        outXMLAdsShoros(search: $search) {
+                    query ($organization: ID!, $search: String!) {
+                        outXMLAdsShoros(organization: $organization, search: $search) {
                             _id
                             guid
                             district
+                                {_id name}
+                            organization
                                 {_id name}
                             createdAt
                           }
@@ -66,8 +69,8 @@ export const addOutXMLAdsShoro = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($district: ID!, $guid: String!) {
-                        addOutXMLAdsShoro(district: $district, guid: $guid) {
+                    mutation ($organization: ID!, $district: ID!, $guid: String!) {
+                        addOutXMLAdsShoro(organization: $organization, district: $district, guid: $guid) {
                              data
                         }
                     }`})

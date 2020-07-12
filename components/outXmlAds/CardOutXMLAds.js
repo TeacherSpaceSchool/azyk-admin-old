@@ -17,7 +17,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const CardOutXMLAds = React.memo((props) => {
     const classes = cardPageListStyle();
-    const { element, setList, districts, idx, list } = props;
+    const { element, setList, districts, idx, list, organization } = props;
     const { profile } = props.user;
     const { isMobileApp } = props.app;
     //addCard
@@ -97,7 +97,7 @@ const CardOutXMLAds = React.memo((props) => {
                                 <Button onClick={async()=> {
                                     if (district !== undefined && district._id && guid.length > 0) {
                                         const action = async() => {
-                                            setList(await addOutXMLAdsShoro({guid: guid, district: district._id}))
+                                            setList(await addOutXMLAdsShoro({organization: organization, guid: guid, district: district._id}))
                                             setDistrict({})
                                             setGuid('')
                                         }

@@ -99,7 +99,7 @@ const MyDrawer = React.memo((props) => {
                         <Divider/>
                         </>
                         :
-                        [/*'client', */'admin'].includes(profile.role)?
+                        ['client', 'admin'].includes(profile.role)?
                             <>
                             <Link href='/category'>
                                     <ListItem style={{background: (router.pathname===('/category')
@@ -130,7 +130,7 @@ const MyDrawer = React.memo((props) => {
                         :null
                 }
                 {
-                    ['admin', 'client', 'суперорганизация', 'организация', 'менеджер', 'агент', 'суперагент'].includes(profile.role)?
+                    ['admin'].includes(profile.role)?
                         <>
                         <ListItem style={{background: router.pathname.includes('bonus')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncoverBonus(!uncoverBonus)}}>
                             <ListItemIcon><MoneyIcon color='inherit'/></ListItemIcon>
