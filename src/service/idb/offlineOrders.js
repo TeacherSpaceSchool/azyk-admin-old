@@ -26,7 +26,6 @@ export let deleteOfflineOrderByKey = async(key) => {
 }
 
 export let getAllOfflineOrders = async() => {
-    console.log(db)
     if(db!==undefined){
         let res = await db.getAll('offlineOrders')
         return res.map(res=>{return {...res.data, key: res.id}})

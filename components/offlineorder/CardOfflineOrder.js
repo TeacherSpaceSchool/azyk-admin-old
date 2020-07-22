@@ -16,7 +16,6 @@ const CardOfflineOrder = React.memo((props) => {
     const classes = cardErrorStyle();
     const { element, geo, list, setList, idx } = props;
     const { isMobileApp } = props.app;
-    console.log(element)
     return (
         <Card className={isMobileApp?classes.cardM:classes.cardD}>
             <CardContent>
