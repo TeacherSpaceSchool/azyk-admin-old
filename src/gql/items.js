@@ -1,6 +1,7 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
 import { SingletonStore } from '../singleton/store';
+import { getReceiveDataByIndex, putReceiveDataByIndex } from '../service/idb/receiveData';
 
 export const getBrandOrganizations = async({search: search, sort: sort, filter: filter}, client)=>{
     try{
@@ -37,9 +38,13 @@ export const getBrandOrganizations = async({search: search, sort: sort, filter: 
                           }
                     }`,
             })
+        if(new SingletonStore().getStore()&&new SingletonStore().getStore().getState().user.profile.role.includes('агент'))
+            await putReceiveDataByIndex(`brandOrganizations(search: ${search}, sort: ${sort}, filter: ${filter})`, res.data)
         return res.data
     } catch(err){
         console.error(err)
+        if(new SingletonStore().getStore()&&new SingletonStore().getStore().getState().user.profile.role.includes('агент'))
+            return await getReceiveDataByIndex(`brandOrganizations(search: ${search}, sort: ${sort}, filter: ${filter})`)
     }
 }
 
@@ -197,9 +202,13 @@ export const getBrands = async({organization,  search,  sort}, client)=>{
                         }
                     }`,
             })
+        if(new SingletonStore().getStore()&&new SingletonStore().getStore().getState().user.profile.role.includes('агент'))
+            await putReceiveDataByIndex(`brands(organization: ${organization}, search: ${search}, sort: ${sort})`, res.data)
         return res.data
     } catch(err){
         console.error(err)
+        if(new SingletonStore().getStore()&&new SingletonStore().getStore().getState().user.profile.role.includes('агент'))
+            return await getReceiveDataByIndex(`brands(organization: ${organization}, search: ${search}, sort: ${sort})`)
     }
 }
 
@@ -377,7 +386,7 @@ export const addItem = async(element, subCategory)=>{
         await client.mutate({
             variables: {...element, subCategory: subCategory},
             mutation : gql`
-                    mutation ($categorys: [String]!, $priotiry: Int, $unit: String, $apiece: Boolean, $weight: Float!, $size: Float!, $packaging: Int!, $stock: Int!, $deliveryDays: [String], $name: String!, $image: Upload, $info: String!, $price: Float!, $subCategory: ID!, $organization: ID!, $hit: Boolean!, $latest: Boolean!) {
+                    mutation ($categorys: [String]!, $priotiry: Int, $unit: String, $apiece: Boolean, $weight: Float!, $size: Float!, $packaging: Int!, $stock: Float!, $deliveryDays: [String], $name: String!, $image: Upload, $info: String!, $price: Float!, $subCategory: ID!, $organization: ID!, $hit: Boolean!, $latest: Boolean!) {
                         addItem(categorys: $categorys, priotiry: $priotiry, unit: $unit, apiece: $apiece, weight: $weight, size: $size, packaging: $packaging, stock: $stock, deliveryDays: $deliveryDays, name: $name, image: $image, info: $info, price: $price, subCategory: $subCategory, organization: $organization, hit: $hit, latest: $latest) {
                              data
                         }
@@ -393,7 +402,7 @@ export const setItem = async(element)=>{
         await client.mutate({
             variables: {...element},
             mutation : gql`
-                    mutation ($categorys: [String], $_id: ID!, $priotiry: Int, $unit: String, $apiece: Boolean, $weight: Float, $size: Float, $packaging: Int, $stock: Int, $deliveryDays: [String], $name: String, $image: Upload, $info: String, $price: Float, $subCategory: ID, $organization: ID, $hit: Boolean, $latest: Boolean) {
+                    mutation ($categorys: [String], $_id: ID!, $priotiry: Int, $unit: String, $apiece: Boolean, $weight: Float, $size: Float, $packaging: Int, $stock: Float, $deliveryDays: [String], $name: String, $image: Upload, $info: String, $price: Float, $subCategory: ID, $organization: ID, $hit: Boolean, $latest: Boolean) {
                         setItem(categorys: $categorys, _id: $_id, priotiry: $priotiry, unit: $unit, apiece: $apiece, weight: $weight, size: $size, packaging: $packaging, stock: $stock, deliveryDays: $deliveryDays, name: $name, image: $image, info: $info, price: $price, subCategory: $subCategory, organization: $organization, hit: $hit, latest: $latest) {
                              data
                         }

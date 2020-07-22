@@ -57,7 +57,9 @@ const Organization = React.memo((props) => {
     });
     useEffect(()=>{
         (async()=>{
-            setList((await getBrandOrganizations({search: search, sort: sort, filter: filter})).brandOrganizations)
+            list = (await getBrandOrganizations({search: search, sort: sort, filter: filter})).brandOrganizations
+            console.log(list)
+            setList(list)
         })()
     },[filter, sort, search])
     useEffect(()=>{

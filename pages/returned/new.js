@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/catalog/catalog'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import {checkInt} from '../../src/lib';
+import {checkInt, checkFloat} from '../../src/lib';
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
@@ -109,9 +109,9 @@ const Catalog = React.memo((props) => {
         if(!items[id])
             items[id] = {_id: id, item: list[idx].name, count: 0, allPrice: 0, allTonnage: 0, allSize: 0, weight: checkInt(list[idx].weight), price: list[idx].price, size: checkInt(list[idx].size)}
         items[id].count+=1
-        items[id].allPrice = Math.round(items[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
-        items[id].allTonnage = Math.round(items[id].count*items[id].weight)
-        items[id].allSize = Math.round(items[id].count*items[id].size)
+        items[id].allPrice = checkFloat(items[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        items[id].allTonnage = checkFloat(items[id].count*items[id].weight)
+        items[id].allSize = checkFloat(items[id].count*items[id].size)
         setItems({...items})
     }
     let decrement = (idx)=>{
@@ -120,9 +120,9 @@ const Catalog = React.memo((props) => {
             items[id] = {_id: id, item: list[idx].name, count: 0, allPrice: 0, allTonnage: 0, allSize: 0, weight: checkInt(list[idx].weight), price: list[idx].price, size: checkInt(list[idx].size)}
         if(items[id].count>0) {
             items[id].count -= 1
-            items[id].allPrice = Math.round(items[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
-            items[id].allTonnage = Math.round(items[id].count*items[id].weight)
-            items[id].allSize = Math.round(items[id].count*items[id].size)
+            items[id].allPrice = checkFloat(items[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+            items[id].allTonnage = checkFloat(items[id].count*items[id].weight)
+            items[id].allSize = checkFloat(items[id].count*items[id].size)
             setItems({...items})
         }
     }
@@ -131,9 +131,9 @@ const Catalog = React.memo((props) => {
         if(!items[id])
             items[id] = {_id: id, item: list[idx].name, count: 0, allPrice: 0, allTonnage: 0, allSize: 0, weight: checkInt(list[idx].weight), price: list[idx].price, size: checkInt(list[idx].size)}
         items[id].count = checkInt(count)
-        items[id].allPrice = Math.round(items[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
-        items[id].allTonnage = Math.round(items[id].count*items[id].weight)
-        items[id].allSize = Math.round(items[id].count*items[id].size)
+        items[id].allPrice = checkFloat(items[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        items[id].allTonnage = checkFloat(items[id].count*items[id].weight)
+        items[id].allSize = checkFloat(items[id].count*items[id].size)
         setItems({...items})
     }
     useEffect(()=>{
@@ -142,7 +142,7 @@ const Catalog = React.memo((props) => {
         for(let i=0; i<keys.length; i++){
             allPrice += items[keys[i]].allPrice
         }
-        setAllPrice(Math.round(allPrice))
+        setAllPrice(checkFloat(allPrice))
     },[items])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{

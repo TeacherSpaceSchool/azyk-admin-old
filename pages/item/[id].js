@@ -419,7 +419,7 @@ const Item = React.memo((props) => {
                                                                     packaging: checkInt(packaging)>0?checkInt(packaging):1,
                                                                     name: name,
                                                                     categorys: categorys,
-                                                                    stock: checkInt(stock),
+                                                                    stock: checkFloat(stock),
                                                                     image: image,
                                                                     info: info,
                                                                     price: checkFloat(price),
@@ -449,7 +449,7 @@ const Item = React.memo((props) => {
                                                     <Button onClick={async()=>{
                                                         if (categorys.length>0){
                                                             let editElement = {_id: data.item._id, categorys: categorys}
-                                                            if(stock!==data.item.stock)editElement.stock = checkInt(stock)
+                                                            if(stock!==data.item.stock)editElement.stock = checkFloat(stock)
                                                             if(name.length>0&&name!==data.item.name)editElement.name = name
                                                             if(packaging!==data.item.packaging&&checkInt(packaging)>0)editElement.packaging = checkInt(packaging)
                                                             if(image!==undefined)editElement.image = image
@@ -522,47 +522,6 @@ const Item = React.memo((props) => {
                                             src={data.item.image}
                                             alt={data.item.info}
                                         />
-                                        {
-                                            profile.role==='client'?
-                                                <>
-                                                <Star className={classes.buttonToggle} onClick={async ()=>{
-                                                    let index
-                                                        await favoriteItem([data.item._id])
-                                                        index = favorite.indexOf(profile._id)
-                                                        if (index === -1) {
-                                                            favorite.push(profile._id)
-                                                            setFavorite([...favorite])
-                                                        }
-
-                                                    if (index !== -1) {
-                                                        const action = async() => {
-                                                                favorite.splice(index, 1)
-                                                                setFavorite([...favorite])
-                                                        }
-                                                        setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                                        showMiniDialog(true)
-                                                    }
-                                                }} style={{color: (profile.role=='client'&&favorite.includes(profile._id))?'#ffb300':'#e1e1e1'}}  />
-                                                <div className={classes.chipList}>
-                                                    {
-                                                        data.item.latest?
-                                                            <div className={classes.chip} style={{color: 'white',background: 'green'}}>
-                                                                Новинка
-                                                            </div>
-                                                            :null
-                                                    }
-                                                    {
-                                                        data.item.hit?
-                                                            <div className={classes.chip} style={{color: 'black',background: 'yellow'}}>
-                                                                Хит
-                                                            </div>
-                                                            :null
-                                                    }
-                                                </div>
-                                                </>
-                                                :
-                                                null
-                                        }
                                     </div>
                                     <div>
                                         {
@@ -590,162 +549,23 @@ const Item = React.memo((props) => {
                                             {
                                                 data.item.stock===0||data.item.stock===undefined?
                                                     <div className={classes.price}>
-                                                        {Math.round(count*data.item.price)}&nbsp;сом
+                                                        {data.item.price}&nbsp;сом
                                                     </div>
                                                     :
                                                     <>
                                                     <div className={classes.stockPrice}>
-                                                        {Math.round(count*data.item.stock)}&nbsp;сом
+                                                        {data.item.stock}&nbsp;сом
                                                     </div>
                                                     <div className={classes.crossedPrice}>
-                                                        {Math.round(count*data.item.price)}&nbsp;сом
+                                                        {data.item.price}&nbsp;сом
                                                     </div>
                                                     </>
                                             }
                                         </div>
                                         <br/>
-                                        {
-                                            ['client'].includes(profile.role)?
-                                                <>
-                                                {
-                                                    isMobileApp?
-                                                        <>
-                                                        <div className={isMobileApp?classes.column:classes.rowCenter}>
-                                                            <div className={classes.counter} style={isMobileApp?{}:{marginRight: 20}}>
-                                                                <div className={classes.counterbtn} onClick={decrement}>–</div>
-                                                                <input type='number' readOnly={!data.item.apiece} className={classes.counternmbr} value={count} onChange={(event)=>{
-                                                                    setCount(event.target.value)
-                                                                }}/>
-                                                                <div className={classes.counterbtn} onClick={increment}>+</div>
-                                                            </div>
-                                                            {
-                                                                data.item.apiece?
-                                                                    <div className={classes.addPackaging} style={{color: '#ffb300'}} onClick={()=>{
-                                                                        count = (parseInt(count/packaging)+1)*packaging
-                                                                        setCount(count)
-                                                                    }}>
-                                                                        Добавить упаковку
-                                                                    </div>
-                                                                    :
-                                                                    <div className={classes.addPackaging} style={{color: '#ffb300'}}>
-                                                                       Упаковок: {(count/packaging)}
-                                                                    </div>
-                                                            }
-                                                            <Button
-                                                                variant='contained'
-                                                                color='primary'
-                                                                className={classes.button}
-                                                                onClick={()=>{
-                                                                    if(count>0) {
-                                                                        addBasket({
-                                                                                item: data.item._id,
-                                                                                count: count > 0 ? checkInt(count) : 1
-                                                                            })
-                                                                        showSnackBar('Товар добавлен в корзину')
-                                                                        getCountBasket()
-                                                                    }
-                                                                }}
-                                                            >
-                                                                В КОРЗИНУ
-                                                            </Button>
-                                                        </div>
-                                                        <br/>
-                                                        </>
-                                                        :
-                                                        <>
-                                                        <div className={isMobileApp?classes.column:classes.rowCenter}>
-                                                            <div className={classes.counter} style={isMobileApp?{marginBottom: 20}:{marginRight: 20}}>
-                                                                <div className={classes.counterbtn} onClick={decrement}>–</div>
-                                                                <input type='text' readOnly={!data.item.apiece} className={classes.counternmbr} value={count} onChange={(event)=>{
-                                                                    setCount(event.target.value)
-                                                                }}/>
-                                                                <div className={classes.counterbtn} onClick={increment}>+</div>
-                                                            </div>
-                                                            <Button
-                                                                variant='contained'
-                                                                color='primary'
-                                                                className={classes.button}
-                                                                onClick={()=>{
-                                                                    if(count>0) {
-                                                                            addBasket({
-                                                                                item: data.item._id,
-                                                                                count: count > 0 ? checkInt(count) : 1
-                                                                            })
-                                                                        showSnackBar('Товар добавлен в корзину')
-                                                                        getCountBasket()
-                                                                    }
-                                                                }}
-                                                            >
-                                                                В КОРЗИНУ
-                                                            </Button>
-                                                        </div>
-                                                        {
-                                                            data.item.apiece?
-                                                                <div className={classes.addPackaging} style={{color: '#ffb300'}} onClick={()=>{
-                                                                    count = (parseInt(count/packaging)+1)*packaging
-                                                                    setCount(count)
-                                                                }}>
-                                                                    Добавить упаковку
-                                                                </div>
-                                                                :
-                                                                <div className={classes.addPackaging} style={{color: '#ffb300'}}>
-                                                                   Упаковок: {(count/packaging)}
-                                                                </div>
-                                                        }
-                                                        </>
-                                                }
-                                                <div className={classes.share}>
-                                                    Поделиться:
-                                                </div>
-                                                <div className={classes.rowCenter}>
-                                                    <FacebookShareButton
-                                                        url={process.browser?window.location.href.toString():''}
-                                                    >
-                                                        <FacebookIcon
-                                                            size={32}
-                                                            round />
-                                                    </FacebookShareButton>
-                                                    &nbsp;
-                                                    &nbsp;
-                                                    <VKShareButton url={process.browser?window.location.href:''}>
-                                                        <VKIcon
-                                                            size={32}
-                                                            round />
-                                                    </VKShareButton>
-                                                    &nbsp;
-                                                    &nbsp;
-                                                    <OKShareButton url={process.browser?window.location.href:''}>
-                                                        <OKIcon
-                                                            size={32}
-                                                            round />
-                                                    </OKShareButton>
-                                                    &nbsp;
-                                                    &nbsp;
-                                                    <WhatsappShareButton url={process.browser?window.location.href:''}>
-                                                        <WhatsappIcon
-                                                            size={32}
-                                                            round />
-                                                    </WhatsappShareButton>
-                                                    &nbsp;
-                                                    &nbsp;
-                                                    <TelegramShareButton url={process.browser?window.location.href:''}>
-                                                        <TelegramIcon
-                                                            size={32}
-                                                            round />
-                                                    </TelegramShareButton>
-                                                </div>
-                                                </>
-                                                :
-                                                null
-
-                                        }
                                     </div>
                                     </>
                         }
-
-
-
-
                     </CardContent>
             </Card>
             <input

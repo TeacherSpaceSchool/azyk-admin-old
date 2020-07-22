@@ -8,7 +8,7 @@ import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
 import Button from '@material-ui/core/Button';
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
-import { pdDDMMYYHHMM, pdDDMMYYHHMMCancel } from '../../src/lib'
+import { pdDDMMYYHHMM, checkFloat } from '../../src/lib'
 import Confirmation from './Confirmation'
 import Geo from '../../components/dialog/Geo'
 import HistoryReturned from '../../components/dialog/HistoryReturned'
@@ -41,23 +41,23 @@ const Returned =  React.memo(
                 allTonnage+=items[i].allTonnage
                 allSize+=items[i].allSize
             }
-            setAllPrice(Math.round(allPrice))
-            setAllTonnage(Math.round(allTonnage))
-            setAllSize(Math.round(allSize))
+            setAllPrice(checkFloat(allPrice))
+            setAllTonnage(checkFloat(allTonnage))
+            setAllSize(checkFloat(allSize))
         }
         let increment = (idx)=>{
             items[idx].count+=1
-            items[idx].allPrice = Math.round(items[idx].price * items[idx].count)
-            items[idx].allTonnage = Math.round(items[idx].count * items[idx].weight)
-            items[idx].allSize = Math.round(items[idx].count * items[idx].size)
+            items[idx].allPrice = checkFloat(items[idx].price * items[idx].count)
+            items[idx].allTonnage = checkFloat(items[idx].count * items[idx].weight)
+            items[idx].allSize = checkFloat(items[idx].count * items[idx].size)
             canculateAllPrice()
         }
         let decrement = (idx)=>{
             if(items[idx].count>1) {
                 items[idx].count -= 1
-                items[idx].allPrice = Math.round(items[idx].price * items[idx].count)
-                items[idx].allTonnage = Math.round(items[idx].count * items[idx].weight)
-                items[idx].allSize = Math.round(items[idx].count * items[idx].size)
+                items[idx].allPrice = checkFloat(items[idx].price * items[idx].count)
+                items[idx].allTonnage = checkFloat(items[idx].count * items[idx].weight)
+                items[idx].allSize = checkFloat(items[idx].count * items[idx].size)
                 canculateAllPrice()
             }
         }

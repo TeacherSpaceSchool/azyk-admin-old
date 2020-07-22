@@ -122,19 +122,14 @@ const AdssStatistic = React.memo((props) => {
                 {
                     statisticAdss?
                         <>
-                        {`Акций: ${statisticAdss.row[0].data[0]}`}
+                        <div className={classes.rowStatic}>{`Акций: ${statisticAdss.row[0].data[0]}`}</div>
                         {
                             showStat?
                                 <>
-                                <br/>
-                                <br/>
-                                {`Выручка: ${statisticAdss.row[0].data[1]} сом`}
-                                <br/>
-                                <br/>
-                                {`Выполнено: ${statisticAdss.row[0].data[2]} шт`}
-                                <br/>
-                                <br/>
-                                {`Отказов: ${statisticAdss.row[0].data[3]} сом`}
+                                <div className={classes.rowStatic}> {`Выручка: ${statisticAdss.row[0].data[1]} сом`}</div>
+                                <div className={classes.rowStatic}>{`Выполнено: ${statisticAdss.row[0].data[2]} шт`}</div>
+                                <div className={classes.rowStatic}>{`Отказов: ${statisticAdss.row[0].data[3]} сом`}</div>
+                                <div className={classes.rowStatic}> {`Конс: ${statisticAdss.row[0].data[4]} сом`}</div>
                                 </>
                                 :
                                 null

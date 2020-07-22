@@ -95,13 +95,18 @@ const list = {
             link: '/statistic/client',
             role: ['admin', 'суперорганизация']
         },
-        /*{
+        {
             name: 'Статистика товаров',
             link: '/statistic/item',
             role: ['admin']
-        }*/
+        }
     ],
     tools: [
+        {
+            name: 'Дни поставки',
+            link: '/statistic/deliverydate',
+            role: ['admin', 'суперорганизация', 'организация', 'менеджер', 'агент']
+        },
         {
             name: 'Корзина',
             link: '/statistic/trash',
@@ -113,9 +118,9 @@ const list = {
             role: ['admin', 'суперорганизация', 'организация', 'менеджер', 'агент']
         },
         {
-            name: 'Дни поставки',
-            link: '/statistic/deliverydate',
-            role: ['admin', 'суперорганизация', 'организация', 'менеджер', 'агент']
+            name: 'Оффлайн заказы',
+            link: '/statistic/offlineorder',
+            role: ['агент', 'суперагент']
         },
         {
             name: 'Подписчики',
@@ -151,6 +156,11 @@ const list = {
             name: 'Скидки клиентов',
             link: '/statistic/discountclient',
             role: ['admin', 'суперорганизация', 'организация', 'менеджер', 'агент']
+        },
+        {
+            name: 'Файловое хранилище',
+            link: '/statistic/files',
+            role: ['admin']
         },
     ],
     integrate: [

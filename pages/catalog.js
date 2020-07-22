@@ -5,19 +5,17 @@ import { connect } from 'react-redux'
 import pageListStyle from '../src/styleMUI/catalog/catalog'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import {checkInt} from '../src/lib';
+import {checkInt, checkFloat} from '../src/lib';
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../redux/actions/mini_dialog'
 import * as snackbarActions from '../redux/actions/snackbar'
-import {getBrands} from '../src/gql/items';
 import Router from 'next/router'
 import BuyBasket from '../components/dialog/BuyBasket'
 import SetPackage from '../components/dialog/SetPackage'
 import { urlMain } from '../redux/constants/other'
 import { getBonusesClient } from '../src/gql/bonusclient'
-import { getClient } from '../src/gql/client'
+import { getClient, getClients } from '../src/gql/client'
 import TextField from '@material-ui/core/TextField';
-import {getClients} from '../src/gql/client'
 import { getClientGqlSsr } from '../src/getClientGQL'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { forceCheck } from 'react-lazyload';
@@ -26,7 +24,7 @@ import Divider from '@material-ui/core/Divider';
 import LazyLoad from 'react-lazyload';
 import CardCatalogPlaceholder from '../components/catalog/CardCatalogPlaceholder'
 import initialApp from '../src/initialApp'
-import { getBrandOrganizations } from '../src/gql/items'
+import { getBrandOrganizations, getBrands } from '../src/gql/items'
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const Catalog = React.memo((props) => {
@@ -87,7 +85,6 @@ const Catalog = React.memo((props) => {
                     setGeo(position)
                 })
 
-            //await deleteBasketAll()
             if(profile.organization){
                 //setBonusesClient((await getBonusesClient({search: '', sort: '-createdAt'})).bonusesClient)
                 organization = data.brandOrganizations.filter(elem=>elem._id===profile.organization)[0]
@@ -101,10 +98,10 @@ const Catalog = React.memo((props) => {
     useEffect(()=>{
         (async()=>{
             if(organization._id){
-                setList((await getBrands({organization: organization._id, search: search, sort: sort})).brands)
+                setList((await getBrands({organization: organization._id, search: search, sort: '-name'})).brands)
             }
         })()
-    },[filter, sort, search, organization])
+    },[filter, search, organization])
     useEffect(()=>{
         setPagination(100)
         forceCheck()
@@ -124,7 +121,7 @@ const Catalog = React.memo((props) => {
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(basket[id].count)
         basket[id].count+=list[idx].apiece?1:(list[idx].packaging?list[idx].packaging:1)
-        basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
         setBasket({...basket})
     }
     let decrement = async (idx)=>{
@@ -133,7 +130,7 @@ const Catalog = React.memo((props) => {
             if(basket[id].count>0) {
                 basket[id].count = checkInt(basket[id].count)
                 basket[id].count -= list[idx].apiece?1:(list[idx].packaging?list[idx].packaging:1)
-                basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+                basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
                 setBasket({...basket})
             }
         }
@@ -165,7 +162,7 @@ const Catalog = React.memo((props) => {
         if(!basket[id])
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(count)
-        basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
         setBasket({...basket})
     }
     let setPackage= async(idx, count)=>{
@@ -174,7 +171,7 @@ const Catalog = React.memo((props) => {
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(basket[id].count)
         basket[id].count = count*(list[idx].packaging?list[idx].packaging:1)
-        basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
         setBasket({...basket})
     }
     let setPackageConsignment = async(idx, count)=>{
@@ -194,7 +191,7 @@ const Catalog = React.memo((props) => {
         for(let i=0; i<keys.length; i++){
             allPrice += basket[keys[i]].allPrice
         }
-        setAllPrice(Math.round(allPrice))
+        setAllPrice(checkFloat(allPrice))
     },[basket])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
@@ -412,7 +409,7 @@ Catalog.getInitialProps = async function(ctx) {
     await deleteBasketAll(ctx.req?await getClientGqlSsr(ctx.req):undefined)
     return {
         data: {
-            brands: [],
+            brands: ctx.store.getState().user.profile.organization?(await getBrands({organization: ctx.store.getState().user.profile.organization, search: '', sort: '-name'}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).brands:[],
             organization: {},
             bonusesClient: [],
             client: ctx.query.client?(await getClient({_id: ctx.query.client}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).client:undefined,

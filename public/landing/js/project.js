@@ -689,7 +689,7 @@ function t228_setWidth(recid){
             var right_w=el.find('.t228__rightcontainer').outerWidth(true);
             var items_align=el.attr('data-menu-items-align');
             if(left_w<right_w)max_w=right_w;
-            max_w=Math.ceil(max_w);
+            max_w=Math.round(max_w);
             var center_w=0;
             el.find('.t228__centercontainer').find('li').each(function() {
                 center_w+=$(this).outerWidth(true);
@@ -8950,7 +8950,7 @@ function t481_setWidth(recid){
             var right_w=el.find('.t481__rightcontainer').outerWidth(true);
             var items_align=el.attr('data-menu-items-align');
             if(left_w<right_w)max_w=right_w;
-            max_w=Math.ceil(max_w);
+            max_w=Math.round(max_w);
             var center_w=0;
             el.find('.t481__centercontainer').find('li').each(function() {
                 center_w+=$(this).outerWidth(true);
@@ -18759,7 +18759,7 @@ function t862_setProgress(rec, index) {
     var questionArr = t862_createQuestionArr(rec);
     var progressWidth = progress.width();
     var progressStep = progressbarWidth / (questionArr.length);
-    var percentProgressWidth = Math.ceil((progressWidth + index * progressStep) / progressbarWidth * 100) + '%';
+    var percentProgressWidth = Math.round((progressWidth + index * progressStep) / progressbarWidth * 100) + '%';
 
     progress.css('width', percentProgressWidth);
 }

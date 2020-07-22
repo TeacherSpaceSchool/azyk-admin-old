@@ -129,22 +129,14 @@ const DistributerStatistic = React.memo((props) => {
                 {
                     statistic?
                         <>
-                        {`${'Агентов'}: ${statistic.row[0].data[0]}`}
+                        <div className={classes.rowStatic}>{`${'Агентов'}: ${statistic.row[0].data[0]}`}</div>
                         {
                             showStat?
                                 <>
-                                <br/>
-                                <br/>
-                                {`Всего выручка: ${statistic.row[0].data[1]} сом`}
-                                <br/>
-                                <br/>
-                                {`Выполнено: ${statistic.row[0].data[2]} шт`}
-                                <br/>
-                                <br/>
-                                {`Отказов: ${statistic.row[0].data[3]} сом`}
-                                <br/>
-                                <br/>
-                                {`Конс: ${statistic.row[0].data[4]} сом`}
+                                <div className={classes.rowStatic}>{`Всего выручка: ${statistic.row[0].data[1]} сом`}</div>
+                                <div className={classes.rowStatic}>{`Выполнено: ${statistic.row[0].data[2]} шт`}</div>
+                                <div className={classes.rowStatic}>{`Отказов: ${statistic.row[0].data[3]} сом`}</div>
+                                <div className={classes.rowStatic}>{`Конс: ${statistic.row[0].data[4]} сом`}</div>
                                 </>
                                 :
                                 null

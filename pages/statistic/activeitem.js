@@ -81,9 +81,9 @@ const ItemStatisticActive = React.memo((props) => {
                                 {
                                     showStat?
                                         <>
-                                        <div className={classes.rowStatic}>{`Выполнено: ${statisticActive.row[0].data[1]}`}</div>
-                                        <div className={classes.rowStatic}>{`Выручка: ${statisticActive.row[0].data[2]}`}</div>
-                                        <div className={classes.rowStatic}>{`Возвратов: ${statisticActive.row[0].data[3]}`}</div>
+                                        <div className={classes.rowStatic}>{`Выполнено: ${statisticActive.row[0].data[1]} шт`}</div>
+                                        <div className={classes.rowStatic}>{`Выручка: ${statisticActive.row[0].data[2]} сом`}</div>
+                                        <div className={classes.rowStatic}>{`Возвратов: ${statisticActive.row[0].data[3]} сом`}</div>
                                         </>
                                         :
                                         null

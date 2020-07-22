@@ -1,6 +1,7 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
 import { SingletonStore } from '../singleton/store';
+import { getReceiveDataByIndex, putReceiveDataByIndex } from '../service/idb/receiveData';
 
 export const getClients = async(arg, client)=>{
     try{
@@ -41,9 +42,13 @@ export const getClients = async(arg, client)=>{
                           }
                     }`,
             })
+        if(new SingletonStore().getStore()&&new SingletonStore().getStore().getState().user.profile.role.includes('агент'))
+            await putReceiveDataByIndex(`clients(search: ${arg.search}, sort: ${arg.sort}, filter: ${arg.filter}, date: ${arg.date}, skip: ${arg.skip})`, res.data)
         return res.data
     } catch(err){
         console.error(err)
+        if(new SingletonStore().getStore()&&new SingletonStore().getStore().getState().user.profile.role.includes('агент'))
+            return await getReceiveDataByIndex(`clients(search: ${arg.search}, sort: ${arg.sort}, filter: ${arg.filter}, date: ${arg.date}, skip: ${arg.skip})`)
     }
 }
 
@@ -183,9 +188,13 @@ export const getClient = async({_id: _id}, client)=>{
                         }
                     }`,
             })
+        if(new SingletonStore().getStore()&&new SingletonStore().getStore().getState().user.profile.role.includes('агент'))
+            await putReceiveDataByIndex(`client(_id: ${_id})`, res.data)
         return res.data
     } catch(err){
         console.error(err)
+        if(new SingletonStore().getStore()&&new SingletonStore().getStore().getState().user.profile.role.includes('агент'))
+            return await getReceiveDataByIndex(`client(_id: ${_id})`)
     }
 }
 

@@ -81,7 +81,7 @@ const AgentsStatistic = React.memo((props) => {
                             profile.role==='admin'?
                                 <Autocomplete
                                     className={classes.input}
-                                    options={[{name: 'AZYK.STORE', _id: 'super'}, ...data.activeOrganization]}
+                                    options={data.activeOrganization}
                                     getOptionLabel={option => option.name}
                                     value={organization}
                                     onChange={(event, newValue) => {
@@ -120,22 +120,14 @@ const AgentsStatistic = React.memo((props) => {
                 {
                     statistic?
                         <>
-                        {`${'Агентов'}: ${statistic.row[0].data[0]}`}
+                        <div className={classes.rowStatic}> {`${'Агентов'}: ${statistic.row[0].data[0]}`}</div>
                         {
                             showStat?
                                 <>
-                                <br/>
-                                <br/>
-                                {`Выручка: ${statistic.row[0].data[1]} сом`}
-                                <br/>
-                                <br/>
-                                {`Выполнено: ${statistic.row[0].data[2]} шт`}
-                                <br/>
-                                <br/>
-                                {`Отказов: ${statistic.row[0].data[3]} сом`}
-                                <br/>
-                                <br/>
-                                {`Конс: ${statistic.row[0].data[4]} сом`}
+                                <div className={classes.rowStatic}>{`Выручка: ${statistic.row[0].data[1]} сом`}</div>
+                                <div className={classes.rowStatic}>{`Выполнено: ${statistic.row[0].data[2]} шт`}</div>
+                                <div className={classes.rowStatic}>{`Отказов: ${statistic.row[0].data[3]} сом`}</div>
+                                <div className={classes.rowStatic}>{`Конс: ${statistic.row[0].data[4]} сом`}</div>
                                 </>
                                 :
                                 null

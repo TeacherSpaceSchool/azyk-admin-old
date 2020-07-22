@@ -1,8 +1,8 @@
 import { getProfile } from '../redux/actions/user'
-import { setClient } from '../src/gql/client'
-import { checkAuth, checkMobile } from '../src/lib'
+import { setClient } from './gql/client'
+import { checkAuth, checkMobile } from './lib'
 import uaParserJs from 'ua-parser-js';
-import { getClientGqlSsr } from '../src/getClientGQL'
+import { getClientGqlSsr } from './getClientGQL'
 
 export default async (ctx)=>{
     if (ctx.req) {

@@ -16,6 +16,7 @@ import { subscriptionOrder } from '../src/gql/order';
 import { useSubscription } from '@apollo/react-hooks';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import * as snackbarActions from '../redux/actions/snackbar'
+import { start } from '../src/service/idb'
 
 export const mainWindow = React.createRef();
 export const alert = React.createRef();
@@ -44,6 +45,7 @@ const App = React.memo(props => {
 
     useEffect( ()=>{
         if(process.browser) {
+            start()
             window.addEventListener('offline', ()=>{showSnackBar('Нет подключения к Интернету')})
         }
     },[process.browser])

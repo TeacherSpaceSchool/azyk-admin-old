@@ -8,7 +8,7 @@ import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
 import Button from '@material-ui/core/Button';
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
-import { pdDDMMYYHHMM, pdDDMMYYHHMMCancel, pdDDMMYYYYWW } from '../../src/lib'
+import { pdDDMMYYHHMM, pdDDMMYYHHMMCancel, pdDDMMYYYYWW, checkFloat } from '../../src/lib'
 import Confirmation from './Confirmation'
 import Geo from '../../components/dialog/Geo'
 import OrderAdss from '../../components/dialog/OrderAdss'
@@ -56,30 +56,30 @@ const Order =  React.memo(
             }
             if(element.usedBonus&&element.usedBonus>0)
                 allPrice -= element.usedBonus
-            setAllPrice(Math.round(allPrice))
-            setAllTonnage(Math.round(allTonnage))
-            setAllSize(Math.round(allSize))
+            setAllPrice(checkFloat(allPrice))
+            setAllTonnage(checkFloat(allTonnage))
+            setAllSize(checkFloat(allSize))
             setConsignmentPrice(consignmentPrice)
             setChangeOrders(true)
         }
         let increment = (idx)=>{
-            let price = Math.round(orders[idx].allPrice/orders[idx].count)
+            let price = orders[idx].allPrice/orders[idx].count
             if(orders[idx].item.apiece)
                 orders[idx].count+=1
             else
                 orders[idx].count+=orders[idx].item.packaging
-            orders[idx].allPrice = orders[idx].count * price
+            orders[idx].allPrice = checkFloat(orders[idx].count * price)
             orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
             orders[idx].allSize = orders[idx].count * orders[idx].item.size
             setOrders([...orders])
             canculateAllPrice()
         }
         let decrement = (idx)=>{
-            let price = Math.round(orders[idx].allPrice/orders[idx].count)
+            let price = orders[idx].allPrice/orders[idx].count
             if(orders[idx].count>1&&orders[idx].item.apiece) {
                 if(!element.organization.minimumOrder||((allPrice-price)>=element.organization.minimumOrder)) {
                     orders[idx].count -= 1
-                    orders[idx].allPrice = orders[idx].count * price
+                    orders[idx].allPrice = checkFloat(orders[idx].count * price)
                     orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
                     orders[idx].allSize = orders[idx].count * orders[idx].item.size
                     setOrders([...orders])
@@ -90,7 +90,7 @@ const Order =  React.memo(
             else if(orders[idx].count>orders[idx].item.packaging&&!orders[idx].item.apiece) {
                 if(!element.organization.minimumOrder||((allPrice-price*orders[idx].item.packaging)>=element.organization.minimumOrder)) {
                     orders[idx].count -= orders[idx].item.packaging
-                    orders[idx].allPrice = orders[idx].count * price
+                    orders[idx].allPrice = checkFloat(orders[idx].count * price)
                     orders[idx].allTonnage = orders[idx].count * orders[idx].item.weight
                     orders[idx].allSize = orders[idx].count * orders[idx].item.size
                     setOrders([...orders])
@@ -100,19 +100,19 @@ const Order =  React.memo(
             }
         }
         let incrementConsignation = (idx)=>{
-            let price = Math.round(orders[idx].allPrice/orders[idx].count)
+            let price = orders[idx].allPrice/orders[idx].count
             if(orders[idx].consignment<orders[idx].count){
                 orders[idx].consignment+=1
-                orders[idx].consignmentPrice = orders[idx].consignment*price
+                orders[idx].consignmentPrice = checkFloat(orders[idx].consignment*price)
                 setOrders([...orders])
                 canculateAllPrice()
             }
         }
         let decrementConsignation = (idx)=>{
             if(orders[idx].consignment>0) {
-                let price = Math.round(orders[idx].allPrice/orders[idx].count)
+                let price = orders[idx].allPrice/orders[idx].count
                 orders[idx].consignment -= 1
-                orders[idx].consignmentPrice = orders[idx].consignment*price
+                orders[idx].consignmentPrice = checkFloat(orders[idx].consignment*price)
                 setOrders([...orders])
                 canculateAllPrice()
             }
@@ -145,7 +145,7 @@ const Order =  React.memo(
             for(let i=0; i<orders.length; i++){
                 priceAfterReturn += (orders[i].allPrice-orders[i].returned*(orders[i].allPrice / orders[i].count))
             }
-            setPriceAfterReturn(Math.round(priceAfterReturn))
+            setPriceAfterReturn(checkFloat(priceAfterReturn))
         },[orders,])
         return (
             <div className={classes.column} style={{width: width}}>
@@ -507,7 +507,7 @@ const Order =  React.memo(
                                             <div className={classes.value}>
                                                 {
                                                     order.returned?
-                                                        `${order.allPrice/order.count*(order.count-order.returned)} сом/${order.allPrice} сом`
+                                                        `${checkFloat(order.allPrice/order.count*(order.count-order.returned))} сом/${order.allPrice} сом`
                                                         :
                                                         `${order.allPrice} сом`
                                                 }
@@ -617,7 +617,7 @@ const Order =  React.memo(
                                             <div className={classes.value}>
                                                 {
                                                     order.returned?
-                                                        `${order.allPrice/order.count*(order.count-order.returned)} ${order.item.unit&&order.item.unit.length>0?order.item.unit:'шт'}/${order.allPrice} сом`
+                                                        `${checkFloat(order.allPrice/order.count*(order.count-order.returned))}/${order.allPrice} сом`
                                                         :
                                                         `${order.allPrice} сом`
                                                 }

@@ -459,8 +459,8 @@ export const addOrders = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($dateDelivery: Date!, $info: String, $inv: Boolean, $unite: Boolean, $usedBonus: Boolean, $paymentMethod: String, $address: [[String]], $organization: ID!, $client: ID!) {
-                        addOrders(dateDelivery: $dateDelivery, usedBonus: $usedBonus, inv: $inv, unite: $unite, info: $info, paymentMethod: $paymentMethod, address: $address, organization: $organization, client: $client) {
+                    mutation ($dateDelivery: Date!, $info: String, $inv: Boolean, $unite: Boolean, $usedBonus: Boolean, $paymentMethod: String, $organization: ID!, $client: ID!) {
+                        addOrders(dateDelivery: $dateDelivery, usedBonus: $usedBonus, inv: $inv, unite: $unite, info: $info, paymentMethod: $paymentMethod, organization: $organization, client: $client) {
                              data
                         }
                     }`})

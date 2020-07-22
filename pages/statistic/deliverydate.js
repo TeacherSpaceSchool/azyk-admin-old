@@ -220,34 +220,32 @@ const LogistiOorder = React.memo((props) => {
                     if (idx <= pagination) {
                         let deliveryDate = deliveryDates[element._id] ? deliveryDates[element._id].days : [true, true, true, true, true, true, false];
                         return (
-                            <div key={idx} style={{alignItems: 'baseline'}} className={classes.column1}>
-                                <div className={classes.row1}>
-                                    <div style={{alignItems: 'center'}} className={classes.column1}>
-                                        <Checkbox checked={selectedClients.includes(element._id)}
-                                                  onChange={() => {
-                                                      if (!selectedClients.includes(element._id)) {
-                                                          selectedClients.push(element._id)
-                                                      } else {
-                                                          selectedClients.splice(selectedClients.indexOf(element._id), 1)
-                                                      }
-                                                      setSelectedClients([...selectedClients])
-                                                  }}
-                                        />
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[0]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[1]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[2]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[3]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[4]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[5]?'#ffb300':'white'}}/>
-                                        <div className={classes.dateStatistic} style={{background: deliveryDate[6]?'#ffb300':'white'}}/>
-                                    </div>
-                                    <LazyLoad scrollContainer={'.App-body'} key={element._id}
-                                              height={height} offset={[height, 0]} debounce={0}
-                                              once={true}
-                                              placeholder={<CardClientPlaceholder/>}>
-                                        <CardClient idx={idx} key={element._id} element={element}/>
-                                    </LazyLoad>
+                            <div key={idx} className={classes.row1} style={{justifyContent: 'center'}}>
+                                <div style={{alignItems: 'center'}} className={isMobileApp?classes.row1:classes.column}>
+                                    <Checkbox checked={selectedClients.includes(element._id)}
+                                        onChange={() => {
+                                            if (!selectedClients.includes(element._id)) {
+                                                selectedClients.push(element._id)
+                                            } else {
+                                                selectedClients.splice(selectedClients.indexOf(element._id), 1)
+                                            }
+                                            setSelectedClients([...selectedClients])
+                                        }}
+                                    />
+                                    <div className={classes.dateStatistic} style={{background: deliveryDate[0]?'#ffb300':'white'}}/>
+                                    <div className={classes.dateStatistic} style={{background: deliveryDate[1]?'#ffb300':'white'}}/>
+                                    <div className={classes.dateStatistic} style={{background: deliveryDate[2]?'#ffb300':'white'}}/>
+                                    <div className={classes.dateStatistic} style={{background: deliveryDate[3]?'#ffb300':'white'}}/>
+                                    <div className={classes.dateStatistic} style={{background: deliveryDate[4]?'#ffb300':'white'}}/>
+                                    <div className={classes.dateStatistic} style={{background: deliveryDate[5]?'#ffb300':'white'}}/>
+                                    <div className={classes.dateStatistic} style={{background: deliveryDate[6]?'#ffb300':'white'}}/>
                                 </div>
+                                <LazyLoad scrollContainer={'.App-body'} key={element._id}
+                                    height={height} offset={[height, 0]} debounce={0}
+                                    once={true}
+                                    placeholder={<CardClientPlaceholder/>}>
+                                    <CardClient idx={idx} key={element._id} element={element}/>
+                                </LazyLoad>
                             </div>
                         )
                     }

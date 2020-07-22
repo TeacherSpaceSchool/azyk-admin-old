@@ -24,19 +24,20 @@ import Link from 'next/link';
 import WhatshotIcon from '@material-ui/icons/Whatshot';
 import { addBasket } from '../../src/gql/basket';
 import { addAgentHistoryGeo } from '../../src/gql/agentHistoryGeo'
-import {getGeoDistance} from '../../src/lib'
+import { getGeoDistance } from '../../src/lib'
 import { getDeliveryDate } from '../../src/gql/deliveryDate';
 import { getDiscountClient } from '../../src/gql/discountClient';
 import { pdDDMMYYYYWW } from '../../src/lib';
+import { putOfflineOrders } from '../../src/service/idb/offlineOrders';
 
 const BuyBasket =  React.memo(
     (props) =>{
         const { isMobileApp } = props.app;
+        const { profile } = props.user;
         const { client, allPrice, organization, bonus, adss, agent, basket, geo, classes } = props;
         const { showMiniDialog, setMiniDialog } = props.mini_dialogActions;
         const { showSnackBar } = props.snackbarActions;
         const width = isMobileApp? (window.innerWidth-112) : 500
-        const address = [client.address[0]];
         let [coment, setComent] = useState('');
         let [inv, setInv] = useState(false);
         let handleComent =  (event) => {
@@ -45,11 +46,11 @@ const BuyBasket =  React.memo(
         let [paymentMethod, setPaymentMethod] = useState('Наличные');
         let [useBonus, setUseBonus] = useState(false);
         let [discount, setDiscount] = useState(undefined);
-        let [deliveryDate, setDeliveryDate] = useState(undefined);
-        let handleDeliveryDate =  (event) => {
-            setDeliveryDate(event.target.value)
+        let [dateDelivery, setDateDelivery] = useState(undefined);
+        let handleDateDelivery =  (event) => {
+            setDateDelivery(event.target.value)
         };
-        let [deliveryDates, setDeliveryDates] = useState([true, true, true, true, true, true, false]);
+        let [dateDeliverys, setDateDeliverys] = useState([true, true, true, true, true, true, false]);
         let [week, setWeek] = useState([]);
         let [unlock, setUnlock] = useState(false);
         let paymentMethods = ['Наличные', 'Перечисление', 'Консигнация']
@@ -64,18 +65,18 @@ const BuyBasket =  React.memo(
                         organization: organization._id
                     })).discountClient
                     setDiscount(discount?discount.discount:0)
-                    deliveryDates = (await getDeliveryDate({
+                    dateDeliverys = (await getDeliveryDate({
                         client: client._id,
                         organization: organization._id
                     })).deliveryDate
-                    if (deliveryDates) {
-                        deliveryDates = deliveryDates.days
+                    if (dateDeliverys) {
+                        dateDeliverys = dateDeliverys.days
                         if (!agent)
-                            deliveryDates[6] = false
-                        setDeliveryDates([...deliveryDates])
+                            dateDeliverys[6] = false
+                        setDateDeliverys([...dateDeliverys])
                     }
                     else
-                        deliveryDates = [true, true, true, true, true, true, false]
+                        dateDeliverys = [true, true, true, true, true, true, false]
                     for (let i = 0; i < 7; i++) {
                         let day = new Date()
                         if(day.getHours()>3)
@@ -84,9 +85,9 @@ const BuyBasket =  React.memo(
                         day.setHours(3, 0, 0, 0)
                         let dayWeek = day.getDay() === 0 ? 6 : (day.getDay() - 1)
                         week[dayWeek] = day
-                        if(!deliveryDate&&deliveryDates[dayWeek]){
-                            deliveryDate = day
-                            setDeliveryDate(deliveryDate)
+                        if(!dateDelivery&&dateDeliverys[dayWeek]){
+                            dateDelivery = day
+                            setDateDelivery(dateDelivery)
                         }
                     }
                     setWeek([...week])
@@ -138,9 +139,9 @@ const BuyBasket =  React.memo(
                         <>
                         <FormControl style={{width: width}} className={isMobileApp?classes.inputM:classes.inputD}>
                             <InputLabel>День доставки</InputLabel>
-                            <Select value={deliveryDate} onChange={handleDeliveryDate}>
+                            <Select value={dateDelivery} onChange={handleDateDelivery}>
                                 {week.map((element, idx)=>{
-                                    if(deliveryDates[idx])
+                                    if(dateDeliverys[idx])
                                         return <MenuItem value={element}>{pdDDMMYYYYWW(element)}</MenuItem>
                                 }
                                 )}
@@ -209,26 +210,43 @@ const BuyBasket =  React.memo(
                             if (agent || !organization.minimumOrder === 0 || organization.minimumOrder <= allPrice) {
                                if (paymentMethod.length > 0) {
                                    const action = async () => {
-                                       if (agent&&geo&&client.address[0][1].includes(', ')) {
-                                           let distance = getGeoDistance(geo.coords.latitude, geo.coords.longitude, ...(client.address[0][1].split(', ')))
-                                           if(distance<1000){
-                                               await addAgentHistoryGeo({client: client._id, geo: `${geo.coords.latitude}, ${geo.coords.longitude}`})
-                                           }
-                                       }
-
                                        sessionStorage.catalog = '{}'
-                                       await addOrders({
-                                           inv: inv,
-                                           unite: organization.unite,
-                                           info: coment,
-                                           usedBonus: useBonus,
-                                           paymentMethod: paymentMethod,
-                                           address: address,
-                                           organization: organization._id,
-                                           client: client._id,
-                                           dateDelivery: deliveryDate
-                                       })
-                                       Router.push('/orders')
+                                       if(navigator.onLine){
+                                           if (agent&&geo&&client.address[0][1].includes(', ')) {
+                                               let distance = getGeoDistance(geo.coords.latitude, geo.coords.longitude, ...(client.address[0][1].split(', ')))
+                                               if(distance<1000){
+                                                   await addAgentHistoryGeo({client: client._id, geo: `${geo.coords.latitude}, ${geo.coords.longitude}`})
+                                               }
+                                           }
+                                           await addOrders({
+                                               inv: inv,
+                                               unite: organization.unite,
+                                               info: coment,
+                                               usedBonus: useBonus,
+                                               paymentMethod: paymentMethod,
+                                               organization: organization._id,
+                                               client: client._id,
+                                               dateDelivery: dateDelivery
+                                           })
+                                           Router.push('/orders')
+                                       }
+                                       else if(profile.role.includes('агент')) {
+                                           await putOfflineOrders({
+                                               inv: inv,
+                                               unite: organization.unite,
+                                               info: coment,
+                                               usedBonus: useBonus,
+                                               paymentMethod: paymentMethod,
+                                               organization: organization._id,
+                                               client: client._id,
+                                               dateDelivery: dateDelivery,
+                                               basket: basket,
+                                               address: client.address[0],
+                                               name: client.name,
+                                               allPrice: `${allPrice-allPrice/100*discount} сом`
+                                           })
+                                           Router.push('/statistic/offlineorder')
+                                       }
                                        showMiniDialog(false);
                                    }
                                    setMiniDialog('Вы уверены?', <Confirmation action={action}/>)

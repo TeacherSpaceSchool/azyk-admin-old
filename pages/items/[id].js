@@ -111,15 +111,6 @@ const Items = React.memo((props) => {
                     </Fab>
                 </Link>
                 :
-                !authenticated||profile.role==='client'?
-                    <Link href='/basket'>
-                        <Fab color='primary' aria-label='add' className={classes.fab}>
-                            <Badge badgeContent={countBasket} color='secondary'>
-                                <LocalGroceryStore />
-                            </Badge>
-                        </Fab>
-                    </Link>
-                    :
                     null
             }
         </App>

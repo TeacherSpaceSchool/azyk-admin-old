@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/catalog/catalog'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import {checkInt} from '../../src/lib';
+import {checkInt, checkFloat} from '../../src/lib';
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
@@ -46,7 +46,7 @@ const Catalog = React.memo((props) => {
     },[])
     useEffect(()=>{
         (async()=>{
-            setList((await getBrands({organization: router.query.id, search: search, sort: sort})).brands)
+            setList((await getBrands({organization: router.query.id, search: search, sort: '-name'})).brands)
         })()
     },[filter, sort, search])
     useEffect(()=>{
@@ -61,7 +61,7 @@ const Catalog = React.memo((props) => {
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(basket[id].count)
         basket[id].count+=list[idx].apiece?1:list[idx].packaging
-        basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
         setBasket({...basket})
     }
     let decrement = async (idx)=>{
@@ -70,7 +70,7 @@ const Catalog = React.memo((props) => {
             if(basket[id].count>0) {
                 basket[id].count = checkInt(basket[id].count)
                 basket[id].count -= list[idx].apiece?1:list[idx].packaging
-                basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+                basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
                 setBasket({...basket})
             }
         }
@@ -102,7 +102,7 @@ const Catalog = React.memo((props) => {
         if(!basket[id])
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(count)
-        basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
         setBasket({...basket})
     }
     let addPackaging= async(idx)=>{
@@ -112,7 +112,7 @@ const Catalog = React.memo((props) => {
         basket[id].count = checkInt(basket[id].count)
         if(list[idx].packaging){
             basket[id].count = (parseInt(basket[id].count/list[idx].packaging)+1)*list[idx].packaging
-            basket[id].allPrice = Math.round(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+            basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
             setBasket({...basket})
         }
     }
@@ -133,7 +133,7 @@ const Catalog = React.memo((props) => {
         for(let i=0; i<keys.length; i++){
             allPrice += basket[keys[i]].allPrice
         }
-        setAllPrice(Math.round(allPrice))
+        setAllPrice(checkFloat(allPrice))
     },[basket])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{

@@ -45,7 +45,8 @@ export const weekDay = [
     'Суббота',
 ]
 export const checkFloat = (float) => {
-    return isNaN(parseFloat(float))?0:parseFloat(float)
+    float = parseFloat(float)
+    return isNaN(float)?0:Math.round(float * 10)/10
 }
 export const pdDDMMYYYY = (date) =>
 {

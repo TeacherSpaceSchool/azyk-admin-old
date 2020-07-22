@@ -1,6 +1,7 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
 import { SingletonStore } from '../singleton/store';
+import { getReceiveDataByIndex, putReceiveDataByIndex } from '../service/idb/receiveData';
 
 export const getDiscountClients = async({clients, organization}, client)=>{
     try{
@@ -37,9 +38,13 @@ export const getDiscountClient = async({client, organization})=>{
                          }
                     }`,
             })
+        if(new SingletonStore().getStore()&&new SingletonStore().getStore().getState().user.profile.role.includes('агент'))
+            await putReceiveDataByIndex(`discountClient(client: ${client}, organization: ${organization})`, res.data)
         return res.data
     } catch(err){
         console.error(err)
+        if(new SingletonStore().getStore()&&new SingletonStore().getStore().getState().user.profile.role.includes('агент'))
+            return await getReceiveDataByIndex(`discountClient(client: ${client}, organization: ${organization})`)
     }
 }
 

@@ -6,11 +6,8 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
-import AddShoppingCart from '@material-ui/icons/AddShoppingCart';
-import Star from '@material-ui/icons/Star';
 import Link from 'next/link';
-import { onoffItem, deleteItem, favoriteItem, restoreItem } from '../../src/gql/items'
-import { addBasket, getCountBasket, deleteBasket } from '../../src/gql/basket'
+import { onoffItem, deleteItem, restoreItem } from '../../src/gql/items'
 import Button from '@material-ui/core/Button';
 import Confirmation from '../dialog/Confirmation'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -20,21 +17,13 @@ import { setItem } from '../../src/gql/items'
 
 const CardItem = React.memo((props) => {
     const classes = cardItemStyle();
-    const { element, setList, subCategory, getList, setFavorites, list } = props;
-    const { profile, authenticated } = props.user;
+    const { element, setList, subCategory, list } = props;
+    const { profile } = props.user;
     let [status, setStatus] = useState(element!==undefined?element.status:'');
-    let [favorite, setFavorite] = useState(element!==undefined&&element.favorite!==undefined?element.favorite:[]);
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
-    const { showSnackBar } = props.snackbarActions;
-    let [basket, setBasket] = useState(false);
     let [hit, setHit] = useState(element.hit);
     let [latest, setLatest] = useState(element.latest);
     let [apiece, setApiece] = useState(element.apiece);
-    useEffect(()=>{
-        if(authenticated){
-            setBasket((element.basket).includes(profile._id))
-        }
-    },[])
     return (
         <Card className={classes.card}>
             <CardContent className={classes.column}>
@@ -223,50 +212,9 @@ const CardItem = React.memo((props) => {
                                                     :
                                                     null
                                             :
-                                            ['агент', 'client'].includes(profile.role)?
-                                                <AddShoppingCart style={{color: basket?'#ffb300':'#e1e1e1'}}  className={classes.button} onClick={async()=>{
-                                                    if(!basket) {
-                                                        addBasket({item: element._id, count: element.apiece?1:element.packaging})
-                                                        showSnackBar('Товар добавлен в корзину')
-                                                        setBasket(true)
-                                                    }
-                                                    else {
-                                                        await deleteBasket([element._id])
-                                                        showSnackBar('Товар удален из корзины')
-                                                        setBasket(false)
-                                                    }
-                                                    getCountBasket()
-                                                }}/>
-                                                :
                                                 null
                                         }
-
-                {element.del!=='deleted'&&profile.role==='client'?
-                                            <Star className={classes.buttonToggle} onClick={async ()=>{
-                                                let index
-                                                await favoriteItem([element._id])
-                                                index = favorite.indexOf(profile._id)
-                                                if (index === -1) {
-                                                    favorite.push(profile._id)
-                                                    setFavorite([...favorite])
-                                                    if (getList !== undefined)
-                                                        getList()
-                                                }
-                                                if (index !== -1) {
-                                                    const action = async() => {
-                                                        favorite.splice(index, 1)
-                                                        setFavorite([...favorite])
-                                                        if (getList !== undefined)
-                                                            getList()
-                                                    }
-                                                    setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                                    showMiniDialog(true)
-                                                }
-                                            }} style={{color: (profile.role=='client'&&favorite.includes(profile._id))?'#ffb300':'#e1e1e1'}}  />
-                                            :
-                                            null
-                                        }
-                                    </CardContent>
+            </CardContent>
         </Card>
     );
 })
