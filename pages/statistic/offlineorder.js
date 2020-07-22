@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
 import App from '../../layouts/App';
 import CardOfflineOrder from '../../components/offlineorder/CardOfflineOrder';
-import pageListStyle from '../../src/styleMUI/offlineorder/offlineorderList'
+import pageListStyle from '../../src/styleMUI/offlineorder/offlineOrderList'
 import { connect } from 'react-redux'
 import { urlMain } from '../../redux/constants/other'
 import LazyLoad from 'react-lazyload';
