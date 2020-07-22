@@ -10,6 +10,7 @@ import Router from 'next/router'
 import { addAgentHistoryGeo } from '../../src/gql/agentHistoryGeo'
 import { getGeoDistance } from '../../src/lib'
 import { addOrders } from '../../src/gql/order'
+import { addBasket } from '../../src/gql/basket'
 import { deleteOfflineOrderByKey } from '../../src/service/idb/offlineOrders';
 
 const CardOfflineOrder = React.memo((props) => {
@@ -57,6 +58,14 @@ const CardOfflineOrder = React.memo((props) => {
                                 if(distance<1000){
                                     await addAgentHistoryGeo({client: element.client, geo: `${geo.coords.latitude}, ${geo.coords.longitude}`})
                                 }
+                            }
+                            for (let i = 0; i < element.basket.length; i++) {
+                                if (element.basket[i].count > 0)
+                                    await addBasket({
+                                        item: element.basket[i]._id,
+                                        count: element.basket[i].count,
+                                        consignment: element.basket[i].consignment
+                                    })
                             }
                             await addOrders({
                                 inv: element.inv,
