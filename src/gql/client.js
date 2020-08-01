@@ -40,6 +40,23 @@ export const getClientsSync = async(arg, client)=>{
     }
 }
 
+export const getClientsSyncStatistic = async(arg, client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                variables: arg,
+                query: gql`
+                    query ($search: String!, $organization: ID!) {
+                        clientsSyncStatistic(search: $search, organization: $organization) 
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const getClients = async(arg, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()

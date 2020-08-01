@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
 import App from '../../../layouts/App';
 import { connect } from 'react-redux'
-import { getClientsSync } from '../../../src/gql/client'
+import { getClientsSync, getClientsSyncStatistic } from '../../../src/gql/client'
 import { getOrganization } from '../../../src/gql/organization'
 import pageListStyle from '../../../src/styleMUI/client/clientList'
 import CardClient from '../../../components/client/CardClient'
@@ -24,7 +24,7 @@ const ClientsSync = React.memo((props) => {
     let height = 189
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     let [paginationWork, setPaginationWork] = useState(true);
-    let [simpleStatistic, setSimpleStatistic] = useState(0);
+    let [simpleStatistic, setSimpleStatistic] = useState(data.clientsSyncStatistic);
     const checkPagination = async()=>{
         if(paginationWork){
             let addedList = (await getClientsSync({search: search, organization: router.query.id, skip: list.length})).clientsSync
@@ -41,7 +41,7 @@ const ClientsSync = React.memo((props) => {
         searchTimeOut = setTimeout(async()=>{
             let list = (await getClientsSync({search: search, organization: router.query.id, skip: 0})).clientsSync
             setList(list)
-            setSimpleStatistic(list.length)
+            setSimpleStatistic((await getClientsSyncStatistic({search: search, organization: router.query.id})).clientsSyncStatistic)
             setPaginationWork(true);
             (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
             forceCheck()
@@ -91,6 +91,7 @@ ClientsSync.getInitialProps = async function(ctx) {
     return {
         data: {
             ...(await getClientsSync({search: '', organization: ctx.query.id, skip: 0}, ctx.req?await getClientGqlSsr(ctx.req):null)),
+            ...(await getClientsSyncStatistic({search: '', organization: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):null)),
             ...(await getOrganization({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):null)),
         }
     };
