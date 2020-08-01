@@ -1,26 +1,26 @@
 import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
-import App from '../../layouts/App';
-import CardIntegrateOutShoroPlaceholder from '../../components/IntegrateOutShoro/CardIntegrateOutShoroPlaceholder'
-import CardIntegrateOutShoro from '../../components/IntegrateOutShoro/CardIntegrateOutShoro'
-import pageListStyle from '../../src/styleMUI/orders/orderList'
-import {statisticOutXMLReturnedShoros, statisticOutXMLShoros, outXMLReturnedShoros, outXMLShoros, deleteOutXMLReturnedShoroAll, deleteOutXMLShoroAll, outXMLClientShoros, statisticOutXMLClientShoros} from '../../src/gql/integrateOutShoro'
+import App from '../../../layouts/App';
+import CardIntegrateOutShoroPlaceholder from '../../../components/IntegrateOutShoro/CardIntegrateOutShoroPlaceholder'
+import CardIntegrateOutShoro from '../../../components/IntegrateOutShoro/CardIntegrateOutShoro'
+import pageListStyle from '../../../src/styleMUI/orders/orderList'
+import {outXMLReturnedShoros, outXMLShoros, deleteOutXMLReturnedShoroAll, deleteOutXMLShoroAll, statisticOutXMLReturnedShoros, statisticOutXMLShoros} from '../../../src/gql/integrateOutShoro'
 import { connect } from 'react-redux'
 import Router from 'next/router'
-import { urlMain } from '../../redux/constants/other'
+import { urlMain } from '../../../redux/constants/other'
 import LazyLoad from 'react-lazyload';
 import { forceCheck } from 'react-lazyload';
-import { getClientGqlSsr } from '../../src/getClientGQL'
-import initialApp from '../../src/initialApp'
+import { getClientGqlSsr } from '../../../src/getClientGQL'
+import initialApp from '../../../src/initialApp'
 import Fab from '@material-ui/core/Fab';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Confirmation from '../../components/dialog/Confirmation'
-import * as mini_dialogActions from '../../redux/actions/mini_dialog'
+import Confirmation from '../../../components/dialog/Confirmation'
+import * as mini_dialogActions from '../../../redux/actions/mini_dialog'
 import { bindActionCreators } from 'redux'
+import { useRouter } from 'next/router'
 const height = 225
-
 
 const IntegrateOutShoro = React.memo((props) => {
     const classes = pageListStyle();
@@ -28,6 +28,7 @@ const IntegrateOutShoro = React.memo((props) => {
     let [simpleStatistic, setSimpleStatistic] = useState(['0']);
     let [list, setList] = useState(data.outXMLShoros);
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
+    const router = useRouter()
     const { search, filter } = props.app;
     const { profile } = props.user;
     let [paginationWork, setPaginationWork] = useState(true);
@@ -36,12 +37,9 @@ const IntegrateOutShoro = React.memo((props) => {
         if(paginationWork){
             let addedList =
                 type==='Возвраты'?
-                    (await outXMLReturnedShoros({search: search, filter: filter, skip: list.length})).outXMLReturnedShoros
+                    (await outXMLReturnedShoros({search: search, filter: filter, skip: list.length, organization: router.query.id})).outXMLReturnedShoros
                     :
-                type==='Заказы'?
-                    (await outXMLShoros({search: search, filter: filter, skip: list.length})).outXMLShoros
-                    :
-                    (await outXMLClientShoros({skip: list.length})).outXMLClientShoros
+                    (await outXMLShoros({search: search, filter: filter, skip: list.length, organization: router.query.id})).outXMLShoros
             if(addedList.length>0){
                 setList([...list, ...addedList])
             }
@@ -52,21 +50,15 @@ const IntegrateOutShoro = React.memo((props) => {
     const getList = async ()=>{
         setList(
             type==='Возвраты'?
-                (await outXMLReturnedShoros({search: search, filter: filter, skip: 0})).outXMLReturnedShoros
+                (await outXMLReturnedShoros({search: search, filter: filter, skip: 0, organization: router.query.id})).outXMLReturnedShoros
                 :
-                type==='Заказы'?
-                (await outXMLShoros({search: search, filter: filter, skip: 0})).outXMLShoros
-                :
-                (await outXMLClientShoros({skip: 0})).outXMLClientShoros
+                (await outXMLShoros({search: search, filter: filter, skip: 0, organization: router.query.id})).outXMLShoros
         )
         setSimpleStatistic(
             type==='Возвраты'?
-                (await statisticOutXMLReturnedShoros()).statisticOutXMLReturnedShoros
+                (await statisticOutXMLReturnedShoros({organization: router.query.id})).statisticOutXMLReturnedShoros
                 :
-                type==='Заказы'?
-                (await statisticOutXMLShoros()).statisticOutXMLShoros
-                    :
-                    (await statisticOutXMLClientShoros()).statisticOutXMLClientShoros
+                (await statisticOutXMLShoros({organization: router.query.id})).statisticOutXMLShoros
         )
     }
     let [searchTimeOut, setSearchTimeOut] = useState(null);
@@ -166,24 +158,17 @@ const IntegrateOutShoro = React.memo((props) => {
                     setType('Возвраты')
                     close()
                 }}>Возвраты</MenuItem>
-                <MenuItem style={{background: type==='Клиенты'?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async()=>{
-                    setType('Клиенты')
+                <MenuItem onClick={async()=>{
+                    const action = async() => {
+                        type==='Возвраты'?await deleteOutXMLReturnedShoroAll(router.query.id):await deleteOutXMLShoroAll(router.query.id)
+                        setList([])
+                        setSimpleStatistic(['0'])
+                    }
+                    setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                    showMiniDialog(true);
+                    await getList()
                     close()
-                }}>Клиенты</MenuItem>
-                {
-                    type!=='Клиенты'?
-                        <MenuItem onClick={async()=>{
-                            const action = async() => {
-                                type==='Возвраты'?await deleteOutXMLReturnedShoroAll():await deleteOutXMLShoroAll()
-                            }
-                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                            showMiniDialog(true);
-                            await getList()
-                            close()
-                        }}>Удалить все</MenuItem>
-                        :
-                        null
-                }
+                }}>Удалить все</MenuItem>
                 <MenuItem onClick={async()=>{
                     close()
                 }}>Отменить</MenuItem>
@@ -203,7 +188,7 @@ IntegrateOutShoro.getInitialProps = async function(ctx) {
         } else
             Router.push('/contact')
     return {
-        data: await outXMLShoros({search: '', skip: 0,filter:''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+        data: await outXMLShoros({organization: ctx.query.id, search: '', skip: 0,filter:''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     };
 };
 

@@ -2,46 +2,6 @@ import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
 import { SingletonStore } from '../singleton/store';
 
-export const outXMLClientShoros = async(arg, client)=>{
-    try{
-        client = client? client : new SingletonApolloClient().getClient()
-        let res = await client
-            .query({
-                variables: {...arg},
-                query: gql`
-                    query ($skip: Int) {
-                        outXMLClientShoros(skip: $skip) {
-                            _id
-                            createdAt
-                            guid
-                            client
-                                {name _id address}
-                            exc
-                        }
-                    }`,
-            })
-        return res.data
-    } catch(err){
-        console.error(err)
-    }
-}
-
-export const statisticOutXMLClientShoros = async(client)=>{
-    try{
-        client = client? client : new SingletonApolloClient().getClient()
-        let res = await client
-            .query({
-                query: gql`
-                    query{
-                        statisticOutXMLClientShoros
-                    }`,
-            })
-        return res.data
-    } catch(err){
-        console.error(err)
-    }
-}
-
 export const outXMLShoros = async(arg, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
@@ -49,8 +9,8 @@ export const outXMLShoros = async(arg, client)=>{
             .query({
                 variables: {...arg},
                 query: gql`
-                    query ($search: String!, $filter: String!, $skip: Int) {
-                        outXMLShoros(search: $search, filter: $filter, skip: $skip) {
+                    query ($search: String!, $filter: String!, $skip: Int, $organization: ID!) {
+                        outXMLShoros(search: $search, filter: $filter, skip: $skip, organization: $organization) {
                             _id
                             createdAt
                             guid
@@ -74,14 +34,15 @@ export const outXMLShoros = async(arg, client)=>{
     }
 }
 
-export const statisticOutXMLShoros = async(client)=>{
+export const statisticOutXMLShoros = async(arg, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
+                variables: {...arg},
                 query: gql`
-                    query{
-                        statisticOutXMLShoros
+                    query($organization: ID!){
+                        statisticOutXMLShoros(organization: $organization)
                     }`,
             })
         return res.data
@@ -90,14 +51,15 @@ export const statisticOutXMLShoros = async(client)=>{
     }
 }
 
-export const statisticOutXMLReturnedShoros = async(client)=>{
+export const statisticOutXMLReturnedShoros = async(arg, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
+                variables: {...arg},
                 query: gql`
-                    query{
-                        statisticOutXMLReturnedShoros
+                    query($organization: ID!){
+                        statisticOutXMLReturnedShoros(organization: $organization)
                     }`,
             })
         return res.data
@@ -113,8 +75,8 @@ export const outXMLReturnedShoros = async(arg, client)=>{
             .query({
                 variables: {...arg},
                 query: gql`
-                    query ($search: String!, $filter: String!, $skip: Int) {
-                        outXMLReturnedShoros(search: $search, filter: $filter, skip: $skip) {
+                    query ($search: String!, $filter: String!, $skip: Int, $organization: ID!) {
+                        outXMLReturnedShoros(search: $search, filter: $filter, skip: $skip, organization: $organization) {
                             _id
                             createdAt
                             guid
@@ -180,22 +142,6 @@ export const setDateOutXMLShoro = async(ids)=>{
     }
 }
 
-export const deleteOutXMLClientShoro = async(ids)=>{
-    try{
-        const client = new SingletonApolloClient().getClient()
-        await client.mutate({
-            variables: {_id: ids},
-            mutation : gql`
-                    mutation ($_id: ID!) {
-                        deleteOutXMLClientShoro(_id: $_id) {
-                             data
-                        }
-                    }`})
-    } catch(err){
-        console.error(err)
-    }
-}
-
 export const deleteOutXMLShoro = async(ids)=>{
     try{
         const client = new SingletonApolloClient().getClient()
@@ -212,13 +158,14 @@ export const deleteOutXMLShoro = async(ids)=>{
     }
 }
 
-export const deleteOutXMLShoroAll = async()=>{
+export const deleteOutXMLShoroAll = async(organization)=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
+            variables: {organization: organization},
             mutation : gql`
-                    mutation {
-                        deleteOutXMLShoroAll {
+                    mutation ($organization: ID!) {
+                        deleteOutXMLShoroAll(organization: $organization) {
                              data
                         }
                     }`})
@@ -285,13 +232,14 @@ export const deleteOutXMLReturnedShoro = async(ids)=>{
     }
 }
 
-export const deleteOutXMLReturnedShoroAll = async()=>{
+export const deleteOutXMLReturnedShoroAll = async(organization)=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
+            variables: {organization: organization},
             mutation : gql`
-                    mutation {
-                        deleteOutXMLReturnedShoroAll {
+                    mutation($organization: ID!) {
+                        deleteOutXMLReturnedShoroAll(organization: $organization) {
                              data
                         }
                     }`})

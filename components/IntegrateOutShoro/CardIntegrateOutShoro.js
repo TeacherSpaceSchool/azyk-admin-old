@@ -11,7 +11,7 @@ import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
 import { pdDDMMYY, pdDDMMYYHHMM } from '../../src/lib'
 import Confirmation from '../../components/dialog/Confirmation'
-import { deleteOutXMLReturnedShoro, deleteOutXMLShoro, restoreOutXMLReturnedShoro, restoreOutXMLShoro, deleteOutXMLClientShoro } from '../../src/gql/integrateOutShoro'
+import { deleteOutXMLReturnedShoro, deleteOutXMLShoro, restoreOutXMLReturnedShoro, restoreOutXMLShoro } from '../../src/gql/integrateOutShoro'
 import {alert} from '../../layouts/App';
 
 const CardIntegrateOutShoro = React.memo((props) => {
@@ -87,10 +87,7 @@ const CardIntegrateOutShoro = React.memo((props) => {
                             type==='Возвраты'?
                                 await deleteOutXMLReturnedShoro(element._id)
                                 :
-                            type==='Заказы'?
                                 await deleteOutXMLShoro(element._id)
-                                :
-                                await deleteOutXMLClientShoro(element._id)
 
                             let _list = [...list]
                             _list.splice(_list.indexOf(element), 1)

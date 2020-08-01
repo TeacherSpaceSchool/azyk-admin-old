@@ -3,6 +3,43 @@ import { SingletonApolloClient } from '../singleton/client';
 import { SingletonStore } from '../singleton/store';
 import { getReceiveDataByIndex, putReceiveDataByIndex } from '../service/idb/receiveData';
 
+export const getClientsSync = async(arg, client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                variables: arg,
+                query: gql`
+                    query ($search: String!, $organization: ID!, $skip: Int!) {
+                        clientsSync(search: $search, organization: $organization, skip: $skip) {
+                            _id
+                            image
+                            createdAt
+                            name
+                            email
+                            address
+                            lastActive
+                            device
+                            notification
+                            info
+                            reiting
+                            city
+                            category
+                            updatedAt
+                            phone
+                            organization 
+                                {_id name}
+                            user 
+                                {_id role status login}
+                          }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const getClients = async(arg, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()

@@ -171,7 +171,7 @@ const list = {
         },
         {
             name: 'Выгрузка интеграции 1С',
-            link: '/statistic/integrateoutshoro',
+            link: '/statistic/integrateouts',
             role: ['admin']
         },
         {
@@ -200,8 +200,13 @@ const list = {
             role: ['admin']
         },
         {
+            name: 'Интеграция клиентов 1С',
+            link: '/statistic/clientssync',
+            role: ['admin']
+        },
+        {
             name: 'Принятая интеграции 1С',
-            link: '/statistic/receiveData',
+            link: '/statistic/receivedatas',
             role: ['admin']
         },
 

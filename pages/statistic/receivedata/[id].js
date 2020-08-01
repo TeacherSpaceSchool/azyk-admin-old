@@ -1,32 +1,35 @@
 import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
-import App from '../../layouts/App';
-import CardReceiveData from '../../components/receiveData/CardReceiveData';
-import pageListStyle from '../../src/styleMUI/error/errorList'
-import {getReceivedDatas, clearAllReceivedDatas} from '../../src/gql/receiveData'
+import App from '../../../layouts/App';
+import CardReceiveData from '../../../components/receiveData/CardReceiveData';
+import pageListStyle from '../../../src/styleMUI/error/errorList'
+import {getReceivedDatas, clearAllReceivedDatas} from '../../../src/gql/receiveData'
 import { connect } from 'react-redux'
-import { urlMain } from '../../redux/constants/other'
+import { urlMain } from '../../../redux/constants/other'
 import LazyLoad from 'react-lazyload';
-import CardReceiveDataPlaceholder from '../../components/receiveData/CardReceiveDataPlaceholder'
-import { getClientGqlSsr } from '../../src/getClientGQL'
-import initialApp from '../../src/initialApp'
+import CardReceiveDataPlaceholder from '../../../components/receiveData/CardReceiveDataPlaceholder'
+import { getClientGqlSsr } from '../../../src/getClientGQL'
+import initialApp from '../../../src/initialApp'
 import Router from 'next/router'
 import Fab from '@material-ui/core/Fab';
 import RemoveIcon from '@material-ui/icons/Clear';
-import Confirmation from '../../components/dialog/Confirmation'
+import Confirmation from '../../../components/dialog/Confirmation'
 import { bindActionCreators } from 'redux'
-import * as mini_dialogActions from '../../redux/actions/mini_dialog'
+import * as mini_dialogActions from '../../../redux/actions/mini_dialog'
 import { forceCheck } from 'react-lazyload';
+import { useRouter } from 'next/router'
+const height = 308
 
 const ReceiveData = React.memo((props) => {
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const classes = pageListStyle();
     const { data } = props;
     const { search, filter } = props.app;
+    const router = useRouter()
     let [list, setList] = useState(data.receivedDatas);
     useEffect(()=>{
         (async()=>{
-            setList((await getReceivedDatas({search: search, filter: filter})).receivedDatas)
+            setList((await getReceivedDatas({organization: router.query.id, search: search, filter: filter})).receivedDatas)
             setPagination(100)
             forceCheck()
         })()
@@ -54,14 +57,14 @@ const ReceiveData = React.memo((props) => {
                     {`Всего: ${list.length}`}
                 </div>
                 {list?list.map((element, idx)=>
-                    <LazyLoad scrollContainer={'.App-body'} key={element._id} height={308} offset={[308, 0]} debounce={0} once={true}  placeholder={<CardReceiveDataPlaceholder/>}>
+                    <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardReceiveDataPlaceholder height={height}/>}>
                         <CardReceiveData list={list} setList={setList} element={element} idx={idx}/>
                     </LazyLoad>
                 ):null}
             </div>
             <Fab onClick={async()=>{
                     const action = async() => {
-                        await clearAllReceivedDatas()
+                        await clearAllReceivedDatas(router.query.id)
                         setList([])
                     }
                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
@@ -85,7 +88,7 @@ ReceiveData.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getReceivedDatas({search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            ...await getReceivedDatas({organization: ctx.query.id, search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         },
     };
 };
