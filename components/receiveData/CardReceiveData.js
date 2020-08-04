@@ -70,7 +70,7 @@ const CardReceiveData = React.memo((props) => {
                                 Агент:&nbsp;
                             </div>
                             <div className={classes.value}>
-                                {element.agent.name}
+                                {element.agent}
                             </div>
                         </div>
                         :null

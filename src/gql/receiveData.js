@@ -16,7 +16,7 @@ export const getReceivedDatas = async(arg, client)=>{
                             guid
                             name
                             addres
-                            agent {name}
+                            agent
                             phone
                             type
                             position
