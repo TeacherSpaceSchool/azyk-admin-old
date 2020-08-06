@@ -22,6 +22,7 @@ import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Search from '@material-ui/icons/SearchRounded';
 import Sort from '@material-ui/icons/SortRounded';
+import Business from '@material-ui/icons/Business';
 import FilterList from '@material-ui/icons/FilterListRounded';
 import DateRange from '@material-ui/icons/DateRange';
 import PermIdentity from '@material-ui/icons/PermIdentity';
@@ -31,13 +32,15 @@ import Badge from '@material-ui/core/Badge';
 import Sign from '../dialog/Sign'
 import Confirmation from '../dialog/Confirmation'
 import SetDate from '../dialog/SetDate'
+import SetOrganizations from '../dialog/SetOrganizations'
+import { getActiveOrganization } from '../../src/gql/statistic'
 
 const MyAppBar = React.memo((props) => {
     //props
     const classes = appbarStyle();
-    const { filters, sorts, pageName, dates, searchShow, unread, defaultOpenSearch } = props
-    const { drawer, search, filter, sort, isMobileApp, date } = props.app;
-    const { showDrawer, setSearch, setFilter, setSort, setDate } = props.appActions;
+    const { filters, sorts, pageName, dates, searchShow, unread, defaultOpenSearch, organizations } = props
+    const { drawer, search, filter, sort, isMobileApp, date, organization } = props.app;
+    const { showDrawer, setSearch, setFilter, setSort, setDate, setOrganization } = props.appActions;
     const { authenticated, profile } = props.user;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { logout } = props.userActions;
@@ -81,6 +84,14 @@ const MyAppBar = React.memo((props) => {
     }
     let handleCloseDate = () => {
         setAnchorElDate(null);
+    }
+    const [anchorElOrganizations, setAnchorElOrganizations] = useState(null);
+    const openOrganizations = Boolean(anchorElOrganizations);
+    let handleMenuOrganizations = (event) => {
+        setAnchorElOrganizations(event.currentTarget);
+    }
+    let handleCloseOrganizations = () => {
+        setAnchorElOrganizations(null);
     }
     const [openSearch, setOpenSearch] = useState(defaultOpenSearch);
     let handleSearch = (event) => {
@@ -251,6 +262,38 @@ const MyAppBar = React.memo((props) => {
                                     ]
                                     :null
                                 }
+                                {organizations&&['суперагент', 'admin', 'client'].includes(profile.role)?
+                                    [
+                                        <MenuItem onClick={handleMenuOrganizations}>
+                                            <div style={{display: 'flex', color: '#606060'}}>
+                                                <Business/>&nbsp;Организации
+                                            </div>
+                                        </MenuItem>,
+                                        <Menu
+                                            key='Organizations'
+                                            id='menu-appbar'
+                                            anchorEl={anchorElOrganizations}
+                                            anchorOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
+                                            }}
+                                            transformOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
+                                            }}
+                                            open={openOrganizations}
+                                            onClose={handleCloseOrganizations}
+                                        >
+                                            <MenuItem style={{background: organization?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{let activeOrganization = (await getActiveOrganization()).activeOrganization;setMiniDialog('Организации', <SetOrganizations activeOrganization={activeOrganization}/>);showMiniDialog(true);handleCloseOrganizations();handleCloseMobileMenu();}}>
+                                                По организации
+                                            </MenuItem>
+                                            <MenuItem style={{background: !organization?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setOrganization(undefined);handleCloseOrganizations();}}>
+                                                Все
+                                            </MenuItem>
+                                        </Menu>
+                                    ]
+                                    :null
+                                }
                             </Menu>
                             <Tooltip title='Профиль'>
                                 <IconButton
@@ -334,6 +377,44 @@ const MyAppBar = React.memo((props) => {
                             </Paper>
                             :
                             <>
+                            {organizations&&['суперагент', 'admin', 'client'].includes(profile.role)?
+                                <>
+                                <Tooltip title='Организации'>
+                                    <IconButton
+                                        aria-owns={openOrganizations ? 'menu-appbar' : undefined}
+                                        aria-haspopup='true'
+                                        onClick={handleMenuOrganizations}
+                                        color='inherit'
+                                    >
+                                        <Business/>
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    key='Organizations'
+                                    id='menu-appbar'
+                                    anchorEl={anchorElOrganizations}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={openOrganizations}
+                                    onClose={handleCloseOrganizations}
+                                >
+                                    <MenuItem style={{background: organization?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{let activeOrganization = (await getActiveOrganization()).activeOrganization;setMiniDialog('Организация', <SetOrganizations activeOrganization={activeOrganization}/>);showMiniDialog(true);handleCloseOrganizations();}}>
+                                        По организации
+                                    </MenuItem>
+                                    <MenuItem style={{background: !organization?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setOrganization(undefined);handleCloseOrganizations();}}>
+                                        Все
+                                    </MenuItem>
+                                </Menu>
+                                &nbsp;
+                                </>
+                                :null
+                            }
                             {dates?
                                 <>
                                 <Tooltip title='Дата'>

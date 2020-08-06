@@ -105,8 +105,8 @@ const CardReceiveData = React.memo((props) => {
                 </div>
             </CardContent>
             <CardActions>
-                <Button onClick={async()=>{
-                    const action = async() => {
+                <Button onClick={async () => {
+                    const action = async () => {
                         await addReceivedDataClient(element._id)
                         list.splice(idx, 1)
                         setList([...list])

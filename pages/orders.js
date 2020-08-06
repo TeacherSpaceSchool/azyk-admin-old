@@ -32,12 +32,12 @@ const Orders = React.memo((props) => {
     let [simpleStatistic, setSimpleStatistic] = useState(['0']);
     let [list, setList] = useState(data.invoices);
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
-    const { search, filter, sort, date } = props.app;
+    const { search, filter, sort, date, organization } = props.app;
     const { profile } = props.user;
     let [paginationWork, setPaginationWork] = useState(true);
     const checkPagination = async()=>{
         if(paginationWork){
-            let addedList = (await getOrders({search: search, sort: sort, filter: filter, date: date, skip: list.length})).invoices
+            let addedList = (await getOrders({search: search, sort: sort, filter: filter, date: date, skip: list.length, organization: organization})).invoices
             if(addedList.length>0){
                 setList([...list, ...addedList])
             }
@@ -46,16 +46,16 @@ const Orders = React.memo((props) => {
         }
     }
     const getList = async ()=>{
-        let orders = (await getOrders({search: search, sort: sort, filter: filter, date: date, skip: 0})).invoices
+        let orders = (await getOrders({search: search, sort: sort, filter: filter, date: date, skip: 0, organization: organization})).invoices
         setList(orders)
-        setSimpleStatistic((await getInvoicesSimpleStatistic({search: search, filter: filter, date: date})).invoicesSimpleStatistic)
+        setSimpleStatistic((await getInvoicesSimpleStatistic({search: search, filter: filter, date: date, organization: organization})).invoicesSimpleStatistic)
     }
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     useEffect(()=>{
         (async ()=>{
             if(initialRender.current) {
                 initialRender.current = false;
-                setSimpleStatistic((await getInvoicesSimpleStatistic({search: search, filter: filter, date: date})).invoicesSimpleStatistic)
+                setSimpleStatistic((await getInvoicesSimpleStatistic({search: search, filter: filter, date: date, organization: organization})).invoicesSimpleStatistic)
             } else {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
@@ -69,8 +69,7 @@ const Orders = React.memo((props) => {
                 setSearchTimeOut(searchTimeOut)
             }
         })()
-    },[filter, sort, search, date])
-
+    },[filter, sort, search, date, organization])
     let [showStat, setShowStat] = useState(false);
     let [selected, setSelected] = useState([]);
     let [anchorEl, setAnchorEl] = useState(null);
@@ -82,7 +81,7 @@ const Orders = React.memo((props) => {
     };
 
     return (
-        <App checkPagination={checkPagination} setList={setList} list={list} searchShow={true} dates={true} filters={data.filterInvoice} sorts={data.sortInvoice} pageName='Заказы'>
+        <App organizations checkPagination={checkPagination} setList={setList} list={list} searchShow={true} dates={true} filters={data.filterInvoice} sorts={data.sortInvoice} pageName='Заказы'>
             <Head>
                 <title>Заказы</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -226,7 +225,15 @@ Orders.getInitialProps = async function(ctx) {
             Router.push('/contact')
     ctx.store.getState().app.sort = '-createdAt'
     return {
-        data: await getOrders({search: '', sort: '-createdAt', filter: '', date: '', skip: 0}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+        data: {
+            ...await getOrders({
+                search: '',
+                sort: '-createdAt',
+                filter: '',
+                date: '',
+                skip: 0
+            }, ctx.req ? await getClientGqlSsr(ctx.req) : undefined)
+        }
     };
 };
 

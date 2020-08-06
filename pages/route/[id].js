@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
-import { getOrganizations } from '../../src/gql/organization'
+import { getActiveOrganization } from '../../src/gql/statistic'
 import { getOrdersForRouting } from '../../src/gql/order'
 import { getRoute, addRoute, buildRoute, listDownload, listUnload, getUnloadingInvoicesFromRouting } from '../../src/gql/route'
 import { getDistricts } from '../../src/gql/district'
@@ -613,7 +613,7 @@ Route.getInitialProps = async function(ctx) {
     return {
         data: {
             route: (await getRoute({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).route,
-            organizations: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations]
+            organizations: [...ctx.store.getState().user.profile.role==='admin'?[{name: 'AZYK.STORE', _id: 'super'}]:[], ...(await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
         }
     };
 };

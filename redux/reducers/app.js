@@ -1,4 +1,4 @@
-import { SHOW_DRAWER, SET_FILTER, SET_SORT, SET_SEARCH, SET_IS_MOBILE_APP, SHOW_LOAD, SET_COUNT_BASKET, SET_DATE } from '../constants/app'
+import { SHOW_DRAWER, SET_FILTER, SET_SORT, SET_SEARCH, SET_IS_MOBILE_APP, SHOW_LOAD, SET_COUNT_BASKET, SET_DATE, SET_ORGANIZATION } from '../constants/app'
 
 const initialState = {
     drawer: false,
@@ -8,7 +8,8 @@ const initialState = {
     isMobileApp: undefined,
     load: false,
     countBasket: 0,
-    date: ''
+    date: '',
+    organization: undefined,
 }
 
 export default function mini_dialog(state = initialState, action) {
@@ -29,6 +30,8 @@ export default function mini_dialog(state = initialState, action) {
             return {...state, countBasket: action.payload}
         case SET_DATE:
             return {...state, date: action.payload}
+        case SET_ORGANIZATION:
+            return {...state, organization: action.payload}
         default:
             return state
     }

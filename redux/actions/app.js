@@ -1,8 +1,15 @@
-import { SHOW_DRAWER, SET_SEARCH, SET_FILTER, SET_SORT, SET_IS_MOBILE_APP, SHOW_LOAD, SET_COUNT_BASKET, SET_DATE } from '../constants/app'
+import { SHOW_DRAWER, SET_SEARCH, SET_FILTER, SET_SORT, SET_IS_MOBILE_APP, SHOW_LOAD, SET_COUNT_BASKET, SET_DATE, SET_ORGANIZATION } from '../constants/app'
 
 export function showDrawer(data) {
     return {
         type: SHOW_DRAWER,
+        payload: data
+    }
+}
+
+export function setOrganization(data) {
+    return {
+        type: SET_ORGANIZATION,
         payload: data
     }
 }

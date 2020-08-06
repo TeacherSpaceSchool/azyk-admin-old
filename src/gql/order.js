@@ -9,8 +9,8 @@ export const getOrders = async(args, client)=>{
             .query({
                 variables: args,
                 query: gql`
-                    query ($search: String!, $sort: String!, $filter: String!, $date: String!, $skip: Int) {
-                        invoices(search: $search, sort: $sort, filter: $filter, date: $date, skip: $skip) {
+                    query ($search: String!, $sort: String!, $filter: String!, $date: String!, $skip: Int, $organization: ID) {
+                        invoices(search: $search, sort: $sort, filter: $filter, date: $date, skip: $skip, organization: $organization) {
                             _id
                             agent 
                                 {_id name}
@@ -227,8 +227,8 @@ export const getInvoicesSimpleStatistic = async(args, client)=>{
             .query({
                 variables: args,
                 query: gql`
-                    query ($search: String!, $filter: String!, $date: String!) {
-                        invoicesSimpleStatistic(search: $search, filter: $filter, date: $date) 
+                    query ($search: String!, $filter: String!, $date: String!, $organization: ID) {
+                        invoicesSimpleStatistic(search: $search, filter: $filter, date: $date, organization: $organization) 
                     }`,
             })
         return res.data
