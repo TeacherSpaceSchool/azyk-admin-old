@@ -141,7 +141,7 @@ const Client = React.memo((props) => {
             <Card className={classes.page}>
                 <CardContent className={isMobileApp?classes.column:classes.row} style={isMobileApp?{}:{justifyContent: 'start', alignItems: 'flex-start'}}>
                     {data.client?
-                        ['admin', 'суперагент', 'суперорганизация', 'организация', 'агент'].includes(profile.role)||(data.client.user&&profile._id===data.client.user._id)?
+                        ['admin', 'суперагент', 'суперорганизация', 'организация', 'агент'].includes(profile.role)/*||(data.client.user&&profile._id===data.client.user._id)*/?
                                 <>
                                 <div className={classes.column}>
                                     <label htmlFor='contained-button-file'>
@@ -350,7 +350,7 @@ const Client = React.memo((props) => {
                                     />
                                     <div className={classes.row}>
                                         {
-                                            (router.query.id!=='new'&&['суперорганизация', 'организация', 'агент', 'admin', 'суперагент'].includes(profile.role))||(data.client.user&&profile._id===data.client.user._id)?
+                                            (router.query.id!=='new'&&['суперорганизация', 'организация', 'агент', 'admin', 'суперагент'].includes(profile.role))/*||(data.client.user&&profile._id===data.client.user._id)*/?
                                                 <>
                                                 <Button onClick={async()=>{
                                                     if(name.length>0&&address.length>0&&address[0].length>0&&address[0][0]&&address[0][0].length>0&&address[0][2]&&address[0][2].length>0&&phone.length>0&&phone[0].length>0) {
@@ -404,7 +404,7 @@ const Client = React.memo((props) => {
                                                         {status==='active'?'Отключить':'Включить'}
                                                     </Button>
                                                     :
-                                                    data.client.user&&profile._id===data.client.user._id?
+                                                    /*data.client.user&&profile._id===data.client.user._id?
                                                         <Button onClick={()=>{
                                                             const action = async() => {
                                                                 logout(true)
@@ -414,7 +414,7 @@ const Client = React.memo((props) => {
                                                         }} size='small' color='primary'>
                                                             Выйти
                                                         </Button>
-                                                        :
+                                                        :*/
                                                         null
                                                 }
                                                 </>
