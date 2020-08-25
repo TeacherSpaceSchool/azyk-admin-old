@@ -16,7 +16,6 @@ import LazyLoad from 'react-lazyload';
 import { forceCheck } from 'react-lazyload';
 import CardDistrictPlaceholder from '../../components/district/CardDistrictPlaceholder'
 import initialApp from '../../src/initialApp'
-import { getClientsWithoutDistrict } from '../../src/gql/client'
 const height = 210;
 
 const Districts = React.memo((props) => {
@@ -25,8 +24,6 @@ const Districts = React.memo((props) => {
     const router = useRouter()
     const { data } = props;
     let [list, setList] = useState(data.districts);
-    let [clients, setClients] = useState(data.clientsWithoutDistrict);
-    let [showStat, setShowStat] = useState(false);
     const { search, sort } = props.app;
     let getList = async()=>{
         setList((await getDistricts({organization: router.query.id, search: search, sort: sort})).districts)
@@ -35,7 +32,6 @@ const Districts = React.memo((props) => {
         (async()=>{
             setPagination(100)
             forceCheck()
-            setClients((await getClientsWithoutDistrict(router.query.id)).clientsWithoutDistrict)
         })()
     },[list])
     let [searchTimeOut, setSearchTimeOut] = useState(null);
@@ -68,18 +64,8 @@ const Districts = React.memo((props) => {
                 <meta property='og:url' content={`${urlMain}/districts/${router.query.id}`} />
                 <link rel='canonical' href={`${urlMain}/districts/${router.query.id}`}/>
             </Head>
-            <div className='count' onClick={()=>setShowStat(!showStat)}>
+            <div className='count'>
                 {`Всего районов: ${list.length}`}
-                {
-                    showStat?
-                        <>
-                        <br/>
-                        <br/>
-                        {`Осталось клиентов: ${clients.length}`}
-                        </>
-                        :
-                        null
-                }
             </div>
             <div className={classes.page}>
                 {list?list.map((element, idx)=> {
@@ -116,8 +102,7 @@ Districts.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...(await getDistricts({organization: ctx.query.id, search: '', sort: '-createdAt', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)),
-            ...(await getClientsWithoutDistrict(ctx.query.id, ctx.req?await getClientGqlSsr(ctx.req):undefined))
+            ...(await getDistricts({organization: ctx.query.id, search: '', sort: '-createdAt', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined))
             }
     };
 };

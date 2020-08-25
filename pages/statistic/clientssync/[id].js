@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
 import App from '../../../layouts/App';
 import { connect } from 'react-redux'
-import { getClientsSync, getClientsSyncStatistic } from '../../../src/gql/client'
+import { getClientsSync, getClientsSyncStatistic, clearClientsSync } from '../../../src/gql/client'
 import { getOrganization } from '../../../src/gql/organization'
 import pageListStyle from '../../../src/styleMUI/client/clientList'
 import CardClient from '../../../components/client/CardClient'
@@ -14,8 +14,14 @@ import CardClientPlaceholder from '../../../components/client/CardClientPlacehol
 import { getClientGqlSsr } from '../../../src/getClientGQL'
 import initialApp from '../../../src/initialApp'
 import Router from 'next/router'
+import Fab from '@material-ui/core/Fab';
+import RemoveIcon from '@material-ui/icons/Clear';
+import Confirmation from '../../../components/dialog/Confirmation'
+import { bindActionCreators } from 'redux'
+import * as mini_dialogActions from '../../../redux/actions/mini_dialog'
 
 const ClientsSync = React.memo((props) => {
+    const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const classes = pageListStyle();
     const { data } = props;
     const router = useRouter()
@@ -74,6 +80,16 @@ const ClientsSync = React.memo((props) => {
                     ):null
                 }
             </div>
+            <Fab onClick={async()=>{
+                const action = async() => {
+                    await clearClientsSync(router.query.id)
+                    setList([])
+                }
+                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                showMiniDialog(true)
+            }} color='primary' aria-label='add' className={classes.fab}>
+                <RemoveIcon />
+            </Fab>
         </App>
     )
 })
@@ -104,4 +120,10 @@ function mapStateToProps (state) {
     }
 }
 
-export default connect(mapStateToProps)(ClientsSync);
+function mapDispatchToProps(dispatch) {
+    return {
+        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ClientsSync);
