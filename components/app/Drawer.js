@@ -309,8 +309,8 @@ const MyDrawer = React.memo((props) => {
                 {
                     ['admin', 'суперорганизация', 'организация', 'менеджер', 'агент'].includes(profile.role)?
                         <>
-                        <Link href='/equipments'>
-                            <ListItem style={{background: router.pathname==='/equipments'?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncoverBonus(false);showDrawer(false)}}>
+                        <Link href={profile.organization?`/equipment/${profile.organization}`:'/equipments'}>
+                            <ListItem style={{background: router.pathname.includes('equipment')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncoverBonus(false);showDrawer(false)}}>
                                 <ListItemIcon><AllInboxIcon color='inherit'/></ListItemIcon>
                                 <ListItemText primary='Оборудование' />
                             </ListItem>

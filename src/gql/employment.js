@@ -146,9 +146,9 @@ export const getEcspeditors = async({_id: _id}, client)=>{
     }
 }
 
-export const getAgents = async({_id: _id})=>{
+export const getAgents = async({_id: _id}, client)=>{
     try{
-        const client = new SingletonApolloClient().getClient()
+        client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
                 variables: {_id: _id},

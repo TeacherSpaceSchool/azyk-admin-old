@@ -28,6 +28,8 @@ import initialApp from '../../src/initialApp'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Geo from '../../components/dialog/Geo'
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 
 const Organization = React.memo((props) => {
     const classes = organizationStyle();
@@ -49,6 +51,11 @@ const Organization = React.memo((props) => {
     let [minimumOrder, setMinimumOrder] = useState(data.organization!==null?data.organization.minimumOrder:0);
     let [priotiry, setPriotiry] = useState(data.organization!==null?data.organization.priotiry:0);
     let [address, setAddress] = useState(data.organization?data.organization.address:[]);
+    const _cities = ['Бишкек']
+    let [cities, setCities] = useState(data.organization&&data.organization.cities?data.organization.cities:['Бишкек']);
+    let handleCities =  (event) => {
+        setCities(event.target.value)
+    };
     let [newAddress, setNewAddress] = useState('');
     let addAddress = ()=>{
         address = [...address, newAddress]
@@ -235,6 +242,29 @@ const Organization = React.memo((props) => {
                                             'aria-label': 'description',
                                         }}
                                     />
+                                    <FormControl className={isMobileApp?classes.inputM:classes.inputD} variant='outlined'>
+                                        <InputLabel>Город</InputLabel>
+                                        <Select
+                                            multiple
+                                            value={cities}
+                                            onChange={handleCities}
+                                            input={<Input />}
+                                            MenuProps={{
+                                                PaperProps: {
+                                                    style: {
+                                                        maxHeight: 226,
+                                                        width: 250,
+                                                    },
+                                                }
+                                            }}
+                                        >
+                                            {_cities.map((city) => (
+                                                <MenuItem key={city} value={city}>
+                                                    {city}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
                                     <TextField
                                         label='Профиль'
                                         value={miniInfo}
@@ -383,9 +413,9 @@ const Organization = React.memo((props) => {
                                         {
                                             router.query.id==='new'?
                                                 <Button onClick={async()=>{
-                                                    if (image!==undefined&&name.length>0&&email.length>0&&address.length>0&&phone.length>0&&info.length>0) {
+                                                    if (cities.length>0&&image!==undefined&&name.length>0&&email.length>0&&address.length>0&&phone.length>0&&info.length>0) {
                                                         const action = async() => {
-                                                            await addOrganization({pass: pass, miniInfo: miniInfo, priotiry: checkInt(priotiry),consignation: consignation, onlyDistrict: onlyDistrict, unite: unite, superagent: superagent, onlyIntegrate: onlyIntegrate, autoAccept: autoAccept, warehouse: warehouse, accessToClient: accessToClient, image: image, name: name, address: address, email: email, phone: phone, info: info, minimumOrder: checkInt(minimumOrder)})
+                                                            await addOrganization({cities: cities, pass: pass, miniInfo: miniInfo, priotiry: checkInt(priotiry),consignation: consignation, onlyDistrict: onlyDistrict, unite: unite, superagent: superagent, onlyIntegrate: onlyIntegrate, autoAccept: autoAccept, warehouse: warehouse, accessToClient: accessToClient, image: image, name: name, address: address, email: email, phone: phone, info: info, minimumOrder: checkInt(minimumOrder)})
                                                             Router.push('/organizations')
                                                         }
                                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
@@ -403,6 +433,7 @@ const Organization = React.memo((props) => {
                                                     if(image!==undefined)editElement.image = image
                                                     if(pass!==data.organization.pass)editElement.pass = pass
                                                     if(name.length>0&&name!==data.organization.name)editElement.name = name
+                                                    if(cities.length>0)editElement.cities = cities
                                                     if(address.length>0&&address!==data.organization.address)editElement.address = address
                                                     if(email.length>0&&email!==data.organization.email)editElement.email = email
                                                     if(phone.length>0&&phone!==data.organization.phone)editElement.phone = phone
@@ -418,6 +449,7 @@ const Organization = React.memo((props) => {
                                                     if(consignation!==data.organization.consignation)editElement.consignation = consignation
                                                     if(minimumOrder!==data.organization.minimumOrder)editElement.minimumOrder = checkInt(minimumOrder)
                                                     if(priotiry!==data.organization.priotiry)editElement.priotiry = checkInt(priotiry)
+                                                    console.log(editElement)
                                                     const action = async() => {
                                                         await setOrganization(editElement)
                                                     }

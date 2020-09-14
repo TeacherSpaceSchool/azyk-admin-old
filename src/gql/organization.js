@@ -33,6 +33,7 @@ export const getOrganization = async({_id: _id}, client)=>{
                             autoAccept
                             warehouse
                             pass
+                            cities
                           }
                     }`,
             })
@@ -169,8 +170,8 @@ export const addOrganization = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($miniInfo: String!, $image: Upload!, $priotiry: Int, $minimumOrder: Int, $name: String!, $address: [String]!, $email: [String]!, $phone: [String]!, $info: String!, $consignation: Boolean!, $accessToClient: Boolean!, $unite: Boolean!, $superagent: Boolean!, $onlyDistrict: Boolean!, $onlyIntegrate: Boolean!, $autoAccept: Boolean!, $warehouse: String!, $pass: String) {
-                        addOrganization(miniInfo: $miniInfo, image: $image, priotiry: $priotiry, minimumOrder: $minimumOrder, name: $name, address: $address, email: $email, phone: $phone, info: $info, consignation: $consignation, unite: $unite, superagent: $superagent, accessToClient: $accessToClient, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate, autoAccept: $autoAccept, warehouse: $warehouse, pass: $pass) {
+                    mutation ($cities: [String]!, $miniInfo: String!, $image: Upload!, $priotiry: Int, $minimumOrder: Int, $name: String!, $address: [String]!, $email: [String]!, $phone: [String]!, $info: String!, $consignation: Boolean!, $accessToClient: Boolean!, $unite: Boolean!, $superagent: Boolean!, $onlyDistrict: Boolean!, $onlyIntegrate: Boolean!, $autoAccept: Boolean!, $warehouse: String!, $pass: String) {
+                        addOrganization(cities: $cities, miniInfo: $miniInfo, image: $image, priotiry: $priotiry, minimumOrder: $minimumOrder, name: $name, address: $address, email: $email, phone: $phone, info: $info, consignation: $consignation, unite: $unite, superagent: $superagent, accessToClient: $accessToClient, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate, autoAccept: $autoAccept, warehouse: $warehouse, pass: $pass) {
                              data
                         }
                     }`})
@@ -185,8 +186,8 @@ export const setOrganization = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($miniInfo: String, $_id: ID!, $consignation: Boolean, $priotiry: Int, $accessToClient: Boolean, $image: Upload, $minimumOrder: Int, $name: String, $address: [String], $email: [String], $phone: [String], $info: String, $unite: Boolean, $superagent: Boolean, $onlyDistrict: Boolean, $onlyIntegrate: Boolean, $autoAccept: Boolean, $warehouse: String, $pass: String) {
-                        setOrganization(miniInfo: $miniInfo, _id: $_id, priotiry: $priotiry, consignation: $consignation, accessToClient: $accessToClient, image: $image, minimumOrder: $minimumOrder, name: $name, address: $address, unite: $unite, superagent: $superagent, email: $email, phone: $phone, info: $info, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate, autoAccept: $autoAccept, warehouse: $warehouse, pass: $pass) {
+                    mutation ($cities: [String], $miniInfo: String, $_id: ID!, $consignation: Boolean, $priotiry: Int, $accessToClient: Boolean, $image: Upload, $minimumOrder: Int, $name: String, $address: [String], $email: [String], $phone: [String], $info: String, $unite: Boolean, $superagent: Boolean, $onlyDistrict: Boolean, $onlyIntegrate: Boolean, $autoAccept: Boolean, $warehouse: String, $pass: String) {
+                        setOrganization(cities: $cities, miniInfo: $miniInfo, _id: $_id, priotiry: $priotiry, consignation: $consignation, accessToClient: $accessToClient, image: $image, minimumOrder: $minimumOrder, name: $name, address: $address, unite: $unite, superagent: $superagent, email: $email, phone: $phone, info: $info, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate, autoAccept: $autoAccept, warehouse: $warehouse, pass: $pass) {
                              data
                         }
                     }`})

@@ -23,7 +23,7 @@ export const getIntegrate1Cs = async(arg, organization, client)=>{
                             agent
                                 {_id name}
                             item
-                                {_id name}
+                                {_id name city}
                           }
                           filterIntegrate1C {
                            name
@@ -124,6 +124,7 @@ export const getItemsIntegrate1C = async(organization, client)=>{
                         itemsIntegrate1C(organization: $organization) {
                             _id 
                             name
+                            city
                         }
                     }`,
             })

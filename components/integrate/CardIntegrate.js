@@ -23,9 +23,17 @@ const CardIntegrate = React.memo((props) => {
     const { element, setList, organization, items, clients, agents, ecspeditors, list, idx, getList } = props;
     const { isMobileApp } = props.app;
     //addCard
+    let [itemsByCity, setItemsByCity] = useState([]);
     let [guid, setGuid] = useState(element?element.guid:'');
     let handleGuid =  (event) => {
         setGuid(event.target.value)
+    };
+    const cities = ['Бишкек']
+    let [city, setCity] = useState(element&&element.item?element.item.city:'Бишкек');
+    let handleCity =  (event) => {
+        setItem({})
+        setCity(event.target.value)
+        setItemsByCity(items.filter(element=>element.city===event.target.value))
     };
     let [item, setItem] = useState(element?element.item:{});
     let handleItem =  (item) => {
@@ -67,6 +75,7 @@ const CardIntegrate = React.memo((props) => {
         setAgent({})
         setEcspeditor({})
         setItem({})
+        setItemsByCity([])
     };
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     return (
@@ -115,9 +124,20 @@ const CardIntegrate = React.memo((props) => {
                                 />
                                 :
                                 type==='товар'?
+                                    <>
+                                    <FormControl className={classes.input}>
+                                        <InputLabel>Город</InputLabel>
+                                        <Select value={city} onChange={handleCity}>
+                                            {cities.map((element)=>
+                                                <MenuItem key={element} value={element} ola={element}>{element}</MenuItem>
+                                            )}
+                                        </Select>
+                                    </FormControl>
+                                    <br/>
+                                    <br/>
                                     <Autocomplete
                                         className={classes.input}
-                                        options={items}
+                                        options={itemsByCity}
                                         getOptionLabel={option => option.name}
                                         value={item}
                                         onChange={(event, newValue) => {
@@ -128,6 +148,7 @@ const CardIntegrate = React.memo((props) => {
                                             <TextField {...params} label='Выберите товар' fullWidth />
                                         )}
                                     />
+                                    </>
                                     :
                                     type==='клиент'?
                                         <Autocomplete

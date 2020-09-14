@@ -75,7 +75,11 @@ const Client = React.memo((props) => {
     if(data.client.address.length>0&&!Array.isArray(data.client.address[0])) data.client.address.map((addres)=>[addres])
 
     let [address, setAddress] = useState(data.client&&data.client.address&&data.client.address.length>0?data.client.address:[['']]);
-    let [city, setCity] = useState(data.client&&data.client.city&&data.client.city?data.client.city:'');
+    const cities = ['Бишкек']
+    let [city, setCity] = useState(data.client&&data.client.city?data.client.city:'Бишкек');
+    let handleCity =  (event) => {
+        setCity(event.target.value)
+    };
 
     let [newAddress, setNewAddress] = useState('');
     let addAddress = ()=>{
@@ -221,20 +225,14 @@ const Client = React.memo((props) => {
                                             </InputAdornment>
                                         }
                                     />
-                                    <TextField
-                                        className={classes.input}
-                                        label='Город'
-                                        error={city.length===0}
-                                        type='text'
-                                        InputLabelProps={{
-                                            shrink: true,
-                                        }}
-                                        value={city}
-                                        inputProps={{
-                                            'aria-label': 'description',
-                                        }}
-                                        onChange={ event => setCity(event.target.value) }
-                                    />
+                                    <FormControl className={classes.input}>
+                                        <InputLabel>Город</InputLabel>
+                                        <Select value={city} onChange={handleCity}>
+                                            {cities.map((element)=>
+                                                <MenuItem key={element} value={element} ola={element}>{element}</MenuItem>
+                                            )}
+                                        </Select>
+                                    </FormControl>
                                     {address?address.map((element, idx)=>
                                             <div key={idx}>
                                                 <FormControl className={classes.input}>

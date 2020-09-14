@@ -60,6 +60,11 @@ const Item = React.memo((props) => {
     let [price, setPrice] = useState(data.item!==null?data.item.price:'');
     let [deliveryDays, setDeliveryDays] = useState(data.item!==null?data.item.deliveryDays:[]);
     let [subCategory, setSubCategory] = useState(data.item!==null?data.item.subCategory:{});
+    const cities = ['Бишкек']
+    let [city, setCity] = useState(data.item&&data.item.city?data.item.city:'Бишкек');
+    let handleCity =  (event) => {
+        setCity(event.target.value)
+    };
     let [status, setStatus] = useState(data.item!==null?data.item.status:'');
     let handleSubCategory =  (event) => {
         setSubCategory({_id: event.target.value, name: event.target.name})
@@ -238,6 +243,14 @@ const Item = React.memo((props) => {
                                                 }}
                                             />
                                         </h1>
+                                        <FormControl className={isMobileApp?classes.inputM:classes.inputD}>
+                                            <InputLabel>Город</InputLabel>
+                                            <Select value={city} onChange={handleCity}>
+                                                {cities.map((element)=>
+                                                    <MenuItem key={element} value={element} ola={element}>{element}</MenuItem>
+                                                )}
+                                            </Select>
+                                        </FormControl>
                                         <div className={classes.price}>
                                             <FormControl className={isMobileApp?classes.inputM:classes.inputD} variant='outlined'>
                                                 <InputLabel>Категории</InputLabel>
@@ -432,6 +445,7 @@ const Item = React.memo((props) => {
                                                                     size: checkFloat(size),
                                                                     apiece: apiece,
                                                                     unit: unit,
+                                                                    city: city,
                                                                     priotiry: checkInt(priotiry)
                                                                 }, subCategory._id)
                                                                 Router.push(`/items/${subCategory._id}`)
@@ -450,6 +464,7 @@ const Item = React.memo((props) => {
                                                         if (categorys.length>0){
                                                             let editElement = {_id: data.item._id, categorys: categorys}
                                                             if(stock!==data.item.stock)editElement.stock = checkFloat(stock)
+                                                            if(city!==data.item.city)editElement.city = city
                                                             if(name.length>0&&name!==data.item.name)editElement.name = name
                                                             if(packaging!==data.item.packaging&&checkInt(packaging)>0)editElement.packaging = checkInt(packaging)
                                                             if(image!==undefined)editElement.image = image

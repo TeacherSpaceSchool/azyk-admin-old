@@ -24,6 +24,7 @@ export const getOrders = async(args, client)=>{
                                     name
                                     email
                                     phone
+                                    city
                                     user 
                                         {_id }
                                 }

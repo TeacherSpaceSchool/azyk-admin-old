@@ -11,8 +11,7 @@ import initialApp from '../../src/initialApp'
 import Table from '../../components/app/Table'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import { pdDatePicker } from '../../src/lib'
-import { getStatisticAzykStoreAgent } from '../../src/gql/statistic'
-import { getAgents } from '../../src/gql/employment'
+import { getStatisticAzykStoreAgents, getSuperagentOrganization } from '../../src/gql/statistic'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -23,43 +22,43 @@ const AzykStoreStatistic = React.memo((props) => {
 
     const classes = pageListStyle();
     const { data } = props;
-    const { isMobileApp } = props.app;
+    const { isMobileApp, filter } = props.app;
     let [dateStart, setDateStart] = useState(pdDatePicker(new Date()));
     let [dateType, setDateType] = useState('day');
     let [statisticOrder, setStatisticOrder] = useState(undefined);
     let [showStat, setShowStat] = useState(false);
-    let [agent, setAgent] = useState(undefined);
+    let [organization, setOrganization] = useState(undefined);
     const { showLoad } = props.appActions;
     useEffect(()=>{
         (async()=>{
-            if(agent) {
-                await showLoad(true)
-                setStatisticOrder((await getStatisticAzykStoreAgent({
-                    agent: agent._id,
-                    dateStart: dateStart ? dateStart : null,
-                    dateType: dateType,
-                })).statisticAzykStoreAgent)
-                await showLoad(false)
-            }
+            await showLoad(true)
+            setStatisticOrder((await getStatisticAzykStoreAgents({
+                ...organization?{company: organization._id}:{},
+                dateStart: dateStart ? dateStart : null,
+                dateType: dateType,
+                filter: filter
+            })).statisticAzykStoreAgents)
+            await showLoad(false)
         })()
-    },[agent, dateStart, dateType])
+    },[organization, dateStart, dateType, filter])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
             appBody[0].style.paddingBottom = '0px'
         }
     },[process.browser])
+    const filters = [{name: 'Агент', value: 'агент'}, {name: 'Организация', value: 'организация'},]
     return (
-        <App pageName='Статистика агента AZYK.STORE'>
+        <App pageName='Статистика агентов AZYK.STORE' filters={filters}>
             <Head>
-                <title>Статистика агента AZYK.STORE</title>
+                <title>Статистика агентов AZYK.STORE</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
-                <meta property='og:title' content='Статистика агента AZYK.STORE' />
+                <meta property='og:title' content='Статистика агентов AZYK.STORE' />
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
-                <meta property='og:url' content={`${urlMain}/statistic/agentAzykStore`} />
-                <link rel='canonical' href={`${urlMain}/statistic/agentAzykStore`}/>
+                <meta property='og:url' content={`${urlMain}/statistic/agentsAzykStore`} />
+                <link rel='canonical' href={`${urlMain}/statistic/agentdAzykStore`}/>
             </Head>
             <Card className={classes.page}>
                 <CardContent className={classes.column} style={isMobileApp?{}:{justifyContent: 'start', alignItems: 'flex-start'}}>
@@ -80,15 +79,15 @@ const AzykStoreStatistic = React.memo((props) => {
                     <div className={classes.row}>
                         <Autocomplete
                             className={classes.input}
-                            options={data.agents}
+                            options={data.superagentOrganization}
                             getOptionLabel={option => option.name}
-                            value={agent}
+                            value={organization}
                             onChange={(event, newValue) => {
-                                setAgent(newValue)
+                                setOrganization(newValue)
                             }}
                             noOptionsText='Ничего не найдено'
                             renderInput={params => (
-                                <TextField {...params} label='агент' fullWidth/>
+                                <TextField {...params} label='Организация' fullWidth/>
                             )}
                         />
                         <TextField
@@ -138,6 +137,7 @@ const AzykStoreStatistic = React.memo((props) => {
 
 AzykStoreStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.filter = 'агент'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -148,7 +148,7 @@ AzykStoreStatistic.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getAgents({_id: 'super'}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            ...await getSuperagentOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };
 };

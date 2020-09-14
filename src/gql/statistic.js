@@ -60,7 +60,7 @@ export const getStatisticAzykStoreOrder = async({company, dateStart, dateType}, 
     }
 }
 
-export const getStatisticAzykStoreAgent = async({company, dateStart, dateType, filter}, client)=>{
+export const getStatisticAzykStoreAgents = async({company, dateStart, dateType, filter}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
@@ -68,7 +68,28 @@ export const getStatisticAzykStoreAgent = async({company, dateStart, dateType, f
                 variables: {company: company, dateStart: dateStart, dateType: dateType, filter: filter},
                 query: gql`
                     query ($company: ID, $dateStart: Date, $dateType: String, $filter: String) {
-                        statisticAzykStoreAgent(company: $company, dateStart: $dateStart, dateType: $dateType, filter: $filter) {
+                        statisticAzykStoreAgents(company: $company, dateStart: $dateStart, dateType: $dateType, filter: $filter) {
+                            columns
+                            row 
+                                {_id data}
+                        }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
+export const getStatisticAzykStoreAgent = async({agent, dateStart, dateType}, client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                variables: {agent: agent, dateStart: dateStart, dateType: dateType},
+                query: gql`
+                    query ($agent: ID!, $dateStart: Date, $dateType: String) {
+                        statisticAzykStoreAgent(agent: $agent, dateStart: $dateStart, dateType: $dateType) {
                             columns
                             row 
                                 {_id data}

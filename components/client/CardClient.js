@@ -92,6 +92,14 @@ const CardOrganization = React.memo((props) => {
                             }
                             <div className={classes.row}>
                                 <div className={classes.nameField}>
+                                    Город:&nbsp;
+                                </div>
+                                <div className={classes.value}>
+                                    {element.city}
+                                </div>
+                            </div>
+                            <div className={classes.row}>
+                                <div className={classes.nameField}>
                                     Адрес:&nbsp;
                                 </div>
                                 <div>
