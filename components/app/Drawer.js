@@ -19,6 +19,7 @@ import LiveHelp from '@material-ui/icons/LiveHelp';
 import InfoIcon from '@material-ui/icons/Info';
 import GroupIcon from '@material-ui/icons/Group';
 import ReceiptIcon from '@material-ui/icons/Receipt';
+import RateReview from '@material-ui/icons/RateReview';
 import LocalShipping from '@material-ui/icons/LocalShipping';
 import LocationCityIcon from '@material-ui/icons/LocationCity';
 import BusinessCenterIcon from '@material-ui/icons/BusinessCenter';
@@ -339,6 +340,19 @@ const MyDrawer = React.memo((props) => {
                             <ListItem style={{background: router.pathname==='/blog'?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncoverBonus(false);showDrawer(false)}}>
                                 <ListItemIcon><ArtTrackIcon color='inherit'/></ListItemIcon>
                                 <ListItemText primary='Блог' />
+                            </ListItem>
+                        </Link>
+                        <Divider/>
+                        </>
+                        :null
+                }
+                {
+                    ['admin', 'client', 'суперорганизация', 'организация'].includes(profile.role)?
+                        <>
+                        <Link href='/reviews'>
+                            <ListItem style={{background: router.pathname==='/reviews'?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncoverBonus(false);showDrawer(false)}}>
+                                <ListItemIcon><RateReview color='inherit'/></ListItemIcon>
+                                <ListItemText primary='Отзывы' />
                             </ListItem>
                         </Link>
                         <Divider/>

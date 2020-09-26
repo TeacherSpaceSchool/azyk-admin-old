@@ -7,6 +7,7 @@ import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
 import { Map, YMaps, Placemark, TrafficControl, Polyline } from 'react-yandex-maps';
 import Order from './Order';
+import OpenOrderRoute from './OpenOrderRoute';
 import * as snackbarActions from '../../redux/actions/snackbar'
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -113,8 +114,21 @@ const Geo =  React.memo(
                                                     onClick={async() => {
                                                         let _elemenet = (await getOrder({_id: invoice._id})).invoice
                                                         if(_elemenet) {
-                                                            setMiniDialog('Заказ', <Order idx={idx} list={_list} setList={_setList_} route={false}
-                                                                                          element={_elemenet}/>);
+                                                            if(geo){
+                                                                setMiniDialog('Заказ', <OpenOrderRoute idx={idx} list={_list}
+                                                                                              setList={_setList_}
+                                                                                              route={false}
+                                                                                              element={_elemenet}
+                                                                                              geoMy={geo}
+                                                                                              geoOrder={invoice.address[1].split(', ')}
+                                                                />);
+                                                            }
+                                                            else {
+                                                                setMiniDialog('Заказ', <Order idx={idx} list={_list}
+                                                                                              setList={_setList_}
+                                                                                              route={false}
+                                                                                              element={_elemenet}/>);
+                                                            }
                                                             showMiniDialog(true)
                                                         }
                                                     }}
@@ -184,8 +198,21 @@ const Geo =  React.memo(
                                                     onClick={async () => {
                                                         let _elemenet = (await getOrder({_id: invoice._id})).invoice
                                                         if(_elemenet) {
-                                                            setMiniDialog('Заказ', <Order setList={_setList_} idx={idx} list={_list} route={false}
-                                                                                          element={_elemenet}/>);
+                                                            if(geo){
+                                                                setMiniDialog('Заказ', <OpenOrderRoute idx={idx} list={_list}
+                                                                                                       setList={_setList_}
+                                                                                                       route={false}
+                                                                                                       element={_elemenet}
+                                                                                                       geoMy={geo}
+                                                                                                       geoOrder={invoice.address[1].split(', ')}
+                                                                />);
+                                                            }
+                                                            else {
+                                                                setMiniDialog('Заказ', <Order idx={idx} list={_list}
+                                                                                              setList={_setList_}
+                                                                                              route={false}
+                                                                                              element={_elemenet}/>);
+                                                            }
                                                             showMiniDialog(true)
                                                         }
                                                     }}

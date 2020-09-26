@@ -207,15 +207,15 @@ export const getStatisticOrganizationActivity = async({online, organization}, cl
     }
 }
 
-export const getUnloadingOrders = async({organization, dateStart}, client)=>{
+export const getUnloadingOrders = async({organization, dateStart, filter}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {organization: organization, dateStart: dateStart},
+                variables: {organization: organization, dateStart: dateStart, filter: filter},
                 query: gql`
-                    query ($organization: ID!, $dateStart: Date!) {
-                        unloadingOrders(organization: $organization, dateStart: $dateStart) {
+                    query ($organization: ID!, $dateStart: Date!, $filter: String!) {
+                        unloadingOrders(organization: $organization, dateStart: $dateStart, filter: $filter) {
                             data
                         }
                     }`,

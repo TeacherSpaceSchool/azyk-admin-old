@@ -34,6 +34,10 @@ export default makeStyles({
         width: 'calc(50% - 10px)',
         margin: 5
     },
+    inputThird: {
+        width: 'calc((100% / 3) - 10px)',
+        margin: 5
+    },
     rowStatic: {
         margin: 5
     },

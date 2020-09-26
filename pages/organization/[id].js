@@ -449,7 +449,6 @@ const Organization = React.memo((props) => {
                                                     if(consignation!==data.organization.consignation)editElement.consignation = consignation
                                                     if(minimumOrder!==data.organization.minimumOrder)editElement.minimumOrder = checkInt(minimumOrder)
                                                     if(priotiry!==data.organization.priotiry)editElement.priotiry = checkInt(priotiry)
-                                                    console.log(editElement)
                                                     const action = async() => {
                                                         await setOrganization(editElement)
                                                     }

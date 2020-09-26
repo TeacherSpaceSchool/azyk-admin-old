@@ -23,7 +23,7 @@ const UnloadingOrders = React.memo((props) => {
     const { profile } = props.user;
     let [date, setDate] = useState(null);
     let [organization, setOrganization] = useState(profile.organization?{_id: profile.organization}:{_id: 'all'});
-    const { isMobileApp } = props.app;
+    const { isMobileApp, filter } = props.app;
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
@@ -31,8 +31,9 @@ const UnloadingOrders = React.memo((props) => {
         }
     },[process.browser])
     const { showLoad } = props.appActions;
+    const filters = [{name: 'Дата доставки', value: 'Дата доставки'}, {name: 'Дата заказа', value: 'Дата заказа'}]
     return (
-        <App pageName='Выгрузка заказов'>
+        <App pageName='Выгрузка заказов' filters={filters}>
             <Head>
                 <title>Выгрузка заказов</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -66,7 +67,7 @@ const UnloadingOrders = React.memo((props) => {
                         }
                         <TextField
                             className={classes.input}
-                            label='Дата доставки'
+                            label={filter}
                             type='date'
                             InputLabelProps={{
                                 shrink: true,
@@ -84,7 +85,8 @@ const UnloadingOrders = React.memo((props) => {
                             await showLoad(true)
                             window.open(((await getUnloadingOrders({
                                 organization: organization._id,
-                                dateStart: date
+                                dateStart: date,
+                                filter: filter
                             })).unloadingOrders).data, '_blank');
                             await showLoad(false)
                         }
@@ -99,6 +101,7 @@ const UnloadingOrders = React.memo((props) => {
 
 UnloadingOrders.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.filter = 'Дата доставки'
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {

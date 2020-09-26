@@ -79,7 +79,7 @@ const BuyBasket =  React.memo(
                         dateDeliverys = [true, true, true, true, true, true, false]
                     for (let i = 0; i < 7; i++) {
                         let day = new Date()
-                        if(day.getHours()>3)
+                        if(day.getHours()>=3)
                             day.setDate(day.getDate()+1)
                         day.setDate(day.getDate()+i)
                         day.setHours(3, 0, 0, 0)
