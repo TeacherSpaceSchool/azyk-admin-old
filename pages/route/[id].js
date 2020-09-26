@@ -342,7 +342,7 @@ const Route = React.memo((props) => {
                                                                 Сумма{element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)?' (факт/итого)':''}:&nbsp;
                                                             </div>
                                                             <div className={classes.value}>
-                                                                {element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)?`${element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)} сом/`:''}{element.orders.reduce((accumulator, element) => accumulator + (element.allPrice-element.returnedPrice), 0)} сом
+                                                                {element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)?`${element.orders.reduce((accumulator, element) => accumulator + (element.allPrice-element.returnedPrice), 0)-element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)} сом/`:''}{element.orders.reduce((accumulator, element) => accumulator + (element.allPrice-element.returnedPrice), 0)} сом
                                                             </div>
                                                         </div>
                                                         <div className={classes.row}>
