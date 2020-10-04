@@ -9,19 +9,17 @@ import { Map, YMaps, Placemark, TrafficControl } from 'react-yandex-maps';
 import * as snackbarActions from '../../redux/actions/snackbar'
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { addAgentHistoryGeo } from '../../src/gql/agentHistoryGeo'
-import {getGeoDistance} from '../../src/lib'
 import Router from 'next/router'
-import Confirmation from '../../components/dialog/Confirmation'
 import Fab from '@material-ui/core/Fab';
 import GpsFixed from '@material-ui/icons/GpsFixed';
+import GeoSelectClient from './GeoSelectClient';
 
 const Geo =  React.memo(
     (props) =>{
-        const { showFullDialog } = props.mini_dialogActions;
+        const { showFullDialog, setFullDialog } = props.mini_dialogActions;
         const { showSnackBar } = props.snackbarActions;
         const { profile } = props.user;
-        const { classes, clients } = props;
+        const { classes, clients, unselectedClient, setClient, setUnselectedClient } = props;
         let [geo, setGeo] = useState(null);
         let [follow, setFollow] = useState(false);
         const searchTimeOutRef = useRef(null);
@@ -115,6 +113,14 @@ const Geo =  React.memo(
                         }
                     </div>
                     <center>
+                        {
+                            unselectedClient&&profile.role==='admin'?
+                                <Button variant='contained' color='primary' onClick={()=>{setFullDialog('Редактировать район', <GeoSelectClient setUnselectedClient={setUnselectedClient} client={clients} setClient={setClient} unselectedClient={unselectedClient}/>);}} className={classes.button}>
+                                    Редактировать
+                                </Button>
+                                :
+                                null
+                        }
                         <Button variant='contained' color='secondary' onClick={()=>{showFullDialog(false);}} className={classes.button}>
                             Закрыть
                         </Button>

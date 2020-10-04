@@ -301,7 +301,7 @@ const District = React.memo((props) => {
                             </div>
                             <div className={isMobileApp?classes.bottomRouteM:classes.bottomRouteD}>
                                 <Button onClick={async()=>{
-                                    setFullDialog('Маршрут', <GeoRouteAgent clients={client}/>)
+                                    setFullDialog('Маршрут', <GeoRouteAgent clients={client} unselectedClient={unselectedClient} setUnselectedClient={setUnselectedClient} setClient={setClient}/>)
                                     showFullDialog(true)
                                 }} size='small' color='primary'>
                                     Карта

@@ -7,7 +7,7 @@ import { urlMain } from '../../redux/constants/other'
 import initialApp from '../../src/initialApp'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import { getStatisticClientGeo, getActiveItem, getActiveOrganization } from '../../src/gql/statistic'
-import { Map, YMaps, Placemark, ObjectManager } from 'react-yandex-maps';
+import { Map, YMaps, ObjectManager } from 'react-yandex-maps';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
@@ -17,7 +17,7 @@ import * as appActions from '../../redux/actions/app'
 const ClientGeoStatistic = React.memo((props) => {
 
     const { data } = props;
-    const { isMobileApp } = props.app;
+    const { search, isMobileApp } = props.app;
     const { profile } = props.user;
     const { showLoad } = props.appActions;
     let [load, setLoad] = useState(true);
@@ -50,11 +50,11 @@ const ClientGeoStatistic = React.memo((props) => {
         (async()=>{
             if(profile.role==='admin') {
                 await showLoad(true)
-                setStatisticClientGeo((await getStatisticClientGeo({organization: organization ? organization._id : null, item: item ? item._id : null})).statisticClientGeo)
+                setStatisticClientGeo((await getStatisticClientGeo({search: search, organization: organization ? organization._id : null, item: item ? item._id : null})).statisticClientGeo)
                 await showLoad(false)
             }
         })()
-    },[item, items/*, organization*/])
+    },[item, items, search/*, organization*/])
     useEffect(()=>{
         (async()=>{
             if(profile.role==='admin'&&statisticClientGeo) {
@@ -88,11 +88,10 @@ const ClientGeoStatistic = React.memo((props) => {
             }
         })()
     },[statisticClientGeo])
-
     return (
         <>
         <YMaps>
-            <App pageName='Карта клиентов'>
+            <App searchShow={true} pageName='Карта клиентов'>
                 <Head>
                     <title>Карта клиентов</title>
                     <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />

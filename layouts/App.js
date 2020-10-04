@@ -20,6 +20,7 @@ import { start } from '../src/service/idb'
 
 export const mainWindow = React.createRef();
 export const alert = React.createRef();
+export let containerRef;
 
 const App = React.memo(props => {
     const { setProfile, logout } = props.userActions;
@@ -77,7 +78,7 @@ const App = React.memo(props => {
 
     });
 
-    const containerRef = useBottomScrollListener(async()=>{
+    containerRef = useBottomScrollListener(async()=>{
         if(checkPagination) {
             await setReloadPage(true)
             await checkPagination()

@@ -227,7 +227,7 @@ const ChartStatistic = React.memo((props) => {
             <div className='count' onClick={()=>setShowStat(!showStat)}>
                 {
                     statisticOrderChart?
-                        `${statisticOrderChart.all} ${type==='money'?'сом':'заказы'}`
+                        `${statisticOrderChart.all} ${type.value==='money'?'сом':type.value==='clients'?'клиенты':'заказы'}`
                         :null
                 }
             </div>

@@ -532,15 +532,15 @@ export const getStatisticAgents = async({company, dateStart, dateType}, client)=
     }
 }
 
-export const getStatisticClientGeo = async({organization, item}, client)=>{
+export const getStatisticClientGeo = async({organization, item, search}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {organization: organization, item: item},
+                variables: {organization, item, search},
                 query: gql`
-                    query($organization: ID, $item: ID) {
-                        statisticClientGeo(organization: $organization, item: $item) {
+                    query($organization: ID, $item: ID, $search: String) {
+                        statisticClientGeo(organization: $organization, item: $item, search: $search) {
                             client
                             address
                             data
