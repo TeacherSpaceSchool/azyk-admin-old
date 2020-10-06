@@ -76,6 +76,12 @@ const District = React.memo((props) => {
     let [selectType, setSelectType] = useState(['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role)?'Все':'Выбраные');
     const { setMiniDialog, showMiniDialog, setFullDialog, showFullDialog } = props.mini_dialogActions;
     const { showSnackBar } = props.snackbarActions;
+    const selectClient = (i)=>{
+        client.push(unselectedClient[i])
+        unselectedClient.splice(i, 1)
+        setClient([...client])
+        setUnselectedClient([...unselectedClient])
+    }
     useEffect(()=>{
         (async()=>{
             if(router.query.id==='new'&&profile.organization){
@@ -301,7 +307,7 @@ const District = React.memo((props) => {
                             </div>
                             <div className={isMobileApp?classes.bottomRouteM:classes.bottomRouteD}>
                                 <Button onClick={async()=>{
-                                    setFullDialog('Маршрут', <GeoRouteAgent clients={client} unselectedClient={unselectedClient} setUnselectedClient={setUnselectedClient} setClient={setClient}/>)
+                                    setFullDialog('Маршрут', <GeoRouteAgent clients={client} unselectedClient={unselectedClient} selectClient={selectClient}/>)
                                     showFullDialog(true)
                                 }} size='small' color='primary'>
                                     Карта

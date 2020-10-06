@@ -19,7 +19,7 @@ const Geo =  React.memo(
         const { showFullDialog, setFullDialog } = props.mini_dialogActions;
         const { showSnackBar } = props.snackbarActions;
         const { profile } = props.user;
-        const { classes, clients, unselectedClient, setClient, setUnselectedClient } = props;
+        const { classes, clients, unselectedClient, selectClient } = props;
         let [geo, setGeo] = useState(null);
         let [follow, setFollow] = useState(false);
         const searchTimeOutRef = useRef(null);
@@ -115,7 +115,8 @@ const Geo =  React.memo(
                     <center>
                         {
                             unselectedClient&&profile.role==='admin'?
-                                <Button variant='contained' color='primary' onClick={()=>{setFullDialog('Редактировать район', <GeoSelectClient setUnselectedClient={setUnselectedClient} client={clients} setClient={setClient} unselectedClient={unselectedClient}/>);}} className={classes.button}>
+                                <Button variant='contained' color='primary' onClick={()=>{setFullDialog('Редактировать район',
+                                    <GeoSelectClient clients={unselectedClient} selectClient={selectClient}/>);}} className={classes.button}>
                                     Редактировать
                                 </Button>
                                 :

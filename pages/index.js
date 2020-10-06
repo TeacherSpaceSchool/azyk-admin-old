@@ -86,14 +86,14 @@ const Organization = React.memo((props) => {
             <div className='count'>
                 {`Всего брендов: ${list.length}`}
             </div>
-            {
+            {/*
                 profile.role==='client'&&data.popularItems&&data.popularItems.length>0&&widthPopularItem?
                     <div ref={popularItemsRef} className={classes.populars}>
                         {data.popularItems.map((element)=> <CardPopularItem widthPopularItem={widthPopularItem} key={element._id} element={element}/>)}
                     </div>
                     :
                     null
-            }
+            */}
             <div className={classes.page} style={{paddingTop: profile.role==='client'&&data.popularItems&&data.popularItems.length>0&&widthPopularItem?10:20}}>
                 {list?list.map((element, idx)=> {
                     if(idx<=pagination)

@@ -7,7 +7,7 @@ const CardOrganizationPlaceholder = React.memo((props) => {
     const classes = cardCategoryStyle();
     const { isMobileApp } = props.app;
     return (
-        <div className={isMobileApp?classes.cardM:classes.cardD} style={{height: 80}}>
+        <div className={isMobileApp?classes.cardBrand:classes.cardD} style={{height: isMobileApp?125:80}}>
             <Skeleton variant='rect' height='100%'/>
         </div>
     );

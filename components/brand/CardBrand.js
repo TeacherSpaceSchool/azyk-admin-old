@@ -12,32 +12,49 @@ const CardBrand = React.memo((props) => {
     const { isMobileApp } = props.app;
     const { profile } = props.user;
     return (
-        <Link href={`/${profile.role==='client'?'catalog':'brand'}/[id]`} as={`/${profile.role==='client'?'catalog':'brand'}/${element._id}`}>
-            <Card className={isMobileApp?classes.cardM:classes.cardD}>
-                <CardActionArea>
-                       <div className={classes.line}>
+        isMobileApp?
+            <Link href={`/${profile.role==='client'?'catalog':'brand'}/[id]`} as={`/${profile.role==='client'?'catalog':'brand'}/${element._id}`}>
+                <Card className={classes.cardBrand}>
+                    <img
+                        className={classes.mediaBrand}
+                        src={element.image}
+                        alt={element.name}
+                    />
+                    <div className={classes.nameBrand}>
+                        {element.name}
+                    </div>
+                    <div className={classes.textBrand}>
+                        {element.miniInfo?element.miniInfo:''}
+                    </div>
+                </Card>
+            </Link>
+            :
+            <Link href={`/${profile.role==='client'?'catalog':'brand'}/[id]`} as={`/${profile.role==='client'?'catalog':'brand'}/${element._id}`}>
+                <Card className={isMobileApp?classes.cardM:classes.cardD}>
+                    <CardActionArea>
+                        <div className={classes.line}>
                             <img
                                 className={classes.mediaO}
                                 src={element.image}
                                 alt={element.name}
                             />
-                           <div className={classes.column}>
-                               <h3 className={classes.input}>
-                                   {element.name}
-                               </h3>
-                               {
-                                   element.miniInfo?
-                                       <div className={classes.value}>
-                                           {element.miniInfo}
-                                       </div>
-                                       :
-                                       null
-                               }
-                           </div>
+                            <div className={classes.column}>
+                                <h3 className={classes.input}>
+                                    {element.name}
+                                </h3>
+                                {
+                                    element.miniInfo?
+                                        <div className={classes.value}>
+                                            {element.miniInfo}
+                                        </div>
+                                        :
+                                        null
+                                }
+                            </div>
                         </div>
-                </CardActionArea>
-            </Card>
-        </Link>
+                    </CardActionArea>
+                </Card>
+            </Link>
     );
 })
 

@@ -33,13 +33,14 @@ import Button from '@material-ui/core/Button';
 
 const height = 225
 const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'))
+const GeoSelectClient = dynamic(() => import('../../components/dialog/GeoSelectClient'))
 
 const LogistiOorder = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     let { isMobileApp, search } = props.app;
     const { profile } = props.user;
-    const { setMiniDialog, showMiniDialog} = props.mini_dialogActions;
+    const { setMiniDialog, showMiniDialog, setFullDialog, showFullDialog} = props.mini_dialogActions;
     const { showLoad } = props.appActions;
     const { showSnackBar } = props.snackbarActions;
     let [pagination, setPagination] = useState(100);
@@ -53,6 +54,10 @@ const LogistiOorder = React.memo((props) => {
     let [organizations, setOrganizations] = useState([]);
     let [organization, setOrganization] = useState(undefined);
     let [days, setDays] = useState([true, true, true, true, true, true, false]);
+    const selectClient = (i)=>{
+        selectedClients.push(allClients[i]._id)
+        setSelectedClients([...selectedClients])
+    }
     useEffect(()=>{
         (async ()=>{
             if(profile.organization) {
@@ -269,6 +274,16 @@ const LogistiOorder = React.memo((props) => {
                     horizontal: 'left',
                 }}
             >
+                {
+                    allClients.length>0?
+                        <MenuItem onClick={async()=>{
+                            setFullDialog('Редактировать район', <GeoSelectClient clients={allClients} selectClient={selectClient}/>);
+                            showFullDialog(true)
+                            close()
+                        }}>По карте</MenuItem>
+                        :
+                        null
+                }
                 <MenuItem onClick={async()=>{
                     if(selectedClients.length>0){
                         const action = async() => {

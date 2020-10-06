@@ -49,4 +49,37 @@ export default makeStyles({
         fontFamily: 'Roboto',
         wordBreak: 'break-all'
     },
+    cardBrand: {
+        width: 'calc(100vw / 3 - 10px)',
+        margin: 5,
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+        height: 125
+    },
+    mediaBrand: {
+        borderRadius: '30px',
+        objectFit: 'cover',
+        height: '60px',
+        width: '60px',
+        margin: 5,
+    },
+    nameBrand: {
+        width: 'calc(100vw / 3 - 15px)',
+        fontWeight: 'bold',
+        fontSize: '0.81rem',
+        fontFamily: 'Roboto',
+        overflow: 'hidden',
+        height: 15,
+        marginBottom: 5,
+        textAlign: 'center'
+    },
+    textBrand: {
+        width: 'calc(100vw / 3 - 15px)',
+        fontSize: '0.6875rem',
+        fontFamily: 'Roboto',
+        overflow: 'hidden',
+        height: 30,
+        textAlign: 'center'
+    }
 })

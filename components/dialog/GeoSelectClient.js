@@ -20,7 +20,7 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 const GeoSelectClient =  React.memo(
     (props) =>{
         const { showFullDialog, setMiniDialog, showMiniDialog } = props.mini_dialogActions;
-        const { classes, unselectedClient, setClient, client, setUnselectedClient } = props;
+        const { classes, clients, selectClient } = props;
         let [yellowData, setYellowData] = useState([]);
         let [show, setShow] = useState(false);
         let [geo1, setGeo1] = useState([42.86745, 74.592635]);
@@ -55,18 +55,18 @@ const GeoSelectClient =  React.memo(
             (async()=>{
                 let _yellowData = []
                 let data
-                for(let i=1;i<unselectedClient.length;i++){
-                    if(unselectedClient[i].address[0]&&unselectedClient[i].address[0][1]&&unselectedClient[i].address[0][1].length) {
+                for(let i=0; i<clients.length; i++){
+                    if(clients[i].address[0]&&clients[i].address[0][1]&&clients[i].address[0][1].length) {
                         data = {
                             type: 'Feature',
-                            id: unselectedClient[i]._id,
+                            id: clients[i]._id,
                             geometry: {
                                 type: 'Point',
-                                coordinates: unselectedClient[i].address[0][1].split(', ')
+                                coordinates: clients[i].address[0][1].split(', ')
                             },
                             properties: {
                                 iconColor: 'yellow',
-                                iconCaption: `${unselectedClient[i].address[0][2] ? `${unselectedClient[i].address[0][2]}, ` : ''}${unselectedClient[i].address[0][0]}`
+                                iconCaption: `${clients[i].address[0][2] ? `${clients[i].address[0][2]}, ` : ''}${clients[i].address[0][0]}`
                             }
                         }
                         _yellowData.push(data)
@@ -143,13 +143,10 @@ const GeoSelectClient =  React.memo(
                         <Button variant='contained' color='primary' onClick={async()=>{
                             const action = async() => {
                                 showFullDialog(false);
-                                for(let i=0; i<unselectedClient.length; i++){
-                                    if(unselectedClient[i].address[0]&&unselectedClient[i].address[0][1]&&unselectedClient[i].address[0][1].length){
-                                        if(classifyPoint([geo1, geo2, geo3, geo4], unselectedClient[i].address[0][1].split(', '))===-1){
-                                            client.push(unselectedClient[i])
-                                            unselectedClient.splice(i, 1)
-                                            setClient([...client])
-                                            setUnselectedClient([...unselectedClient])
+                                for(let i=0; i<clients.length; i++){
+                                    if(clients[i].address[0]&&clients[i].address[0][1]&&clients[i].address[0][1].length){
+                                        if(classifyPoint([geo1, geo2, geo3, geo4], clients[i].address[0][1].split(', '))===-1){
+                                            await selectClient(i)
                                         }
                                     }
                                 }
