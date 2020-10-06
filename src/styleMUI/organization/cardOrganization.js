@@ -55,7 +55,7 @@ export default makeStyles({
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
-        height: 125
+        height: 135
     },
     mediaBrand: {
         borderRadius: '30px',
@@ -71,7 +71,7 @@ export default makeStyles({
         fontFamily: 'Roboto',
         overflow: 'hidden',
         height: 15,
-        marginBottom: 5,
+        marginBottom: 3,
         textAlign: 'center'
     },
     textBrand: {
@@ -79,7 +79,7 @@ export default makeStyles({
         fontSize: '0.6875rem',
         fontFamily: 'Roboto',
         overflow: 'hidden',
-        height: 30,
+        height: 45,
         textAlign: 'center'
     }
 })
