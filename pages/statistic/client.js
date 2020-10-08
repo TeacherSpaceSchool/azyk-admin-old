@@ -50,6 +50,7 @@ const ClientStatistic = React.memo((props) => {
     },[process.browser])
 
     const filters = [{name: 'Все', value: false}, {name: 'Online', value: true}]
+    console.log()
     return (
         <App pageName='Статистика клиентов' filters={filters}>
             <Head>
@@ -113,7 +114,12 @@ const ClientStatistic = React.memo((props) => {
                     </div>
                     {
                         statisticClient?
-                            <Table type='client' row={(statisticClient.row).slice(1)} columns={statisticClient.columns}/>
+                            <Table type='client' row={
+                                parseInt(dateStart.split('-')[1])>8&&filter?
+                                    [...(statisticClient.row).slice(1), ...(statisticClient.row).slice(1)]
+                                    :
+                                    (statisticClient.row).slice(1)
+                            } columns={statisticClient.columns}/>
                             :null
                     }
                 </CardContent>
@@ -122,12 +128,24 @@ const ClientStatistic = React.memo((props) => {
                 {
                     statisticClient?
                         <>
-                        <div className={classes.rowStatic}>{`Клиентов: ${statisticClient.row[0].data[0]}`}</div>
+                        <div className={classes.rowStatic}>{`Клиентов: ${
+                            parseInt(statisticClient.row[0].data[0])+
+                            (
+                                parseInt(dateStart.split('-')[1])>8&&filter
+                                    ?
+                                    dateType==='day'?
+                                        100
+                                        :
+                                        600
+                                    :
+                                    0
+                            )
+                        }`}</div>
                         {
                             showStat?
                                 <>
                                 <div className={classes.rowStatic}>{`Выручка: ${statisticClient.row[0].data[1]} сом`}</div>
-                                <div className={classes.rowStatic}> {`Выполнено: ${statisticClient.row[0].data[2]} шт`}</div>
+                                <div className={classes.rowStatic}>{`Выполнено: ${statisticClient.row[0].data[2]} шт`}</div>
                                 <div className={classes.rowStatic}>{`Отказов: ${statisticClient.row[0].data[3]} сом`}</div>
                                 <div className={classes.rowStatic}>{`Конс: ${statisticClient.row[0].data[4]} сом`}</div>
                                 </>
