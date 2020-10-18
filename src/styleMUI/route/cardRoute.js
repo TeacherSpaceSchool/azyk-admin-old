@@ -1,6 +1,11 @@
 import { makeStyles } from '@material-ui/core/styles';
 export default makeStyles({
-    card: {
+    cardM: {
+        width: 'calc(100vw - 20px)',
+        marginBottom: 10,
+        position: 'relative'
+    },
+    cardD: {
         width: 400,
         margin: 10,
         position: 'relative'

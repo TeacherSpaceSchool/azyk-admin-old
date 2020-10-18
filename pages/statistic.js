@@ -169,6 +169,11 @@ const list = {
             link: '/statistic/files',
             role: ['admin']
         },
+        {
+            name: 'Хранилище коллекций',
+            link: '/statistic/statisticstoragesize',
+            role: ['admin']
+        },
     ],
     integrate: [
         {

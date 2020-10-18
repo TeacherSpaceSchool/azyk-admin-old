@@ -40,12 +40,12 @@ const Geo =  React.memo(
                     });
                 }, 1000)
                 return ()=>{
-                    clearTimeout(searchTimeOutRef.current)
+                    clearInterval(searchTimeOutRef.current)
                 }
             } else {
                 showSnackBar('Геолокация не поддерживается')
             }
-        });
+        }, []);
         useEffect(()=>{
             if(navigation) {
                 unacceptedIdx = -1

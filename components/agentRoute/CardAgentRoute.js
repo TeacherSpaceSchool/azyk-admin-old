@@ -4,7 +4,7 @@ import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
 import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
-import cardRouteStyle from '../../src/styleMUI/route/cardRoute'
+import cardRouteStyle from '../../src/styleMUI/agentRoute/cardAgentRoute'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
@@ -16,10 +16,11 @@ import Confirmation from '../dialog/Confirmation'
 const CardAgentRoute = React.memo((props) => {
     const classes = cardRouteStyle();
     const { element, setList } = props;
+    const { isMobileApp } = props.app;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { profile } = props.user;
     return (
-        <Card className={classes.card}>
+        <Card className={isMobileApp?classes.cardM:classes.cardD}>
             <Link href='/agentroute/[id]' as={`/agentroute/${element!==undefined?element._id:'new'}`}>
                 <CardActionArea>
                     <CardContent className={classes.column}>

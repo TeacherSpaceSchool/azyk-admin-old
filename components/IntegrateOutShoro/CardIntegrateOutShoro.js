@@ -25,8 +25,9 @@ const CardIntegrateOutShoro = React.memo((props) => {
         'check': 'green',
         'error': 'red'
     }
+    const { isMobileApp } = props.app;
     return (
-        <Card className={classes.card}>
+        <Card className={isMobileApp?classes.cardM:classes.cardD}>
             <CardActionArea>
                 <CardContent className={classes.column}>
                     {

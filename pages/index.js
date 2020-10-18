@@ -52,9 +52,9 @@ const Organization = React.memo((props) => {
             }
         }, 10000)
         return ()=>{
-            clearTimeout(searchTimeOutRef.current)
+            clearInterval(searchTimeOutRef.current)
         }
-    });
+    }, []);
     useEffect(()=>{
         (async()=>{
             list = (await getBrandOrganizations({search: search, sort: sort, filter: filter})).brandOrganizations
@@ -94,7 +94,7 @@ const Organization = React.memo((props) => {
                     :
                     null
             */}
-            <div className={classes.page} style={{paddingTop: profile.role==='client'&&data.popularItems&&data.popularItems.length>0&&widthPopularItem?10:20}}>
+            <div className={classes.page} style={{paddingTop: profile.role==='client'&&data.popularItems&&data.popularItems.length>0&&widthPopularItem?10:10}}>
                 {list?list.map((element, idx)=> {
                     if(idx<=pagination)
                         return(

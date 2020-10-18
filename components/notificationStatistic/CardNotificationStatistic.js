@@ -51,7 +51,7 @@ const NotificationStatistic = React.memo((props) => {
     return (
           <> {
                 !element ?
-                    <Card className={classes.card}>
+                    <Card className={isMobileApp?classes.cardM:classes.cardD}>
                         <label htmlFor={element?element._id:'add'}>
                             <img
                                 className={isMobileApp?classes.mediaM:classes.mediaD}
@@ -134,8 +134,8 @@ const NotificationStatistic = React.memo((props) => {
                         />
                     </Card>
                     :
-                    <Card className={classes.card}>
-                        {
+                    <Card className={isMobileApp?classes.cardM:classes.cardD}>
+                    {
                             element.icon?
                                 <img
                                     className={isMobileApp?classes.mediaM:classes.mediaD}

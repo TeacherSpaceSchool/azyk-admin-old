@@ -22,6 +22,7 @@ const CardOrder = React.memo((props) => {
     const { element, setList, route, setSelected, selected, list, idx } = props;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { profile, authenticated} = props.user;
+    const { isMobileApp } = props.app;
     const status =
         element.taken?'принят':element.cancelForwarder||element.cancelClient?'отмена':element.confirmationForwarder&&element.confirmationClient?'выполнен':'обработка'
     const statusColor = {
@@ -31,7 +32,7 @@ const CardOrder = React.memo((props) => {
         'отмена': 'red'
     }
     return (
-        <Card className={classes.card}>
+        <Card className={isMobileApp?classes.cardM:classes.cardD}>
             {
                 ['admin', 'организация', 'суперагент', 'менеджер', 'агент'].includes(profile.role)?
                     [1,2].includes(element.sync)?

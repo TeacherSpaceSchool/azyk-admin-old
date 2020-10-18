@@ -50,7 +50,6 @@ const ClientStatistic = React.memo((props) => {
     },[process.browser])
 
     const filters = [{name: 'Все', value: false}, {name: 'Online', value: true}]
-    console.log()
     return (
         <App pageName='Статистика клиентов' filters={filters}>
             <Head>
@@ -136,7 +135,7 @@ const ClientStatistic = React.memo((props) => {
                                     dateType==='day'?
                                         100
                                         :
-                                        600
+                                        600+180
                                     :
                                     0
                             )

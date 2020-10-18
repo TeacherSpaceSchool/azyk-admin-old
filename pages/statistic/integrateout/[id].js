@@ -171,7 +171,7 @@ const IntegrateOutShoro = React.memo((props) => {
                 }}>Удалить все</MenuItem>
                 <MenuItem onClick={async()=>{
                     close()
-                }}>Отменить</MenuItem>
+                }}>Закрыть</MenuItem>
             </Menu>
         </App>
     )

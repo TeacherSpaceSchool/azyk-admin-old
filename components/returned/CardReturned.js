@@ -21,6 +21,7 @@ const CardReturned = React.memo((props) => {
     const { element, setList, setSelected, selected, list, idx } = props;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { profile, authenticated} = props.user;
+    const { isMobileApp} = props.app;
     const statusColor = {
         'обработка': 'orange',
         'принят': 'green',
@@ -28,8 +29,8 @@ const CardReturned = React.memo((props) => {
     }
     const status = element.cancelForwarder?'отмена':element.confirmationForwarder?'принят':'обработка'
     return (
-        <Card className={classes.card}>
-            {
+        <Card className={isMobileApp?classes.cardM:classes.cardD}>
+        {
                 ['admin', 'суперорганизация', 'организация', 'суперагент', 'агент', 'менеджер'].includes(profile.role)?
                     [1,2].includes(element.sync)?
                         <SyncOn style={{color: element.sync===1?'orange':'green'}} className={classes.sync}/>

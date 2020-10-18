@@ -19,14 +19,15 @@ const CardOrder = React.memo((props) => {
     const { element, setList, list, idx } = props;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { profile } = props.user;
+    const { isMobileApp } = props.app;
     const statusColor = {
         'создан': 'orange',
         'выполняется': 'blue',
         'выполнен': 'green',
     }
     return (
-        <Card className={classes.card}>
-            <Link href='/route/[id]' as={`/route/${element._id}`}>
+        <Card className={isMobileApp?classes.cardM:classes.cardD}>
+        <Link href='/route/[id]' as={`/route/${element._id}`}>
                 <CardActionArea>
                     <CardContent className={classes.column}>
                         <div className={classes.row}>

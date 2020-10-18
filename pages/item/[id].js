@@ -5,25 +5,12 @@ import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getSubCategorys } from '../../src/gql/subcategory'
 import { getOrganizations } from '../../src/gql/organization'
-import { getItem, addItem, setItem, onoffItem, deleteItem, favoriteItem } from '../../src/gql/items'
-import { addBasket } from '../../src/gql/basket'
+import { getItem, addItem, setItem, onoffItem, deleteItem } from '../../src/gql/items'
 import { checkInt, checkFloat } from '../../src/lib'
 import itemStyle from '../../src/styleMUI/item/item'
 import { useRouter } from 'next/router'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import {
-    FacebookShareButton,
-    VKShareButton,
-    OKShareButton,
-    WhatsappShareButton,
-    TelegramShareButton,
-    FacebookIcon,
-    VKIcon,
-    OKIcon,
-    TelegramIcon,
-    WhatsappIcon,
-} from 'react-share';
 import Button from '@material-ui/core/Button';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -36,12 +23,10 @@ import Router from 'next/router'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
-import Star from '@material-ui/icons/Star';
 import TextField from '@material-ui/core/TextField';
 import Confirmation from '../../components/dialog/Confirmation'
 import { urlMain } from '../../redux/constants/other'
 import DeliveryDays from '../../components/dialog/DeliveryDays';
-import { getCountBasket } from '../../src/gql/basket'
 import Typography from '@material-ui/core/Typography';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from 'next/link';
@@ -52,7 +37,7 @@ const Item = React.memo((props) => {
     const { data } = props;
     const router = useRouter()
     const { isMobileApp } = props.app;
-    const { profile, authenticated } = props.user;
+    const { profile } = props.user;
     let [stock, setStock] = useState(data.item!==null?data.item.stock:'');
     let [unit, setUnit] = useState(data.item?data.item.unit:'');
     let [name, setName] = useState(data.item!==null?data.item.name:'');

@@ -11,6 +11,12 @@ export const getJWT = (auth)=>{
     let res = regexpAuth.exec(auth)
     return res!==null?res[0].trim().replace('jwt=', ''):undefined
 }
+export const countdown = (date) => {
+    date = new Date(date).getTime()
+    let now = new Date().getTime();
+    let distance = date - now;
+    return {days: Math.floor(distance / (1000 * 60 * 60 * 24)), hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)), minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)), seconds: Math.floor((distance % (1000 * 60)) / 1000)}
+}
 export const checkInt = (int) => {
     if(int&&int.length>1&&int[0]==='0')
         int = int.substring(1)
@@ -70,6 +76,12 @@ export const pdDatePicker = (date) =>
 {
     date = new Date(date)
     date = `${date.getFullYear()}-${date.getMonth()<9?'0':''}${date.getMonth()+1}-${date.getDate()<10?'0':''}${date.getDate()}`
+    return date
+}
+export const pdtDatePicker = (date) =>
+{
+    date = new Date(date)
+    date = `${date.getFullYear()}-${date.getMonth()<9?'0':''}${date.getMonth()+1}-${date.getDate()<10?'0':''}${date.getDate()}T${date.getHours()<10?'0':''}${date.getHours()}:${date.getMinutes()<10?'0':''}${date.getMinutes()}`
     return date
 }
 export const pdDDMMYYHHMM = (date) =>

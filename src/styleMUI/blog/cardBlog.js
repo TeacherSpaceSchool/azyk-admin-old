@@ -1,8 +1,8 @@
 import { makeStyles } from '@material-ui/core/styles';
 export default makeStyles({
     cardM: {
-        width: 'calc(100vw - 40px)',
-        marginBottom: 20
+        width: 'calc(100vw - 20px)',
+        marginBottom: 10
     },
     cardD: {
         width: 600,
@@ -10,7 +10,7 @@ export default makeStyles({
     },
     mediaM: {
         objectFit: 'cover',
-        height: 'calc(100vw / 3)',
+        height: 'calc((100vw - 20px) / 2)',
         width: 'calc(100vw - 20px)'
     },
     mediaD: {

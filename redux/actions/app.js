@@ -1,4 +1,11 @@
-import { SHOW_DRAWER, SET_SEARCH, SET_FILTER, SET_SORT, SET_IS_MOBILE_APP, SHOW_LOAD, SET_COUNT_BASKET, SET_DATE, SET_ORGANIZATION } from '../constants/app'
+import { SHOW_APPBAR, SHOW_DRAWER, SET_SEARCH, SET_FILTER, SET_SORT, SET_IS_MOBILE_APP, SHOW_LOAD, SET_COUNT_BASKET, SET_DATE, SET_ORGANIZATION } from '../constants/app'
+
+export function showAppBar(data) {
+    return {
+        type: SHOW_APPBAR,
+        payload: data
+    }
+}
 
 export function showDrawer(data) {
     return {

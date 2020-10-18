@@ -7,7 +7,7 @@ export default makeStyles({
         justifyContent: 'center',
         flexDirection: 'row',
         flexWrap: 'wrap',
-        marginTop: 20
+        marginTop: 10
     },
     cardM: {
         width: 'calc(100vw - 40px)',

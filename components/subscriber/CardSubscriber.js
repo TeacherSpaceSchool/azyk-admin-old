@@ -12,9 +12,10 @@ import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 const NotificationStatistic = React.memo((props) => {
     const classes = cardSubscriberStyle();
     const { element } = props;
+    const { isMobileApp } = props.app;
     return (
-                    <Card className={classes.card}>
-                        <CardContent>
+        <Card className={isMobileApp?classes.cardM:classes.cardD}>
+            <CardContent>
                             <CardActionArea>
                                 <div className={classes.row}>
                                     <div className={classes.nameField}>Дата подписки:&nbsp;</div>

@@ -18,8 +18,9 @@ const CardDistrict = React.memo((props) => {
     const { element, setList } = props;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { profile } = props.user;
+    const { isMobileApp } = props.app;
     return (
-        <Card className={classes.card}>
+        <Card className={isMobileApp?classes.cardM:classes.cardD}>
             <Link href='/district/[id]' as={`/district/${element!==undefined?element._id:'new'}`}>
                 <CardActionArea>
                     <CardContent className={classes.column}>

@@ -1,6 +1,7 @@
-import { SHOW_DRAWER, SET_FILTER, SET_SORT, SET_SEARCH, SET_IS_MOBILE_APP, SHOW_LOAD, SET_COUNT_BASKET, SET_DATE, SET_ORGANIZATION } from '../constants/app'
+import { SHOW_APPBAR, SHOW_DRAWER, SET_FILTER, SET_SORT, SET_SEARCH, SET_IS_MOBILE_APP, SHOW_LOAD, SET_COUNT_BASKET, SET_DATE, SET_ORGANIZATION } from '../constants/app'
 
 const initialState = {
+    showAppBar: true,
     drawer: false,
     search: '',
     filter: '',
@@ -14,6 +15,8 @@ const initialState = {
 
 export default function mini_dialog(state = initialState, action) {
     switch (action.type) {
+        case SHOW_APPBAR:
+            return {...state, showAppBar: action.payload}
         case SHOW_DRAWER:
             return {...state, drawer: action.payload}
         case SET_SORT:

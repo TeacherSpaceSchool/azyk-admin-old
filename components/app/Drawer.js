@@ -19,6 +19,7 @@ import LiveHelp from '@material-ui/icons/LiveHelp';
 import InfoIcon from '@material-ui/icons/Info';
 import GroupIcon from '@material-ui/icons/Group';
 import ReceiptIcon from '@material-ui/icons/Receipt';
+import LocalActivityIcon from '@material-ui/icons/LocalActivity';
 import RateReview from '@material-ui/icons/RateReview';
 import LocalShipping from '@material-ui/icons/LocalShipping';
 import LocationCityIcon from '@material-ui/icons/LocationCity';
@@ -130,7 +131,7 @@ const MyDrawer = React.memo((props) => {
                        </>
                         :null
                 }
-                {
+                {/*
                     ['admin'].includes(profile.role)?
                         <>
                         <ListItem style={{background: router.pathname.includes('bonus')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncoverBonus(!uncoverBonus)}}>
@@ -166,7 +167,7 @@ const MyDrawer = React.memo((props) => {
                         }
                         </>
                         :null
-                }
+                */}
                 {
                     ['admin', 'client', 'суперорганизация', 'организация', 'менеджер', 'агент', 'суперагент'].includes(profile.role)?
                         <>
@@ -174,6 +175,19 @@ const MyDrawer = React.memo((props) => {
                             <ListItem style={{background: router.pathname.includes('ads')&&!router.pathname.includes('statistic')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncoverBonus(false);showDrawer(false)}}>
                                 <ListItemIcon><WhatshotIcon color='inherit'/></ListItemIcon>
                                 <ListItemText primary='Акции' />
+                            </ListItem>
+                        </Link>
+                        <Divider/>
+                        </>
+                        :null
+                }
+                {
+                    ['admin', 'client', 'суперорганизация', 'организация', 'менеджер', 'агент', 'суперагент'].includes(profile.role)?
+                        <>
+                        <Link href={`/lotterys`} as={`/lotterys`}>
+                            <ListItem style={{background: router.pathname.includes('lottery')&&!router.pathname.includes('statistic')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncoverBonus(false);showDrawer(false)}}>
+                                <ListItemIcon><LocalActivityIcon color='inherit'/></ListItemIcon>
+                                <ListItemText primary='Лотереи' />
                             </ListItem>
                         </Link>
                         <Divider/>

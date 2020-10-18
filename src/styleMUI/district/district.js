@@ -1,11 +1,12 @@
 import { makeStyles } from '@material-ui/core/styles';
 export default makeStyles({
     pageM: {
+        margin: '10px',
         position: 'relative',
         paddingBottom: 100
     },
     pageD: {
-        margin: '20px',
+        margin: '10px',
         position: 'relative',
         paddingBottom: 100
     },

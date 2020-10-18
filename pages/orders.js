@@ -207,7 +207,7 @@ const Orders = React.memo((props) => {
                 <MenuItem onClick={async()=>{
                     setSelected([])
                     close()
-                }}>Отменить</MenuItem>
+                }}>Закрыть</MenuItem>
             </Menu>
         </App>
     )

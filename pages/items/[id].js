@@ -7,8 +7,6 @@ import CardItem from '../../components/items/CardItem'
 import { useRouter } from 'next/router'
 import {getItems} from '../../src/gql/items';
 import Fab from '@material-ui/core/Fab';
-import Badge from '@material-ui/core/Badge';
-import LocalGroceryStore from '@material-ui/icons/LocalGroceryStore';
 import AddIcon from '@material-ui/icons/Add';
 import { urlMain } from '../../redux/constants/other'
 import initialApp from '../../src/initialApp'

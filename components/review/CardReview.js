@@ -109,10 +109,9 @@ const CardReview = React.memo((props) => {
                             </CardContent>
                         </CardActionArea>
                 }
-                <CardActions>
                     {
                         element&&profile.role!=='client'&&!element.taken?
-                            <>
+                            <CardActions>
                             <Button onClick={async()=>{
                                 const action = async() => {
                                     await acceptReview({_id: element._id})
@@ -142,10 +141,11 @@ const CardReview = React.memo((props) => {
                                     :
                                     null
                             }
-                            </>
+                            </CardActions>
                             :
                             !element&&profile.role==='client'?
-                                <Button onClick={async()=> {
+                                <CardActions>
+                                    <Button onClick={async()=> {
                                     if(organization._id&&text.length>0) {
                                         const action = async () => {
                                             let element = {organization: organization._id, text: text, type: type}
@@ -160,12 +160,12 @@ const CardReview = React.memo((props) => {
                                         showMiniDialog(true)
                                     }
                                 }} size='small' color='primary'>
-                                    Добавить
-                                </Button>
+                                        Добавить
+                                    </Button>
+                                </CardActions>
                                 :
                                 null
                     }
-                        </CardActions>
                     </Card>
         </div>
     );

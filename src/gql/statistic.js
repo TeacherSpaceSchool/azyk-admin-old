@@ -532,6 +532,26 @@ export const getStatisticAgents = async({company, dateStart, dateType}, client)=
     }
 }
 
+export const getStatisticStorageSize = async(client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                query: gql`
+                    query {
+                        statisticStorageSize {
+                            columns
+                            row 
+                                {_id data}
+                        }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const getStatisticClientGeo = async({organization, item, search}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
