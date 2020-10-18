@@ -47,7 +47,10 @@ const CardLotteryTicket = React.memo((props) => {
                                     <div className={classes.value} style={{color: statusColor[element.status]}}>{element.status}</div>
                                 </div>
                                 :
-                                null
+                                <div className={classes.row}>
+                                    <div className={classes.nameField}>Клиентов:&nbsp;</div>
+                                    <div className={classes.value}>{clientsForLottery.length}</div>
+                                </div>
                         }
                         {
                             element&&element.prize?
