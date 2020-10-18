@@ -10,6 +10,8 @@ import * as userActions from '../redux/actions/user'
 import * as appActions from '../redux/actions/app'
 import CircularProgress from '@material-ui/core/CircularProgress';
 import '../scss/app.scss'
+import '../scss/ticket.scss'
+import 'react-image-lightbox/style.css';
 import Router from 'next/router'
 import { useRouter } from 'next/router';
 import { subscriptionOrder } from '../src/gql/order';

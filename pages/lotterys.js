@@ -16,7 +16,7 @@ import Router from 'next/router'
 import Fab from '@material-ui/core/Fab';
 import AddIcon from '@material-ui/icons/Add';
 import Link from 'next/link';
-const height = 228
+const height = 350
 
 const Lotterys = React.memo((props) => {
     const classes = pageListStyle();

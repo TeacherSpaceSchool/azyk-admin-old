@@ -29,11 +29,10 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { countdown } from '../../src/lib'
-import Confetti from 'react-confetti'
 import TextLottery from '../../components/dialog/TextLottery'
-import '../../scss/ticket.scss'
+import Confetti from 'react-confetti'
 import Lightbox from 'react-image-lightbox';
-import 'react-image-lightbox/style.css';
+
 
 const LotteryEdit = React.memo((props) => {
     const classes = itemStyle();
@@ -188,9 +187,9 @@ const LotteryEdit = React.memo((props) => {
                                                 mainSrc={photoReportsImage[photoReportsIndex]}
                                                 nextSrc={photoReportsImage[(photoReportsIndex + 1) % photoReportsImage.length]}
                                                 prevSrc={photoReportsImage[(photoReportsIndex + photoReportsImage.length - 1) % photoReportsImage.length]}
-                                                onCloseRequest={() => {showAppBar(true); setPrizesOpen(false)}}
-                                                onMovePrevRequest={() => setPrizesIndex((photoReportsIndex + photoReportsImage.length - 1) % photoReportsImage.length)}
-                                                onMoveNextRequest={() => setPrizesIndex((photoReportsIndex + 1) % photoReportsImage.length)}
+                                                onCloseRequest={() => {showAppBar(true); setPhotoReportsOpen(false)}}
+                                                onMovePrevRequest={() => setPhotoReportsIndex((photoReportsIndex + photoReportsImage.length - 1) % photoReportsImage.length)}
+                                                onMoveNextRequest={() => setPhotoReportsIndex((photoReportsIndex + 1) % photoReportsImage.length)}
                                                 imageCaption={photoReportsText[photoReportsIndex]}
                                             />
                                             :
