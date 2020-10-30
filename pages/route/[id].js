@@ -4,7 +4,7 @@ import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getActiveOrganization } from '../../src/gql/statistic'
 import { getOrdersForRouting } from '../../src/gql/order'
-import { getRoute, addRoute, buildRoute, listDownload, listUnload, getUnloadingInvoicesFromRouting } from '../../src/gql/route'
+import { getRoute, addRoute, buildRoute, listDownload, listUnload, getUnloadingInvoicesFromRouting, setRoute } from '../../src/gql/route'
 import { getDistricts } from '../../src/gql/district'
 import { getDistributer } from '../../src/gql/distributer'
 import { getEcspeditors } from '../../src/gql/employment'
@@ -38,11 +38,13 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { pdDatePicker, checkInt } from '../../src/lib'
+import {pdDatePicker, checkInt, checkFloat} from '../../src/lib'
 import ListOrder from '../../components/dialog/ListOrder'
 import GeoRoute from '../../components/dialog/GeoRoute'
 import ItemList from '../../components/dialog/ItemList'
 import AddOrder from '../../components/dialog/AddOrder'
+import IconButton from '@material-ui/core/IconButton';
+import RemoveIcon from '@material-ui/icons/Remove';
 
 const Route = React.memo((props) => {
     const classes = routeStyle();
@@ -83,6 +85,7 @@ const Route = React.memo((props) => {
         setProvider(provider)
     })
     let [produsers, setProdusers] = React.useState(data.route?data.route.selectProdusers:[]);
+    let [deletedOrders, setDeletedOrders] = useState([]);
     let [selectProdusers, setSelectProdusers] = useState(data.route?data.route.selectProdusers:[]);
     let handleSelectProdusers = (async (event) => {
         setSelectProdusers(event.target.value)
@@ -158,10 +161,10 @@ const Route = React.memo((props) => {
                 if (selectedOrders[i].allTonnage)
                     tonnage += selectedOrders[i].allTonnage
             }
-            setAllPrice(price)
-            setAllSize(size)
-            setAllTonnage(tonnage)
-            setAllReturnedPrice(returnedPrice)
+            setAllPrice(checkFloat(price))
+            setAllSize(checkFloat(size))
+            setAllTonnage(checkFloat(tonnage))
+            setAllReturnedPrice(checkFloat(returnedPrice))
         })()
     },[selectedOrders])
     return (
@@ -328,6 +331,7 @@ const Route = React.memo((props) => {
                                                     </div>
                                                 </ExpansionPanelSummary>
                                                 <ExpansionPanelDetails>
+                                                    {console.log(element.orders)}
                                                     <div className={classes.column}>
                                                         <div className={classes.row}>
                                                             <div className={classes.nameField}>
@@ -342,7 +346,7 @@ const Route = React.memo((props) => {
                                                                 Сумма{element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)?' (факт/итого)':''}:&nbsp;
                                                             </div>
                                                             <div className={classes.value}>
-                                                                {element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)?`${element.orders.reduce((accumulator, element) => accumulator + (element.allPrice-element.returnedPrice), 0)-element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)} сом/`:''}{element.orders.reduce((accumulator, element) => accumulator + (element.allPrice-element.returnedPrice), 0)} сом
+                                                                {element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0)?`${checkFloat(element.orders.reduce((accumulator, element) => accumulator + element.allPrice-element.returnedPrice, 0)-element.orders.reduce((accumulator, element) => accumulator + element.returnedPrice, 0))} сом/`:''}{checkFloat(element.orders.reduce((accumulator, element) => accumulator + element.allPrice-element.returnedPrice, 0))} сом
                                                             </div>
                                                         </div>
                                                         <div className={classes.row}>
@@ -427,7 +431,17 @@ const Route = React.memo((props) => {
                                                                           }}
                                                                 />
                                                                 :
-                                                                null
+                                                                <IconButton
+                                                                    onClick={()=>{
+                                                                        deletedOrders.push(orders[idx])
+                                                                        setDeletedOrders([...deletedOrders])
+                                                                        orders.splice(idx, 1);
+                                                                        setOrders([...orders])
+                                                                    }}
+                                                                    aria-label='toggle password visibility'
+                                                                >
+                                                                    <RemoveIcon/>
+                                                                </IconButton>
                                                         }
                                                         <CardOrder setList={setOrders} list={orders} idx={idx} element={element}/>
                                                     </div>
@@ -437,7 +451,7 @@ const Route = React.memo((props) => {
                             }
                         </CardContent>
                         {
-                            router.query.id==='new'?
+                            router.query.id==='new'||deletedOrders.length?
                                 <>
                                 <Fab onClick={open} color='primary' aria-label='add' className={classes.fab}>
                                     <SettingsIcon />
@@ -457,87 +471,99 @@ const Route = React.memo((props) => {
                                     }}
                                 >
                                     {
-                                        screen==='setting'?
-                                            <>
-                                            {
-                                                selectedOrders.length>0&&selectAuto&&selectAuto._id?
-                                                    <MenuItem onClick={async()=>{
-                                                        close()
-                                                        await showLoad(true)
-                                                        let tonnageError = selectedOrders.find(element=>element.allTonnage>selectAuto.tonnage)
-                                                        if(!tonnageError) {
-                                                            let geoError = selectedOrders.find(element=>!element.address[1])
-                                                            if(!geoError) {
-                                                                let deliverys = (await buildRoute({
-                                                                    provider: provider._id,
-                                                                    autoTonnage: selectAuto.tonnage,
-                                                                    length: checkInt(length),
-                                                                    orders: selectedOrders.map(element => element._id)
-                                                                })).buildRoute
-                                                                let resultSelectedOrders = []
-                                                                for(let i=0; i<deliverys.length; i++){
-                                                                    for(let i1=0; i1<deliverys[i].orders.length; i1++) {
-                                                                        resultSelectedOrders.push(deliverys[i].orders[i1]._id)
+                                        router.query.id==='new'?
+                                            screen==='setting'?
+                                                <>
+                                                {
+                                                    selectedOrders.length>0&&selectAuto&&selectAuto._id?
+                                                        <MenuItem onClick={async()=>{
+                                                            close()
+                                                            await showLoad(true)
+                                                            let tonnageError = selectedOrders.find(element=>element.allTonnage>selectAuto.tonnage)
+                                                            if(!tonnageError) {
+                                                                let geoError = selectedOrders.find(element=>!element.address[1])
+                                                                if(!geoError) {
+                                                                    let deliverys = (await buildRoute({
+                                                                        provider: provider._id,
+                                                                        autoTonnage: selectAuto.tonnage,
+                                                                        length: checkInt(length),
+                                                                        orders: selectedOrders.map(element => element._id)
+                                                                    })).buildRoute
+                                                                    let resultSelectedOrders = []
+                                                                    for(let i=0; i<deliverys.length; i++){
+                                                                        for(let i1=0; i1<deliverys[i].orders.length; i1++) {
+                                                                            resultSelectedOrders.push(deliverys[i].orders[i1]._id)
+                                                                        }
                                                                     }
+                                                                    selectedOrders = selectedOrders.filter(element => resultSelectedOrders.includes(element._id))
+                                                                    setSelectedOrders([...selectedOrders])
+                                                                    setDeliverys(deliverys)
                                                                 }
-                                                                selectedOrders = selectedOrders.filter(element => resultSelectedOrders.includes(element._id))
-                                                                setSelectedOrders([...selectedOrders])
-                                                                setDeliverys(deliverys)
+                                                                else
+                                                                    showSnackBar(`Заказ №${geoError.number} отсуствует геолокация`)
                                                             }
                                                             else
-                                                                showSnackBar(`Заказ №${geoError.number} отсуствует геолокация`)
-                                                        }
-                                                        else
-                                                            showSnackBar(`Заказ №${tonnageError.number} слишком большой`)
-                                                        await showLoad(false)
-                                                    }}>Построить маршрут</MenuItem>
-                                                    :
-                                                    null
-                                            }
-                                            {
-                                                deliverys.length>0&&selectEcspeditor&&selectEcspeditor._id?
-                                                    <MenuItem onClick={async()=>{
-                                                        close()
-                                                        await showLoad(true)
-                                                        for(let i=0; i<deliverys.length; i++) {
-                                                            deliverys[i].orders = deliverys[i].orders.map(element=>element._id)
-                                                            deliverys[i] = {
-                                                                legs: deliverys[i].legs,
-                                                                orders: deliverys[i].orders,
-                                                                tonnage: deliverys[i].tonnage,
-                                                                lengthInMeters: deliverys[i].lengthInMeters
+                                                                showSnackBar(`Заказ №${tonnageError.number} слишком большой`)
+                                                            await showLoad(false)
+                                                        }}>Построить маршрут</MenuItem>
+                                                        :
+                                                        null
+                                                }
+                                                {
+                                                    deliverys.length>0&&selectEcspeditor&&selectEcspeditor._id?
+                                                        <MenuItem onClick={async()=>{
+                                                            close()
+                                                            await showLoad(true)
+                                                            for(let i=0; i<deliverys.length; i++) {
+                                                                deliverys[i].orders = deliverys[i].orders.map(element=>element._id)
+                                                                deliverys[i] = {
+                                                                    legs: deliverys[i].legs,
+                                                                    orders: deliverys[i].orders,
+                                                                    tonnage: deliverys[i].tonnage,
+                                                                    lengthInMeters: deliverys[i].lengthInMeters
+                                                                }
                                                             }
-                                                        }
-                                                        await addRoute({provider: provider._id, deliverys: deliverys, selectedOrders: selectedOrders.map(element=>element._id), selectDistricts: selectDistricts.map(element=>element._id), selectEcspeditor: selectEcspeditor._id, selectAuto: selectAuto._id, dateDelivery: dateDelivery, allTonnage: parseInt(allTonnage), selectProdusers: selectProdusers.map(element=>element._id)})
-                                                        Router.push(`/routes/${provider._id}`)
-                                                        await showLoad(false)
-                                                    }}>Сохранить маршрут</MenuItem>
-                                                    :
-                                                    null
-                                            }
-                                            </>
-                                            :
-                                            <>
-                                            {orders.length>0?
-                                                <>
-                                                <MenuItem onClick={async()=>{
-                                                    setSelectedOrders([...orders])
-                                                    close()
-                                                }}>Выбрать все</MenuItem>
-                                                <MenuItem onClick={async()=>{
-                                                    setSelectedOrders([])
-                                                    close()
-                                                }}>Отменить выбор</MenuItem>
+                                                            await addRoute({provider: provider._id, deliverys: deliverys, selectedOrders: selectedOrders.map(element=>element._id), selectDistricts: selectDistricts.map(element=>element._id), selectEcspeditor: selectEcspeditor._id, selectAuto: selectAuto._id, dateDelivery: dateDelivery, allTonnage: parseInt(allTonnage), selectProdusers: selectProdusers.map(element=>element._id)})
+                                                            Router.push(`/routes/${provider._id}`)
+                                                            await showLoad(false)
+                                                        }}>Сохранить маршрут</MenuItem>
+                                                        :
+                                                        null
+                                                }
                                                 </>
                                                 :
-                                                null
-                                            }
+                                                <>
+                                                {
+                                                    orders.length>0?
+                                                    <>
+                                                    <MenuItem onClick={async()=>{
+                                                        setSelectedOrders([...orders])
+                                                        close()
+                                                    }}>Выбрать все</MenuItem>
+                                                    <MenuItem onClick={async()=>{
+                                                        setSelectedOrders([])
+                                                        close()
+                                                    }}>Отменить выбор</MenuItem>
+                                                    </>
+                                                    :
+                                                    null
+                                                }
+                                                <MenuItem onClick={async()=>{
+                                                    setFullDialog('Добавить заказ', <AddOrder districts={districts} produsers={produsers} dateDelivery={dateDelivery} mainSelectedOrders={selectedOrders} setMainSelectedOrders={setSelectedOrders} mainOrders={orders} setMainOrders={setOrders}/>)
+                                                    showFullDialog(true)
+                                                    close()
+                                                }}>Добавить заказ</MenuItem>
+                                                </>
+                                            :
                                             <MenuItem onClick={async()=>{
-                                                setFullDialog('Добавить заказ', <AddOrder districts={districts} produsers={produsers} dateDelivery={dateDelivery} mainSelectedOrders={selectedOrders} setMainSelectedOrders={setSelectedOrders} mainOrders={orders} setMainOrders={setOrders}/>)
-                                                showFullDialog(true)
+                                                await showLoad(true)
+                                                await setRoute({route: router.query.id, deletedOrders: deletedOrders.map(element=>element._id)})
+                                                await showLoad(false)
                                                 close()
-                                            }}>Добавить заказ</MenuItem>
-                                            </>
+                                            }}>
+                                                Сохранить
+                                            </MenuItem>
+
                                     }
                                 </Menu>
                                 </>

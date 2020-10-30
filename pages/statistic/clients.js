@@ -10,7 +10,7 @@ import { urlMain } from '../../redux/constants/other'
 import initialApp from '../../src/initialApp'
 import Table from '../../components/app/Table'
 import { getClientGqlSsr } from '../../src/getClientGQL'
-import { getStatisticClient, getActiveOrganization } from '../../src/gql/statistic'
+import { getStatisticClients, getActiveOrganization } from '../../src/gql/statistic'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
@@ -33,12 +33,12 @@ const ClientStatistic = React.memo((props) => {
     useEffect(()=>{
         (async()=>{
                 await showLoad(true)
-                setStatisticClient((await getStatisticClient({
+                setStatisticClient((await getStatisticClients({
                     company: organization ? organization._id : 'all',
                     dateStart: dateStart ? dateStart : null,
                     dateType: dateType,
                     online: filter
-                })).statisticClient)
+                })).statisticClients)
                 await showLoad(false)
         })()
     },[organization, dateStart, dateType, filter])

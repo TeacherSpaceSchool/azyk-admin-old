@@ -60,6 +60,7 @@ const Item = React.memo((props) => {
         setCategorys(event.target.value)
     })
     let [weight, setWeight] = useState(data.item&&data.item.weight?data.item.weight:0);
+    let [costPrice, setCostPrice] = useState(data.item&&data.item.costPrice?data.item.costPrice:0);
     let [size, setSize] = useState(data.item&&data.item.size?data.item.size:0);
     let [priotiry, setPriotiry] = useState(data.item&&data.item.priotiry?data.item.priotiry:0);
     let [organization, setOrganization] = useState(data.item!==null?data.item.organization:{});
@@ -332,22 +333,38 @@ const Item = React.memo((props) => {
                                                 }}
                                             />
                                         </div>
-                                            <div className={classes.price}>
-                                                <TextField
-                                                    type={isMobileApp?'number':'text'}
-                                                    label='Цена'
-                                                    value={price}
-                                                    className={isMobileApp?classes.inputM:classes.inputD}
-                                                    onChange={(event)=>{
-                                                        while((event.target.value).includes(','))
-                                                            event.target.value = (event.target.value).replace(',', '.')
-                                                        setPrice(event.target.value)
-                                                    }}
-                                                    inputProps={{
-                                                        'aria-label': 'description',
-                                                    }}
-                                                />
-                                            </div>
+                                        <div className={classes.price}>
+                                            <TextField
+                                                type={isMobileApp?'number':'text'}
+                                                label='Цена'
+                                                value={price}
+                                                className={isMobileApp?classes.inputM:classes.inputD}
+                                                onChange={(event)=>{
+                                                    while((event.target.value).includes(','))
+                                                        event.target.value = (event.target.value).replace(',', '.')
+                                                    setPrice(event.target.value)
+                                                }}
+                                                inputProps={{
+                                                    'aria-label': 'description',
+                                                }}
+                                            />
+                                        </div>
+                                        <div className={classes.price}>
+                                            <TextField
+                                                type={isMobileApp?'number':'text'}
+                                                label='Себестоимость'
+                                                value={costPrice}
+                                                className={isMobileApp?classes.inputM:classes.inputD}
+                                                onChange={(event)=>{
+                                                    while((event.target.value).includes(','))
+                                                        event.target.value = (event.target.value).replace(',', '.')
+                                                    setCostPrice(event.target.value)
+                                                }}
+                                                inputProps={{
+                                                    'aria-label': 'description',
+                                                }}
+                                            />
+                                        </div>
                                             <div className={classes.price}>
                                                 <TextField
                                                     type={isMobileApp?'number':'text'}
@@ -418,6 +435,7 @@ const Item = React.memo((props) => {
                                                                     name: name,
                                                                     categorys: categorys,
                                                                     stock: checkFloat(stock),
+                                                                    costPrice: checkFloat(costPrice),
                                                                     image: image,
                                                                     info: info,
                                                                     price: checkFloat(price),
@@ -455,6 +473,7 @@ const Item = React.memo((props) => {
                                                             if(image!==undefined)editElement.image = image
                                                             if(info.length>0&&info!==data.item.info)editElement.info = info
                                                             if(price>0&&price!==data.item.price)editElement.price = checkFloat(price)
+                                                            if(costPrice!==data.item.costPrice)editElement.costPrice = checkFloat(costPrice)
                                                             if(weight!==data.item.weight)editElement.weight = checkFloat(weight)
                                                             if(size!==data.item.size)editElement.size = checkFloat(size)
                                                             if(hit!==data.item.hit)editElement.hit = hit
@@ -597,6 +616,7 @@ Item.getInitialProps = async function(ctx) {
                         image: '/static/add.png',
                         stock: 0,
                         packaging: 1,
+                        costPrice: 0,
                         name: '',
                         info: '',
                         categorys: ['A','B','C','D','Horeca'],

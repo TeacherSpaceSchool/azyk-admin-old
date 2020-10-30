@@ -122,7 +122,8 @@ const LotteryEdit = React.memo((props) => {
                                 Подробности
                             </Button>
                             <div className={classes.countdown}>
-                                {
+                                <div style={{color: color}}>{countdownData.days} дней {countdownData.hours} часов {countdownData.minutes} минут</div>
+                                {/*
                                     data.lottery.status==='разыграна'?
                                         <div style={{color: color}}>Разыграна</div>
                                         :
@@ -137,7 +138,7 @@ const LotteryEdit = React.memo((props) => {
                                                     <div style={{color: color}}>{countdownData.minutes} минут</div>
                                                     :
                                                     <div style={{color: color}}>Сегодня</div>
-                                }
+                                */}
                             </div>
                         </div>
                         <CardContent className={classes.column}>

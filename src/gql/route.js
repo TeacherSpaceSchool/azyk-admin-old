@@ -329,3 +329,19 @@ export const addRoute = async({deliverys, provider, selectProdusers, selectDistr
         console.error(err)
     }
 }
+
+export const setRoute = async(prop)=>{
+    try{
+        const client = new SingletonApolloClient().getClient()
+        await client.mutate({
+            variables: prop,
+            mutation : gql`
+                    mutation ($route: ID!, $deletedOrders: [ID]!) {
+                        setRoute(route: $route, deletedOrders: $deletedOrders) {
+                             data
+                        }
+                    }`})
+    } catch(err){
+        console.error(err)
+    }
+}

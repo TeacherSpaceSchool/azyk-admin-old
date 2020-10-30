@@ -395,6 +395,7 @@ export const getOrder = async({_id})=>{
                                             weight
                                             size
                                             price
+                                            costPrice
                                         }
                                     count
                                     allPrice
@@ -655,6 +656,7 @@ export const subscriptionOrder = gql`
                                             weight
                                             size
                                             price
+                                            costPrice
                                             organization
                                                 {_id name consignation}
                                         }

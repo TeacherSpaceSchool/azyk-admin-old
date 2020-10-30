@@ -15,7 +15,7 @@ import { deleteOfflineOrderByKey } from '../../src/service/idb/offlineOrders';
 
 const CardOfflineOrder = React.memo((props) => {
     const classes = cardErrorStyle();
-    const { element, geo, list, setList, idx } = props;
+    const { element, list, setList, idx } = props;
     const { isMobileApp } = props.app;
     return (
         <Card className={isMobileApp?classes.cardM:classes.cardD}>
@@ -53,10 +53,10 @@ const CardOfflineOrder = React.memo((props) => {
                 {
                     process.browser&&navigator.onLine?
                         <Button onClick={async()=>{
-                            if (geo&&element.address[0][1].includes(', ')) {
-                                let distance = getGeoDistance(geo.coords.latitude, geo.coords.longitude, ...(element.address[0][1].split(', ')))
+                            if (element.geo&&element.address[1].includes(', ')) {
+                                let distance = getGeoDistance(element.geo.latitude, element.geo.longitude, ...(element.address[1].split(', ')))
                                 if(distance<1000){
-                                    await addAgentHistoryGeo({client: element.client, geo: `${geo.coords.latitude}, ${geo.coords.longitude}`})
+                                    await addAgentHistoryGeo({client: element.client, geo: `${element.geo.latitude}, ${element.geo.longitude}`})
                                 }
                             }
                             for (let i = 0; i < element.basket.length; i++) {

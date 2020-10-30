@@ -18,7 +18,9 @@ const HistoryOrder =  React.memo(
         const width = isMobileApp? (window.innerWidth-112) : 500;
         useEffect(()=>{
             (async()=>{
-                setHistoryOrders((await getOrderHistorys(invoice)).orderHistorys)
+                historyOrders = (await getOrderHistorys(invoice)).orderHistorys
+                if(historyOrders)
+                    setHistoryOrders(historyOrders)
             })()
         },[])
         return (

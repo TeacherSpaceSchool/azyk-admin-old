@@ -232,6 +232,7 @@ const BuyBasket =  React.memo(
                                        }
                                        else if(profile.role.includes('агент')) {
                                            await putOfflineOrders({
+                                               ...(geo?{geo: {latitude: geo.coords.latitude, longitude: geo.coords.longitude}}:{}),
                                                inv: inv,
                                                unite: organization.unite,
                                                info: coment,

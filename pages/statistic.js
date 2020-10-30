@@ -98,8 +98,13 @@ const list = {
             role: ['admin', 'суперорганизация']
         },
         {
+            name: 'Статистика клиента',
+            link: '/statistic/client/super',
+            role: ['admin', 'суперорганизация']
+        },
+        {
             name: 'Статистика клиентов',
-            link: '/statistic/client',
+            link: '/statistic/clients',
             role: ['admin', 'суперорганизация']
         },
         {
@@ -157,6 +162,11 @@ const list = {
         {
             name: 'Сбои',
             link: '/statistic/error',
+            role: ['admin']
+        },
+        {
+            name: 'Себестоимость товара',
+            link: '/statistic/itemscostprice',
             role: ['admin']
         },
         {

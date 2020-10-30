@@ -20,16 +20,11 @@ const OfflineOrder = React.memo((props) => {
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const classes = pageListStyle();
     let [list, setList] = useState([]);
-    let [geo, setGeo] = useState([]);
     useEffect(()=>{
         (()=>{
             if(process.browser) {
                 setTimeout(async ()=>{
                     setList(await getAllOfflineOrders())
-                    if (navigator.geolocation)
-                        navigator.geolocation.getCurrentPosition((position) => {
-                            setGeo(position)
-                        })
                 }, 1000)
             }
         })()
@@ -56,7 +51,7 @@ const OfflineOrder = React.memo((props) => {
                         list.map((element, idx) =>
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={120} offset={[120, 0]}
                                       debounce={0} once={true} placeholder={<CardOfflineOrderPlaceholder/>}>
-                                <CardOfflineOrder idx={idx} geo={geo} element={element} list={list} setList={setList}/>
+                                <CardOfflineOrder idx={idx} element={element} list={list} setList={setList}/>
                             </LazyLoad>
                         )
                     }

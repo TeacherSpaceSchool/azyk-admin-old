@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
@@ -11,21 +11,32 @@ const ItemList =  React.memo(
     (props) =>{
         const { classes, items } = props;
         const { showMiniDialog } = props.mini_dialogActions;
+        let organization, number;
         return (
             <div className={classes.column}>
                 {
                     items.map((item, idx) => {
                         return(
                                 <div key={idx} className={classes.column}>
+                                    {
+                                        !idx||item[2]!==organization?
+                                            <>
+                                            {
+                                                (()=>{organization = item[2]; number = 0})()
+                                            }
+                                            <div style={{fontWeight: 'bold', marginBottom: 10, marginTop: !idx?0:10}}>{organization}</div>
+                                            </>
+                                            :
+                                            null
+                                    }
                                     <div className={classes.row}>
-                                        <div className={classes.nameField}>Товар:&nbsp;</div>
-                                        <div className={classes.value}>{item[0]}</div>
+                                        <div className={classes.nameField} style={{marginBottom: 5}}>Товар {++number}:&nbsp;</div>
+                                        <div className={classes.value} style={{marginBottom: 5}}>{item[0]}</div>
                                     </div>
                                     <div className={classes.row}>
-                                        <div className={classes.nameField}>Количество:&nbsp;</div>
-                                        <div className={classes.value}>{item[1]}&nbsp;шт</div>
+                                        <div className={classes.nameField} style={{marginBottom: 10}}>Количество:&nbsp;</div>
+                                        <div className={classes.value} style={{marginBottom: 10}}>{item[1]}&nbsp;шт</div>
                                     </div>
-                                    <br/>
                                 </div>
                             )
                     })

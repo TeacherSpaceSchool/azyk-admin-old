@@ -22,7 +22,7 @@ const AzykStoreStatistic = React.memo((props) => {
 
     const classes = pageListStyle();
     const { data } = props;
-    const { isMobileApp } = props.app;
+    const { isMobileApp, filter } = props.app;
     let [dateStart, setDateStart] = useState(pdDatePicker(new Date()));
     let [dateType, setDateType] = useState('day');
     let [statisticOrder, setStatisticOrder] = useState(undefined);
@@ -36,18 +36,20 @@ const AzykStoreStatistic = React.memo((props) => {
                 ...organization?{company: organization._id}:{},
                 dateStart: dateStart ? dateStart : null,
                 dateType: dateType,
+                filter: filter
             })).statisticAzykStoreOrder)
             await showLoad(false)
         })()
-    },[organization, dateStart, dateType])
+    },[organization, dateStart, dateType, filter])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
             appBody[0].style.paddingBottom = '0px'
         }
     },[process.browser])
+    const filters = [{name: 'Район', value: 'район'}, {name: 'Организация', value: 'организация'},]
     return (
-        <App pageName='Статистика заказов AZYK.STORE'>
+        <App pageName='Статистика заказов AZYK.STORE' filters={filters}>
             <Head>
                 <title>Статистика заказов AZYK.STORE</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -121,6 +123,7 @@ const AzykStoreStatistic = React.memo((props) => {
                                 <div className={classes.rowStatic}>{`Выполнено: ${statisticOrder.row[0].data[2]} шт`}</div>
                                 <div className={classes.rowStatic}>{`Отказов: ${statisticOrder.row[0].data[3]} сом`}</div>
                                 <div className={classes.rowStatic}>{`Конс: ${statisticOrder.row[0].data[4]} сом`}</div>
+                                <div className={classes.rowStatic}>{`Прибыль: ${statisticOrder.row[0].data[5]} сом`}</div>
                                 </>
                                 :
                                 null
@@ -135,7 +138,7 @@ const AzykStoreStatistic = React.memo((props) => {
 
 AzykStoreStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    ctx.store.getState().app.filter = false
+    ctx.store.getState().app.filter = 'организация'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {

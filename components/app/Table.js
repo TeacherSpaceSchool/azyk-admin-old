@@ -1,6 +1,7 @@
 import React from 'react';
 import MUIDataTable from 'mui-datatables';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import Router from 'next/router'
 
 let getMuiTheme = () => createMuiTheme({
     overrides: {
@@ -49,7 +50,7 @@ const MyTable =  React.memo(
             downloadOptions: {filename: 'tableDownload.csv', separator: ','},
             onCellClick: (colData, colMeta) => {
                 if(type==='client'&&colMeta.colIndex===0&&row[colMeta.rowIndex]._id)
-                    window.open(`/${type}/${row[colMeta.rowIndex]._id}`,'_blank');
+                    Router.push(`/statistic/client/${row[colMeta.rowIndex]._id}`);
             },
         };
         return (

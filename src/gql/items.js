@@ -280,6 +280,7 @@ export const getItem = async({_id}, client)=>{
                             info
                             price
                             city
+                            costPrice
                             reiting
                             organization
                                 {_id name minimumOrder consignation}
@@ -387,8 +388,8 @@ export const addItem = async(element, subCategory)=>{
         await client.mutate({
             variables: {...element, subCategory: subCategory},
             mutation : gql`
-                    mutation ($categorys: [String]!, $priotiry: Int, $city: String!, $unit: String, $apiece: Boolean, $weight: Float!, $size: Float!, $packaging: Int!, $stock: Float!, $deliveryDays: [String], $name: String!, $image: Upload, $info: String!, $price: Float!, $subCategory: ID!, $organization: ID!, $hit: Boolean!, $latest: Boolean!) {
-                        addItem(categorys: $categorys, priotiry: $priotiry, city: $city, unit: $unit, apiece: $apiece, weight: $weight, size: $size, packaging: $packaging, stock: $stock, deliveryDays: $deliveryDays, name: $name, image: $image, info: $info, price: $price, subCategory: $subCategory, organization: $organization, hit: $hit, latest: $latest) {
+                    mutation ($costPrice: Float, $categorys: [String]!, $priotiry: Int, $city: String!, $unit: String, $apiece: Boolean, $weight: Float!, $size: Float!, $packaging: Int!, $stock: Float!, $deliveryDays: [String], $name: String!, $image: Upload, $info: String!, $price: Float!, $subCategory: ID!, $organization: ID!, $hit: Boolean!, $latest: Boolean!) {
+                        addItem(costPrice: $costPrice, categorys: $categorys, priotiry: $priotiry, city: $city, unit: $unit, apiece: $apiece, weight: $weight, size: $size, packaging: $packaging, stock: $stock, deliveryDays: $deliveryDays, name: $name, image: $image, info: $info, price: $price, subCategory: $subCategory, organization: $organization, hit: $hit, latest: $latest) {
                              data
                         }
                     }`})
@@ -403,8 +404,24 @@ export const setItem = async(element)=>{
         await client.mutate({
             variables: {...element},
             mutation : gql`
-                    mutation ($categorys: [String], $_id: ID!, $city: String, $priotiry: Int, $unit: String, $apiece: Boolean, $weight: Float, $size: Float, $packaging: Int, $stock: Float, $deliveryDays: [String], $name: String, $image: Upload, $info: String, $price: Float, $subCategory: ID, $organization: ID, $hit: Boolean, $latest: Boolean) {
-                        setItem(categorys: $categorys, _id: $_id, city: $city, priotiry: $priotiry, unit: $unit, apiece: $apiece, weight: $weight, size: $size, packaging: $packaging, stock: $stock, deliveryDays: $deliveryDays, name: $name, image: $image, info: $info, price: $price, subCategory: $subCategory, organization: $organization, hit: $hit, latest: $latest) {
+                    mutation ($costPrice: Float, $categorys: [String], $_id: ID!, $city: String, $priotiry: Int, $unit: String, $apiece: Boolean, $weight: Float, $size: Float, $packaging: Int, $stock: Float, $deliveryDays: [String], $name: String, $image: Upload, $info: String, $price: Float, $subCategory: ID, $organization: ID, $hit: Boolean, $latest: Boolean) {
+                        setItem(costPrice: $costPrice, categorys: $categorys, _id: $_id, city: $city, priotiry: $priotiry, unit: $unit, apiece: $apiece, weight: $weight, size: $size, packaging: $packaging, stock: $stock, deliveryDays: $deliveryDays, name: $name, image: $image, info: $info, price: $price, subCategory: $subCategory, organization: $organization, hit: $hit, latest: $latest) {
+                             data
+                        }
+                    }`})
+    } catch(err){
+        console.error(err)
+    }
+}
+
+export const setItemsCostPrice = async(element)=>{
+    try{
+        const client = new SingletonApolloClient().getClient()
+        await client.mutate({
+            variables: element,
+            mutation : gql`
+                    mutation ($itemsCostPrice: [InputItemCostPrice]!) {
+                        setItemsCostPrice(itemsCostPrice: $itemsCostPrice) {
                              data
                         }
                     }`})
