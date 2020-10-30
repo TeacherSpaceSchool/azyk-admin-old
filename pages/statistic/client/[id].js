@@ -31,7 +31,7 @@ const ClientStatistic = React.memo((props) => {
     let [showStat, setShowStat] = useState(false);
     let [client, setClient] = useState(data.statisticClient?{_id: router.query.id}:undefined);
     const { showLoad } = props.appActions;
-    const { isMobileApp } = props.app;
+    const { isMobileApp, filter } = props.app;
     const [clients, setClients] = useState([]);
     const [inputValue, setInputValue] = React.useState('');
     let [searchTimeOut, setSearchTimeOut] = useState(null);
@@ -76,19 +76,21 @@ const ClientStatistic = React.memo((props) => {
                     client: client._id,
                     dateStart: dateStart ? dateStart : null,
                     dateType: dateType,
+                    online: filter
                 })).statisticClient)
                 await showLoad(false)
             }
         })()
-    },[client, dateStart, dateType])
+    },[client, dateStart, dateType, filter])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
             appBody[0].style.paddingBottom = '0px'
         }
     },[process.browser])
+    const filters = [{name: 'Все', value: false}, {name: 'Online', value: true}]
     return (
-        <App pageName='Статистика клиента'>
+        <App pageName='Статистика клиента' filters={filters}>
             <Head>
                 <title>Статистика клиента</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />

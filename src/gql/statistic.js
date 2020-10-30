@@ -109,8 +109,8 @@ export const getStatisticClient = async(arg, client)=>{
             .query({
                 variables: arg,
                 query: gql`
-                    query ($client: ID!, $dateStart: Date, $dateType: String) {
-                        statisticClient(client: $client, dateStart: $dateStart, dateType: $dateType) {
+                    query ($client: ID!, $dateStart: Date, $dateType: String, $online: Boolean) {
+                        statisticClient(client: $client, dateStart: $dateStart, dateType: $dateType, online: $online) {
                             columns
                             row 
                                 {_id data}
