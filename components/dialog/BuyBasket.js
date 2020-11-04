@@ -51,6 +51,7 @@ const BuyBasket =  React.memo(
             setDateDelivery(event.target.value)
         };
         let [dateDeliverys, setDateDeliverys] = useState([true, true, true, true, true, true, false]);
+        let [priority, setPriority] = useState(0);
         let [week, setWeek] = useState([]);
         let [unlock, setUnlock] = useState(false);
         let paymentMethods = ['Наличные', 'Перечисление', 'Консигнация']
@@ -70,6 +71,7 @@ const BuyBasket =  React.memo(
                         organization: organization._id
                     })).deliveryDate
                     if (dateDeliverys) {
+                        setPriority(dateDeliverys.priority?dateDeliverys.priority:0)
                         dateDeliverys = dateDeliverys.days
                         if (!agent)
                             dateDeliverys[6] = false
@@ -220,6 +222,7 @@ const BuyBasket =  React.memo(
                                            }
                                            await addOrders({
                                                inv: inv,
+                                               priority: priority,
                                                unite: organization.unite,
                                                info: coment,
                                                usedBonus: useBonus,
@@ -234,6 +237,7 @@ const BuyBasket =  React.memo(
                                            await putOfflineOrders({
                                                ...(geo?{geo: {latitude: geo.coords.latitude, longitude: geo.coords.longitude}}:{}),
                                                inv: inv,
+                                               priority: priority,
                                                unite: organization.unite,
                                                info: coment,
                                                usedBonus: useBonus,

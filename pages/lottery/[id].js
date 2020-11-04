@@ -94,6 +94,7 @@ const LotteryEdit = React.memo((props) => {
         }
     }, []);
     return (
+        <div>
         <App pageName='Лотерея'>
             <Head>
                 <title>Лотерея</title>
@@ -122,23 +123,22 @@ const LotteryEdit = React.memo((props) => {
                                 Подробности
                             </Button>
                             <div className={classes.countdown}>
-                                <div style={{color: color}}>{countdownData.days} дней {countdownData.hours} часов {countdownData.minutes} минут</div>
-                                {/*
-                                    data.lottery.status==='разыграна'?
+                                {
+                                    data.lottery.status === 'разыграна' ?
                                         <div style={{color: color}}>Разыграна</div>
                                         :
-                                        countdownData.days>0?
+                                        countdownData.days > 0 ?
                                             <div style={{color: color}}>{countdownData.days} дней {countdownData.hours} часов {countdownData.minutes} минут</div>
 
                                             :
-                                            countdownData.hours>0?
+                                            countdownData.hours > 0 ?
                                                 <div style={{color: color}}>{countdownData.hours} часов {countdownData.minutes} минут</div>
                                                 :
-                                                countdownData.minutes>0?
+                                                countdownData.minutes > 0 ?
                                                     <div style={{color: color}}>{countdownData.minutes} минут</div>
                                                     :
                                                     <div style={{color: color}}>Сегодня</div>
-                                */}
+                                }
                             </div>
                         </div>
                         <CardContent className={classes.column}>
@@ -154,13 +154,19 @@ const LotteryEdit = React.memo((props) => {
                                                 <span>номер</span>
                                             </div>
                                             {
-                                                ticket.prize?
+                                                ticket.status==='розыгрыш'?
                                                     <div className="name">
-                                                        <h2>{ticket.prize}</h2>
-                                                        <span>приз</span>
+                                                        <h2>{ticket.coupons}</h2>
+                                                        <span>купонов</span>
                                                     </div>
                                                     :
-                                                    null
+                                                    ticket.prize?
+                                                        <div className="name">
+                                                            <h2>{ticket.prize}</h2>
+                                                            <span>приз</span>
+                                                        </div>
+                                                        :
+                                                        null
                                             }
                                         </div>
                                         <div className={`${ticket.status==='проигравший'?'cardLose':ticket.status==='победитель'?'cardWin':'card'} cardRight`}>
@@ -270,6 +276,7 @@ const LotteryEdit = React.memo((props) => {
                 :
                 null
             }
+        </App>
             {
                 process.browser&&confetti?
                     <Confetti
@@ -280,7 +287,7 @@ const LotteryEdit = React.memo((props) => {
                     :
                     null
             }
-        </App>
+        </div>
     )
 })
 

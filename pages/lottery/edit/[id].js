@@ -4,8 +4,7 @@ import React, { useState } from 'react';
 import App from '../../../layouts/App';
 import { connect } from 'react-redux'
 import {
-    addLottery, getLottery, setLotteryPhotoReport, setLotteryPrizes, setLottery, setLotteryTickets, getClientsForLottery,
-    deleteLottery
+    addLottery, getLottery, setLottery
 } from '../../../src/gql/lottery'
 import { getOrganizations } from '../../../src/gql/organization'
 import itemStyle from '../../../src/styleMUI/lotterys/lottery'
@@ -311,14 +310,14 @@ const LotteryEdit = React.memo((props) => {
                                                 <div className={classes.row}>
                                                     {
                                                         data.lottery.status!=='разыграна'?
-                                                            <CardLotteryTicket setList={setTickets} list={tickets} clientsForLottery={data.clientsForLottery}/>
+                                                            <CardLotteryTicket setList={setTickets} list={tickets} lottery={router.query.id}/>
                                                             :
                                                             null
                                                     }
                                                     {tickets?tickets.map((element, idx)=> {
                                                         if(idx<=pagination)
                                                             return(
-                                                                <CardLotteryTicket element={element} setList={setTickets} list={tickets} idx={idx} clientsForLottery={data.clientsForLottery}/>
+                                                                <CardLotteryTicket element={element} setList={setTickets} list={tickets} idx={idx} lottery={router.query.id}/>
                                                             )}
                                                     ):null}
                                                 </div>
@@ -389,7 +388,7 @@ const LotteryEdit = React.memo((props) => {
                             }
                             editElement.photoReports = _photoReports
                             if(data.lottery.status!=='разыграна')
-                                editElement.tickets = tickets.map(ticket=>{return {client: ticket.client._id, number: ticket.number}})
+                                editElement.tickets = tickets.map(ticket=>{return {client: ticket.client._id, number: ticket.number, countWin: checkInt(ticket.countWin)?checkInt(ticket.countWin):1, coupons: checkInt(ticket.coupons)?checkInt(ticket.coupons):1}})
                             const action = async() => {
                                 await setLottery(editElement)
                                 Router.push(`/lottery/${data.lottery._id}`)
@@ -431,7 +430,6 @@ LotteryEdit.getInitialProps = async function(ctx) {
         data: {
             lottery: lottery,
             ...await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            ...ctx.query.id!=='new'?await getClientsForLottery(ctx.query.id, ctx.req?await getClientGqlSsr(ctx.req):undefined):{}
         }
     };
 };

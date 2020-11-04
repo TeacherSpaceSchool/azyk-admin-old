@@ -51,7 +51,7 @@ const Organization = React.memo((props) => {
     let [minimumOrder, setMinimumOrder] = useState(data.organization!==null?data.organization.minimumOrder:0);
     let [priotiry, setPriotiry] = useState(data.organization!==null?data.organization.priotiry:0);
     let [address, setAddress] = useState(data.organization?data.organization.address:[]);
-    const _cities = ['Бишкек']
+    const _cities = ['Бишкек', 'Кара-Балта', 'Токмок']
     let [cities, setCities] = useState(data.organization&&data.organization.cities?data.organization.cities:['Бишкек']);
     let handleCities =  (event) => {
         setCities(event.target.value)

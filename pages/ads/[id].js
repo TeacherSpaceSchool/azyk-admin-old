@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import CardAds from '../../components/ads/CardAds';
 import pageListStyle from '../../src/styleMUI/ads/adsList'
@@ -17,6 +17,7 @@ import Router from 'next/router'
 import {getBrands} from '../../src/gql/items';
 
 const Ads = React.memo((props) => {
+    const initialRender = useRef(true);
     const classes = pageListStyle();
     const { data } = props;
     let [list, setList] = useState(data.adss);
@@ -24,7 +25,10 @@ const Ads = React.memo((props) => {
     const { profile } = props.user;
     useEffect(()=>{
         (async()=>{
-            setList((await getAdss({search: search, organization: router.query.id})).adss)
+            if(initialRender.current)
+                initialRender.current = false;
+            else
+                setList((await getAdss({search: search, organization: router.query.id})).adss)
         })()
     },[search])
     useEffect(()=>{

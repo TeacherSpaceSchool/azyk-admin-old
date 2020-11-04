@@ -15,6 +15,7 @@ export const getDeliveryDates = async({clients, organization}, client)=>{
                             client
                             days
                             organization
+                            priority
                          }
                     }`,
             })
@@ -35,6 +36,7 @@ export const getDeliveryDate = async({client, organization})=>{
                             client
                             days
                             organization
+                            priority
                          }
                     }`,
             })
@@ -48,14 +50,14 @@ export const getDeliveryDate = async({client, organization})=>{
     }
 }
 
-export const saveDeliveryDates = async(clients, organization, days)=>{
+export const saveDeliveryDates = async(clients, organization, days, priority)=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
-            variables: { clients: clients, organization: organization, days: days },
+            variables: { clients: clients, organization: organization, days: days, priority: priority },
             mutation : gql`
-                    mutation ($clients: [ID]!, $organization: ID!, $days: [Boolean]!) {
-                        setDeliveryDates(clients: $clients, organization: $organization, days: $days) {
+                    mutation ($clients: [ID]!, $organization: ID!, $days: [Boolean]!, $priority: Int!) {
+                        setDeliveryDates(clients: $clients, organization: $organization, days: $days, priority: $priority) {
                              data
                         }
                     }`})

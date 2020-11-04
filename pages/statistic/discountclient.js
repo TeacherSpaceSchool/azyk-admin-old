@@ -29,8 +29,6 @@ import * as snackbarActions from '../../redux/actions/snackbar'
 import dynamic from 'next/dynamic'
 import { getDistributer } from '../../src/gql/distributer'
 import { checkInt } from '../../src/lib'
-import clients from '../clients';
-import Button from '@material-ui/core/Button';
 
 const height = 225
 const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'))
@@ -103,7 +101,7 @@ const DiscountClient = React.memo((props) => {
         })()
     },[district, organization])
     const checkPagination = ()=>{
-        if(pagination<clients.length){
+        if(pagination<filtredClients.length){
             setPagination(pagination+100)
         }
     }

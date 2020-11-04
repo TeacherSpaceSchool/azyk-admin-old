@@ -69,6 +69,7 @@ const CardOfflineOrder = React.memo((props) => {
                             }
                             await addOrders({
                                 inv: element.inv,
+                                priority: element.priority,
                                 unite: element.unite,
                                 info: element.coment,
                                 usedBonus: element.useBonus,

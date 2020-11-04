@@ -113,12 +113,7 @@ const ClientStatistic = React.memo((props) => {
                     </div>
                     {
                         statisticClient?
-                            <Table type='client' row={
-                                parseInt(dateStart.split('-')[1])>8&&filter?
-                                    [...(statisticClient.row).slice(1), ...(statisticClient.row).slice(1)]
-                                    :
-                                    (statisticClient.row).slice(1)
-                            } columns={statisticClient.columns}/>
+                            <Table type='client' row={(statisticClient.row).slice(1)} columns={statisticClient.columns}/>
                             :null
                     }
                 </CardContent>
@@ -127,19 +122,7 @@ const ClientStatistic = React.memo((props) => {
                 {
                     statisticClient?
                         <>
-                        <div className={classes.rowStatic}>{`Клиентов: ${
-                            parseInt(statisticClient.row[0].data[0])+
-                            (
-                                parseInt(dateStart.split('-')[1])>8&&filter
-                                    ?
-                                    dateType==='day'?
-                                        100
-                                        :
-                                        600+180
-                                    :
-                                    0
-                            )
-                        }`}</div>
+                        <div className={classes.rowStatic}>{`Клиентов: ${parseInt(statisticClient.row[0].data[0])}`}</div>
                         {
                             showStat?
                                 <>

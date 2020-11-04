@@ -52,7 +52,7 @@ export const getAds = async()=>{
                     query {
                         ads {
                             _id
-                            id
+                            xid
                             image
                             count
                             item
@@ -81,19 +81,19 @@ export const getAds = async()=>{
     }
 }
 
-export const getAdss = async({search: search, organization: organization}, client)=>{
+export const getAdss = async(args, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {search: search, organization: organization},
+                variables: args,
                 query: gql`
                     query ($search: String!, $organization: ID!) {
                         adss(search: $search, organization: $organization) {
                             _id
                             image
                             url
-                            id
+                            xid
                             title
                             createdAt
                             count
@@ -132,7 +132,7 @@ export const getAdssTrash = async({search: search, organization: organization}, 
                             _id
                             image
                             url
-                            id
+                            xid
                             title
                             del
                             count
@@ -199,8 +199,8 @@ export const addAds = async(element, organization)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($image: Upload!, $url: String!, $id: String, $title: String!, $organization: ID!, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
-                        addAds(image: $image, url: $url, id: $id, title: $title, organization: $organization, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
+                    mutation ($image: Upload!, $url: String!, $xid: String, $title: String!, $organization: ID!, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
+                        addAds(image: $image, url: $url, xid: $xid, title: $title, organization: $organization, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
                              data
                         }
                     }`})
@@ -231,8 +231,8 @@ export const setAds = async(element, organization)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($id: String, $_id: ID!, $image: Upload, $url: String, $title: String, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
-                        setAds(id: $id, _id: $_id, image: $image, url: $url, title: $title, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
+                    mutation ($xid: String, $_id: ID!, $image: Upload, $url: String, $title: String, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
+                        setAds(xid: $xid, _id: $_id, image: $image, url: $url, title: $title, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
                              data
                         }
                     }`})

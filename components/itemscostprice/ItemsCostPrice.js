@@ -22,36 +22,40 @@ const CardCategory = React.memo((props) => {
     };
     useEffect(()=>{
         (async()=>{
-            setCostPrice(list[idx].costPrice)
+            if(list[idx])
+                setCostPrice(list[idx].costPrice)
         })()
     },[list])
     return (
-        <Card className={isMobileApp?classes.cardM:classes.cardD}>
-            <CardContent>
-                <div className={classes.row}>
-                    <div className={classes.nameField}>Товар:&nbsp;</div>
-                    <div className={classes.value}>{element.name}</div>
-                </div>
-                <div className={classes.row}>
-                    <div className={classes.nameField}>Цена:&nbsp;</div>
-                    <div className={classes.value}>{element.price} сом</div>
-                </div>
-                <div className={classes.row}>
-                    <div className={classes.nameField}>Себестоимость:&nbsp;</div>
-                    <div className={classes.value}>{list[idx].costPrice} сом</div>
-                </div>
-                <TextField
-                    label='Себестоимость'
-                    value={costPrice}
-                    type={isMobileApp?'number':'text'}
-                    className={classes.input}
-                    onChange={handleCostPrice}
-                    inputProps={{
-                        'aria-label': 'description',
-                    }}
-                />
-            </CardContent>
-        </Card>
+        element&&list[idx]?
+            <Card className={isMobileApp?classes.cardM:classes.cardD}>
+                <CardContent>
+                    <div className={classes.row}>
+                        <div className={classes.nameField}>Товар:&nbsp;</div>
+                        <div className={classes.value}>{element.name}</div>
+                    </div>
+                    <div className={classes.row}>
+                        <div className={classes.nameField}>Цена:&nbsp;</div>
+                        <div className={classes.value}>{element.price} сом</div>
+                    </div>
+                    <div className={classes.row}>
+                        <div className={classes.nameField}>Себестоимость:&nbsp;</div>
+                        <div className={classes.value}>{list[idx].costPrice} сом</div>
+                    </div>
+                    <TextField
+                        label='Себестоимость'
+                        value={costPrice}
+                        type={isMobileApp?'number':'text'}
+                        className={classes.input}
+                        onChange={handleCostPrice}
+                        inputProps={{
+                            'aria-label': 'description',
+                        }}
+                    />
+                </CardContent>
+            </Card>
+            :
+            null
     );
 })
 

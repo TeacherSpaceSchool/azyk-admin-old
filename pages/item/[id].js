@@ -45,7 +45,7 @@ const Item = React.memo((props) => {
     let [price, setPrice] = useState(data.item!==null?data.item.price:'');
     let [deliveryDays, setDeliveryDays] = useState(data.item!==null?data.item.deliveryDays:[]);
     let [subCategory, setSubCategory] = useState(data.item!==null?data.item.subCategory:{});
-    const cities = ['Бишкек']
+    const cities = ['Бишкек', 'Кара-Балта', 'Токмок']
     let [city, setCity] = useState(data.item&&data.item.city?data.item.city:'Бишкек');
     let handleCity =  (event) => {
         setCity(event.target.value)

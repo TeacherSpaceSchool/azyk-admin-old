@@ -49,7 +49,7 @@ export const getLottery = async({_id}, client)=>{
                             photoReports
                                 {_id image text}
                             tickets
-                                {status number client {_id name} prize}
+                                {status countWin coupons number client {_id name} prize}
                           }
                     }`,
             })
@@ -91,15 +91,15 @@ export const addLottery = async(element)=>{
     }
 }
 
-export const getClientsForLottery = async(lottery, client)=>{
+export const getClientsForLottery = async(arg, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {lottery: lottery},
+                variables: arg,
                 query: gql`
-                    query ($lottery: ID) {
-                        clientsForLottery(lottery: $lottery) {
+                    query ($lottery: ID, $search: String!) {
+                        clientsForLottery(lottery: $lottery, search: $search) {
                             _id
                             image
                             createdAt

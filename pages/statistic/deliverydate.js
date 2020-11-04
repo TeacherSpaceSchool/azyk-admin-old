@@ -24,12 +24,14 @@ import LazyLoad from 'react-lazyload';
 import Fab from '@material-ui/core/Fab';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import * as snackbarActions from '../../redux/actions/snackbar'
 import dynamic from 'next/dynamic'
 import { getDistributer } from '../../src/gql/distributer'
-import clients from '../clients';
 import Button from '@material-ui/core/Button';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 const height = 225
 const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'))
@@ -43,6 +45,11 @@ const LogistiOorder = React.memo((props) => {
     const { setMiniDialog, showMiniDialog, setFullDialog, showFullDialog} = props.mini_dialogActions;
     const { showLoad } = props.appActions;
     const { showSnackBar } = props.snackbarActions;
+    let [priority, setPriority] = useState(0);
+    let handlePriority =  (event) => {
+        setPriority(event.target.value)
+    };
+    const prioritys = [1, 0]
     let [pagination, setPagination] = useState(100);
     let [districts, setDistricts] = useState([]);
     let [allClients, setAllClients] = useState([]);
@@ -107,7 +114,7 @@ const LogistiOorder = React.memo((props) => {
         })()
     },[district, organization])
     const checkPagination = ()=>{
-        if(pagination<clients.length){
+        if(pagination<filtredClients.length){
             setPagination(pagination+100)
         }
     }
@@ -194,6 +201,17 @@ const LogistiOorder = React.memo((props) => {
                                 <TextField {...params} label='Район' fullWidth />
                             )}
                         />
+                        <FormControl className={classes.input}>
+                            <InputLabel>Приоритет</InputLabel>
+                            <Select
+                                value={priority}
+                                onChange={handlePriority}
+                            >
+                                {prioritys?prioritys.map((element)=>
+                                    <MenuItem key={element} value={element}>{element}</MenuItem>
+                                ):null}
+                            </Select>
+                        </FormControl>
                     </div>
                     <div className={classes.row}>
                         <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>{days[0] = !days[0];setDays([...days])}} size='small' color={days[0]?'primary':''}>
@@ -223,7 +241,9 @@ const LogistiOorder = React.memo((props) => {
             <div className={classes.listInvoices}>
                 {filtredClients?filtredClients.map((element, idx)=> {
                     if (idx <= pagination) {
-                        let deliveryDate = deliveryDates[element._id] ? deliveryDates[element._id].days : [true, true, true, true, true, true, false];
+                        let search = deliveryDates[element._id] ? deliveryDates[element._id] : { days: [true, true, true, true, true, true, false], priority: 0};
+                        let deliveryDate = search.days;
+                        let priority = search.priority;
                         return (
                             <div key={idx} className={classes.row1} style={{justifyContent: 'center'}}>
                                 <div style={{alignItems: 'center'}} className={isMobileApp?classes.row1:classes.column}>
@@ -244,6 +264,9 @@ const LogistiOorder = React.memo((props) => {
                                     <div className={classes.dateStatistic} style={{background: deliveryDate[4]?'#ffb300':'white'}}/>
                                     <div className={classes.dateStatistic} style={{background: deliveryDate[5]?'#ffb300':'white'}}/>
                                     <div className={classes.dateStatistic} style={{background: deliveryDate[6]?'#ffb300':'white'}}/>
+                                    <b>
+                                        {priority}
+                                    </b>
                                 </div>
                                 <LazyLoad scrollContainer={'.App-body'} key={element._id}
                                     height={height} offset={[height, 0]} debounce={0}
@@ -288,11 +311,12 @@ const LogistiOorder = React.memo((props) => {
                     if(selectedClients.length>0){
                         const action = async() => {
                             if(selectedClients.length>0) {
-                                await saveDeliveryDates(selectedClients, organization._id, days)
+                                await saveDeliveryDates(selectedClients, organization._id, days, priority)
                                 for (let i = 0; i < selectedClients.length; i++) {
                                     deliveryDates[selectedClients[i]] = {
                                         client: selectedClients[i],
                                         days: days,
+                                        priority: priority,
                                         organization: organization._id
                                     }
                                 }

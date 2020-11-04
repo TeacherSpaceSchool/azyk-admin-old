@@ -5,7 +5,7 @@ export default makeStyles({
         marginBottom: 10
     },
     cardD: {
-        width: 400,
+        width: 600,
         margin: 10
     },
     mediaM: {

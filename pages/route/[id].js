@@ -192,7 +192,7 @@ const Route = React.memo((props) => {
                                     Настройки
                                 </div>
                                 <div style={{background: screen==='invoices'?'#ffb300':'#ffffff'}} onClick={()=>{setPagination(100);setScreen('invoices')}} className={classes.selectType}>
-                                    Заказы {orders.length}
+                                    Заказы {selectedOrders.length}/{orders.length}
                                 </div>
                             </div>
                             {
@@ -331,7 +331,6 @@ const Route = React.memo((props) => {
                                                     </div>
                                                 </ExpansionPanelSummary>
                                                 <ExpansionPanelDetails>
-                                                    {console.log(element.orders)}
                                                     <div className={classes.column}>
                                                         <div className={classes.row}>
                                                             <div className={classes.nameField}>
@@ -428,6 +427,7 @@ const Route = React.memo((props) => {
                                                                                   selectedOrders.splice(selectedOrders.findIndex(element1=>element1._id===element._id), 1)
                                                                               }
                                                                               setSelectedOrders([...selectedOrders])
+                                                                              setDeliverys([])
                                                                           }}
                                                                 />
                                                                 :
@@ -538,10 +538,12 @@ const Route = React.memo((props) => {
                                                     <>
                                                     <MenuItem onClick={async()=>{
                                                         setSelectedOrders([...orders])
+                                                        setDeliverys([])
                                                         close()
                                                     }}>Выбрать все</MenuItem>
                                                     <MenuItem onClick={async()=>{
                                                         setSelectedOrders([])
+                                                        setDeliverys([])
                                                         close()
                                                     }}>Отменить выбор</MenuItem>
                                                     </>
@@ -549,6 +551,7 @@ const Route = React.memo((props) => {
                                                     null
                                                 }
                                                 <MenuItem onClick={async()=>{
+                                                    setDeliverys([])
                                                     setFullDialog('Добавить заказ', <AddOrder districts={districts} produsers={produsers} dateDelivery={dateDelivery} mainSelectedOrders={selectedOrders} setMainSelectedOrders={setSelectedOrders} mainOrders={orders} setMainOrders={setOrders}/>)
                                                     showFullDialog(true)
                                                     close()

@@ -76,20 +76,20 @@ const ClientStatisticActive = React.memo((props) => {
                     {
                         statisticActive?
                             <>
-                            <Table type='client' row={[...statisticActive.row.slice(1), ...statisticActive.row.slice(1)]} columns={statisticActive.columns}/>
+                            <Table type='client' row={statisticActive.row.slice(1)} columns={statisticActive.columns}/>
                             <div className='count' onClick={()=>setShowStat(!showStat)}>
                                 {
                                     statisticActive?
                                         <>
-                                        <div className={classes.rowStatic}>{`Сегодня активность: ${parseInt(statisticActive.row[0].data[4])+100}`}</div>
-                                        <div className={classes.rowStatic}>{`Сегодня заказов: ${parseInt(statisticActive.row[0].data[5])+100}`}</div>
+                                        <div className={classes.rowStatic}>{`Сегодня активность: ${statisticActive.row[0].data[4]}`}</div>
+                                        <div className={classes.rowStatic}>{`Сегодня заказов: ${statisticActive.row[0].data[5]}`}</div>
                                         {
                                             showStat?
                                                 <>
-                                                <div className={classes.rowStatic}>{`Недельная активность: ${parseInt(statisticActive.row[0].data[6])+600}`}</div>
-                                                <div className={classes.rowStatic}>{`Недельные заказы: ${parseInt(statisticActive.row[0].data[7])+600}`}</div>
-                                                <div className={classes.rowStatic}>{`Месячная активность: ${parseInt(statisticActive.row[0].data[8])+600}`}</div>
-                                                <div className={classes.rowStatic}>{`Месячная заказы: ${parseInt(statisticActive.row[0].data[9])+600}`}</div>
+                                                <div className={classes.rowStatic}>{`Недельная активность: ${statisticActive.row[0].data[6]}`}</div>
+                                                <div className={classes.rowStatic}>{`Недельные заказы: ${statisticActive.row[0].data[7]}`}</div>
+                                                <div className={classes.rowStatic}>{`Месячная активность: ${statisticActive.row[0].data[8]}`}</div>
+                                                <div className={classes.rowStatic}>{`Месячная заказы: ${statisticActive.row[0].data[9]}`}</div>
                                                 <div className={classes.rowStatic}>{`Всего активности: ${statisticActive.row[0].data[2]}`}</div>
                                                 <div className={classes.rowStatic}>{`Всего заказов: ${statisticActive.row[0].data[3]}`}</div>
                                                 <div className={classes.rowStatic}>{`Без активности: ${statisticActive.row[0].data[0]}`}</div>

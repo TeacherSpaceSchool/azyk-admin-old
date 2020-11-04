@@ -16,6 +16,10 @@ export default makeStyles({
         display: 'flex',
         flexDirection: 'row'
     },
+    input: {
+        marginBottom: 10,
+        width: '100%',
+    },
     nameField: {
         marginBottom: 10,
         fontWeight: 'bold',
