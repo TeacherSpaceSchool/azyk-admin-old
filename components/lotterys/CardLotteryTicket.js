@@ -151,8 +151,12 @@ const CardLotteryTicket = React.memo((props) => {
                                         value={coupons}
                                         className={classes.input}
                                         onChange={(event)=>{
-                                            list[idx].coupons = event.target.value
-                                            setList([...list])
+                                            if(idx===undefined)
+                                                setCoupons(event.target.value)
+                                            else {
+                                                list[idx].coupons = event.target.value
+                                                setList([...list])
+                                            }
                                         }}
                                         inputProps={{
                                             'aria-label': 'description',
@@ -162,12 +166,17 @@ const CardLotteryTicket = React.memo((props) => {
                                 <div className={classes.row}>
                                     <TextField
                                         type={isMobileApp?'number':'text'}
-                                        label='Шансов'
+                                        label='Призов'
                                         value={countWin}
                                         className={classes.input}
                                         onChange={(event)=>{
-                                            list[idx].countWin = event.target.value
-                                            setList([...list])
+                                            if(idx===undefined)
+                                               setCountWin(event.target.value)
+                                            else
+                                            {
+                                                list[idx].countWin = event.target.value
+                                                setList([...list])
+                                            }
                                         }}
                                         inputProps={{
                                             'aria-label': 'description',
