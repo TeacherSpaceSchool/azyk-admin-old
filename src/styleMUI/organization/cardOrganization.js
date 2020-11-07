@@ -55,14 +55,15 @@ export default makeStyles({
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
-        height: 135
+        height: /*135*/117
     },
     mediaBrand: {
-        borderRadius: '30px',
+        borderRadius: /*30*/10,
         objectFit: 'cover',
-        height: '60px',
-        width: '60px',
-        margin: 5,
+        height: 67,
+        width: 67,
+        //margin: 5,
+        marginTop: 3
     },
     nameBrand: {
         width: 'calc(100vw / 3 - 15px)',

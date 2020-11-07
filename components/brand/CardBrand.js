@@ -20,9 +20,9 @@ const CardBrand = React.memo((props) => {
                         src={element.image}
                         alt={element.name}
                     />
-                    <div className={classes.nameBrand}>
+                    {/*<div className={classes.nameBrand}>
                         {element.name}
-                    </div>
+                    </div>*/}
                     <div className={classes.textBrand}>
                         {element.miniInfo?element.miniInfo:''}
                     </div>
