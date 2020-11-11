@@ -9,14 +9,14 @@ export default makeStyles({
         margin: 10
     },
     mediaO: {
-        borderRadius: '30px',
+        borderRadius: 10,
         objectFit: 'cover',
         height: '60px',
         width: '60px',
         marginRight: 10
     },
     avatar: {
-        borderRadius: '50px',
+        borderRadius: 50,
         objectFit: 'cover',
         height: '100px',
         width: '100px',
@@ -51,17 +51,17 @@ export default makeStyles({
     },
     cardBrand: {
         width: 'calc(100vw / 3 - 10px)',
-        margin: 5,
+        margin: /*5*/3,
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'column',
-        height: /*135*/117
+        height: /*135*/122
     },
     mediaBrand: {
         borderRadius: /*30*/10,
         objectFit: 'cover',
-        height: 67,
-        width: 67,
+        height: /*67*/80,
+        width: /*67*/80,
         //margin: 5,
         marginTop: 3
     },
@@ -77,10 +77,12 @@ export default makeStyles({
     },
     textBrand: {
         width: 'calc(100vw / 3 - 15px)',
-        fontSize: '0.6875rem',
+        fontSize: /*'0.6875rem'*/'0.75rem',
         fontFamily: 'Roboto',
         overflow: 'hidden',
-        height: 45,
+        height: /*45*/36,
+        lineHeight: '11px',
+        marginTop: 3,
         textAlign: 'center'
     }
 })
