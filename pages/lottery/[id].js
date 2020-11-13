@@ -30,6 +30,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { countdown } from '../../src/lib'
 import TextLottery from '../../components/dialog/TextLottery'
+import WinnerListLottery from '../../components/dialog/WinnerListLottery'
 import Confetti from 'react-confetti'
 import Lightbox from 'react-image-lightbox';
 
@@ -148,7 +149,7 @@ const LotteryEdit = React.memo((props) => {
                                     <center>
                                     <div className="cardWrap">
                                         <div className={`${ticket.status==='проигравший'?'cardLose':ticket.status==='победитель'?'cardWin':'card'} cardLeft`}>
-                                            <h1>{ticket.status}</h1>
+                                            <h1>{ticket.status==='проигравший'?'попробуй еше':ticket.status}</h1>
                                             <div className="title">
                                                 <h2>{ticket.number}</h2>
                                                 <span>номер</span>
@@ -171,10 +172,22 @@ const LotteryEdit = React.memo((props) => {
                                         </div>
                                         <div className={`${ticket.status==='проигравший'?'cardLose':ticket.status==='победитель'?'cardWin':'card'} cardRight`}>
                                         </div>
-
                                     </div>
                                     </center>
                                     <br/>
+                                    </>
+                                    :
+                                    null
+                            }
+                            {
+                                data.lottery.status==='разыграна'&&(profile.role==='admin'||(['суперорганизация', 'организация'].includes(profile.role)&&data.lottery.organization._id===profile.organization)||ticket)?
+                                    <>
+                                    <div style={{background: 'url(https://ak.picdn.net/shutterstock/videos/610861/thumb/1.jpg) center center no-repeat'}} className='buttonPrize' onClick={()=>{
+                                        setMiniDialog('Победители', <WinnerListLottery tickets={data.lottery.tickets}/>)
+                                        showMiniDialog(true)
+                                    }}>
+                                        <span>Победители</span>
+                                    </div>
                                     </>
                                     :
                                     null
