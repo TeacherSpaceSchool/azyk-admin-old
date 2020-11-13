@@ -182,9 +182,9 @@ const LotteryEdit = React.memo((props) => {
                             {
                                 data.lottery.status==='разыграна'&&(profile.role==='admin'||(['суперорганизация', 'организация'].includes(profile.role)&&data.lottery.organization._id===profile.organization)||ticket)?
                                     <>
-                                    <div style={{background: 'url(https://ak.picdn.net/shutterstock/videos/610861/thumb/1.jpg) center center no-repeat'}} className='buttonPrize' onClick={()=>{
-                                        setMiniDialog('Победители', <WinnerListLottery tickets={data.lottery.tickets}/>)
-                                        showMiniDialog(true)
+                                    <div style={{background: 'url(https://png.pngtree.com/thumb_back/fw800/background/20191228/pngtree-firework-celebration-party-new-year-background-image_325773.jpg) center center no-repeat'}} className='buttonPrize' onClick={()=>{
+                                        setFullDialog('Победители', <WinnerListLottery tickets={data.lottery.tickets}/>)
+                                        showFullDialog(true)
                                     }}>
                                         <span>Победители</span>
                                     </div>

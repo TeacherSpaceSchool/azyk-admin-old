@@ -12,9 +12,8 @@ import {getOrder} from '../../src/gql/order'
 
 const WinnerListLottery =  React.memo(
     (props) =>{
-        const { showMiniDialog } = props.mini_dialogActions;
+        const { showFullDialog } = props.mini_dialogActions;
         const { classes, tickets } = props;
-
         return (
             <div className={classes.column}>
                 {
@@ -23,7 +22,7 @@ const WinnerListLottery =  React.memo(
                                 return (
                                     <div className={classes.row} key={`winner${idx}`}>
                                         <div className={classes.nameField}>
-                                            {element.client.name}:&nbsp;
+                                            {`${element.client.name}${element.client.address&&element.client.address[0]?` (${element.client.address[0][2]?`${element.client.address[0][2]}, `:''}${element.client.address[0][0]})`:''}`}:&nbsp;
                                         </div>
                                         <div className={classes.value}>
                                             {element.prize}
@@ -36,7 +35,7 @@ const WinnerListLottery =  React.memo(
                 <br/>
                 <br/>
                 <center>
-                    <Button variant='contained' color='secondary' onClick={()=>{showMiniDialog(false);}} className={classes.button}>
+                    <Button variant='contained' color='secondary' onClick={()=>{showFullDialog(false);}} className={classes.button}>
                         Закрыть
                     </Button>
                 </center>

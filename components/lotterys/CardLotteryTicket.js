@@ -137,7 +137,7 @@ const CardLotteryTicket = React.memo((props) => {
                                 <a href={`/client/${element.client._id}`} target='_blank'>
                                     <div className={classes.row}>
                                         <div className={classes.nameField}>Участник:&nbsp;</div>
-                                        <div className={classes.value}>{element.client.name}</div>
+                                        <div className={classes.value}>{`${element.client.name}${element.client.address&&element.client.address[0]?` (${element.client.address[0][2]?`${element.client.address[0][2]}, `:''}${element.client.address[0][0]})`:''}`}</div>
                                     </div>
                                 </a>
                         }

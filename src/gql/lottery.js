@@ -49,7 +49,7 @@ export const getLottery = async({_id}, client)=>{
                             photoReports
                                 {_id image text}
                             tickets
-                                {status countWin coupons number client {_id name} prize}
+                                {status countWin coupons number client {_id name address} prize}
                           }
                     }`,
             })
