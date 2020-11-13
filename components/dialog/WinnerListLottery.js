@@ -18,15 +18,19 @@ const WinnerListLottery =  React.memo(
         return (
             <div className={classes.column}>
                 {
-                    tickets.map((element, idx)=>
-                        <div className={classes.row} key={`winner${idx}`}>
-                            <div className={classes.nameField}>
-                                {element.client.name}:&nbsp;
-                            </div>
-                            <div className={classes.value}>
-                                {element.prize}
-                            </div>
-                        </div>
+                    tickets.map((element, idx)=> {
+                            if (element.prize && element.prize.length) {
+                                return (
+                                    <div className={classes.row} key={`winner${idx}`}>
+                                        <div className={classes.nameField}>
+                                            {element.client.name}:&nbsp;
+                                        </div>
+                                        <div className={classes.value}>
+                                            {element.prize}
+                                        </div>
+                                    </div>)
+                            }
+                        }
                     )
                 }
                 <br/>

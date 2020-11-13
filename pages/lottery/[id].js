@@ -188,6 +188,7 @@ const LotteryEdit = React.memo((props) => {
                                     }}>
                                         <span>Победители</span>
                                     </div>
+                                    <br/>
                                     </>
                                     :
                                     null
