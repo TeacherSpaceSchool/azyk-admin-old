@@ -195,7 +195,7 @@ const Form = React.memo((props) => {
                                                         }}>
                                                             {
                                                                 element.answers.map((element1, idx1)=>
-                                                                    <FormControlLabel key={`${element.question}${idx1}`} value={element1} control={<Radio />} label={element1} />
+                                                                    <FormControlLabel key={`${element.question}${idx1}`} value={element1} control={<Radio color='primary'/>} label={element1} />
                                                                 )
                                                             }
                                                         </RadioGroup>
@@ -208,7 +208,9 @@ const Form = React.memo((props) => {
                                                                 {
                                                                     element.answers.map((element1, idx1)=>
                                                                         <FormControlLabel key={`${element.question}${idx1}`}
-                                                                            control={<Checkbox checked={questions[idx].answer.includes(element1)}  onChange={()=>{
+                                                                            control={<Checkbox
+                                                                                color='primary'
+                                                                                checked={questions[idx].answer.includes(element1)}  onChange={()=>{
                                                                                 if(edit) {
                                                                                     let index = questions[idx].answer.indexOf(element1)
                                                                                     if (index !== -1)

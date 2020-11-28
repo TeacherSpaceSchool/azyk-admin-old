@@ -23,7 +23,6 @@ const AnalysisForms = React.memo((props) => {
     const { data } = props;
     const { isMobileApp } = props.app;
     const router = useRouter()
-    console.log(data.analysisForms)
     return (
         <App pageName={data.templateForm.title}>
             <Head>

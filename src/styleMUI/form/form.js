@@ -8,7 +8,10 @@ export default makeStyles({
         flexDirection: 'row',
     },
     question:{
-        marginBottom: 30
+        marginBottom: 10,
+        width: '100%',
+        border: '1px solid #E0E0E0',
+        padding: 10
     },
     line:{
         display: 'flex',

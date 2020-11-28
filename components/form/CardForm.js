@@ -19,9 +19,10 @@ const CardForm = React.memo((props) => {
                     <div className={classes.date}>
                         {pdDDMMYYHHMM(element.createdAt)}
                     </div>
+                    <br/>
                     <div className={classes.row}>
                         <div className={classes.nameField}>Клиент:&nbsp;</div>
-                        <div className={classes.value}>{element.client.name}</div>
+                        <div className={classes.value}>{`${element.client.name}${element.client.address&&element.client.address[0]?` (${element.client.address[0][2]?`${element.client.address[0][2]}, `:''}${element.client.address[0][0]})`:''}`}</div>
                     </div>
                     {
                         element.agent?

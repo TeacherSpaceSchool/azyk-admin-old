@@ -6,6 +6,7 @@ export default makeStyles({
         position: 'relative'
     },
     cardD: {
+        cursor: 'pointer',
         width: 400,
         margin: 10,
         position: 'relative'

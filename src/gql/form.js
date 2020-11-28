@@ -92,7 +92,7 @@ export const getForms = async({templateForm, search, skip}, client)=>{
                             _id
                             createdAt
                             client
-                                {_id name}
+                                {_id name address}
                             agent
                                 {_id name}
                             organization
