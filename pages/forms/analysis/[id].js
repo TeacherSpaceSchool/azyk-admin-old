@@ -41,45 +41,61 @@ const AnalysisForms = React.memo((props) => {
                     data.templateForm!==null?
                         ['admin', 'суперорганизация', 'организация'].includes(profile.role)?
                             <>
-                            <h3>
-                                Анкет
-                            </h3>
-                            <br/>
-                            {
-                                data.analysisForms.editor.map((element, idx) =>
-                                    <div style={{width: '100%'}} key={`${element._id}${idx}`}>
-                                        <div className={classes.row}>
-                                            <div className={classes.nameField}>{element._id}:&nbsp;</div>
-                                            <div className={classes.value}>{element.count}</div>
-                                        </div>
-                                        <Divider variant='inset' />
-                                    </div>
-                                )
-                            }
-                            <br/>
-                            <h3>
-                                Ответы
-                            </h3>
-                            <br/>
-                            {
-                                data.analysisForms.questions.map((element, idx) =>
-                                    <div style={{width: '100%'}}  key={`${element._id}${idx}`}>
-                                        <div className={classes.row}>
-                                            <div className={classes.nameField}>{element._id}:&nbsp;</div>
-                                            <div>
-                                                {
-                                                    element.answers.map((element1, idx1) =>
-                                                        <div className={classes.value} key={`${element1._id}${idx1}`}>
-                                                            {`${element1._id}: ${element1.count}`}
-                                                        </div>
-                                                    )
-                                                }
+                            <div className={classes.question}>
+                                <h3>
+                                    Анкет
+                                </h3>
+                                <br/>
+                                <Divider/>
+                                {
+                                    data.analysisForms.editor.map((element, idx) =>
+                                        <div style={{width: '100%', marginTop: 10}} key={`${element._id}${idx}`}>
+                                            <div className={classes.row}>
+                                                <div className={classes.nameField}>{element._id}:&nbsp;</div>
+                                                <div className={classes.value}>{element.count}</div>
                                             </div>
+                                            {
+                                                (idx!==data.analysisForms.editor.length-1)?
+                                                    <Divider/>
+                                                    :
+                                                    null
+                                            }
                                         </div>
-                                        <Divider variant='inset' />
-                                    </div>
-                                )
-                            }
+                                    )
+                                }
+                            </div>
+                            <br/>
+                            <div className={classes.question}>
+                                <h3>
+                                    Ответы
+                                </h3>
+                                <br/>
+                                <Divider/>
+                                {
+                                    data.analysisForms.questions.map((element, idx) =>
+                                        <div style={{width: '100%', marginTop: 10}}  key={`${element._id}${idx}`}>
+                                            <div className={classes.row}>
+                                                <div className={classes.nameField}>{element._id}:&nbsp;</div>
+                                                <div>
+                                                    {
+                                                        element.answers.map((element1, idx1) =>
+                                                            <div className={classes.value} key={`${element1._id}${idx1}`}>
+                                                                {`${element1._id}: ${element1.count}`}
+                                                            </div>
+                                                        )
+                                                    }
+                                                </div>
+                                            </div>
+                                            {
+                                                (idx!==data.analysisForms.questions.length-1)?
+                                                    <Divider/>
+                                                    :
+                                                    null
+                                            }
+                                        </div>
+                                    )
+                                }
+                            </div>
                             </>
                             :
                             'Ничего не найдено'
