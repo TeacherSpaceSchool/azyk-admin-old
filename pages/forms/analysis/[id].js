@@ -47,7 +47,7 @@ const AnalysisForms = React.memo((props) => {
                             <br/>
                             {
                                 data.analysisForms.editor.map((element, idx) =>
-                                    <div key={`${element._id}${idx}`}>
+                                    <div style={{width: '100%'}} key={`${element._id}${idx}`}>
                                         <div className={classes.row}>
                                             <div className={classes.nameField}>{element._id}:&nbsp;</div>
                                             <div className={classes.value}>{element.count}</div>
@@ -63,7 +63,7 @@ const AnalysisForms = React.memo((props) => {
                             <br/>
                             {
                                 data.analysisForms.questions.map((element, idx) =>
-                                    <div key={`${element._id}${idx}`}>
+                                    <div style={{width: '100%'}}  key={`${element._id}${idx}`}>
                                         <div className={classes.row}>
                                             <div className={classes.nameField}>{element._id}:&nbsp;</div>
                                             <div>
