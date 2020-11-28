@@ -10,13 +10,9 @@ $black: #343434;
   left:0;
   width: 100%;
   height: 100px;
-
-
-  background-size: cover;
-
-
   overflow: hidden;
   display: block;
+  background-size: cover !important;
   span{
     transition: all 0.6s ease;
     overflow: hidden;
@@ -71,22 +67,16 @@ $black: #343434;
   float: left;
   position: relative;
   padding: 1em;
-}
-
-.cardLose {
-  background: linear-gradient(to bottom, $red 0%, $red 30%, $grey 30%, $grey 100%);
-  height: 11em;
-  float: left;
-  position: relative;
-  padding: 1em;
+  margin-bottom: 10px;
 }
 
 .card {
-  background: linear-gradient(to bottom, $yellow 0%, $yellow 30%, $grey 30%, $grey 100%);
-  height: 11em;
+  background: linear-gradient(to bottom, $yellow 0%, $yellow 35%, $grey 35%, $grey 100%);
+  height: 9em;
   float: left;
   position: relative;
   padding: 1em;
+  margin-bottom: 10px;
 }
 
 .cardLeft {

@@ -4,30 +4,19 @@ import React, { useState, useEffect } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getLottery, deleteLottery, checkWinners } from '../../src/gql/lottery'
-import { getOrganizations } from '../../src/gql/organization'
 import itemStyle from '../../src/styleMUI/lotterys/lottery'
 import { useRouter } from 'next/router'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import Router from 'next/router'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as appActions from '../../redux/actions/app'
 import * as snackbarActions from '../../redux/actions/snackbar'
-import TextField from '@material-ui/core/TextField';
 import Confirmation from '../../components/dialog/Confirmation'
 import { urlMain } from '../../redux/constants/other'
 import { getClientGqlSsr } from '../../src/getClientGQL'
-import { pdtDatePicker } from '../../src/lib'
-import Fab from '@material-ui/core/Fab';
-import SettingsIcon from '@material-ui/icons/Settings';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
 import { countdown } from '../../src/lib'
 import TextLottery from '../../components/dialog/TextLottery'
 import WinnerListLottery from '../../components/dialog/WinnerListLottery'
@@ -42,10 +31,9 @@ const LotteryEdit = React.memo((props) => {
     const { isMobileApp } = props.app;
     const { profile } = props.user;
     const { setMiniDialog, showMiniDialog, setFullDialog, showFullDialog } = props.mini_dialogActions;
-    const { showSnackBar } = props.snackbarActions;
     const { showAppBar } = props.appActions;
     let [countdownData, setCountdownData] = useState({hours: 0, days: 0});
-    const [ticket, setTicket] = useState(undefined);
+    let [tickets, setTickets] = useState([]);
     const [photoReportsIndex, setPhotoReportsIndex] = useState(0);
     const [photoReportsOpen, setPhotoReportsOpen] = useState(false);
     const [photoReportsImage, setPhotoReportsImage] = useState([]);
@@ -58,10 +46,12 @@ const LotteryEdit = React.memo((props) => {
     useEffect(()=>{
         setCountdownData(countdown(data.lottery.date))
         if(profile.role==='client'){
+            tickets = []
             for(let i=0; i<data.lottery.tickets.length; i++){
                 if(data.lottery.tickets[i].client._id===profile.client)
-                    setTicket(data.lottery.tickets[i])
+                    tickets.push(data.lottery.tickets[i])
             }
+            setTickets([...tickets])
         }
         if(data.lottery.prizes.length) {
             for (let i = 0; i < data.lottery.prizes.length; i++) {
@@ -144,43 +134,36 @@ const LotteryEdit = React.memo((props) => {
                         </div>
                         <CardContent className={classes.column}>
                             {
-                                ticket?
-                                    <>
-                                    <center>
-                                    <div className="cardWrap">
-                                        <div className={`${ticket.status==='проигравший'?'cardLose':ticket.status==='победитель'?'cardWin':'card'} cardLeft`}>
-                                            <h1>{ticket.status==='проигравший'?'попробуй еше':ticket.status}</h1>
-                                            <div className="title">
-                                                <h2>{ticket.number}</h2>
-                                                <span>номер</span>
-                                            </div>
-                                            {
-                                                ticket.status==='розыгрыш'?
-                                                    <div className="name">
-                                                        <h2>{ticket.coupons}</h2>
-                                                        <span>купонов</span>
+                                tickets.length?
+                                    tickets.map((ticket, idx)=>
+                                        <center key={idx}>
+                                            <div className="cardWrap">
+                                                <div className={`${ticket.status==='победитель'?'cardWin':'card'} cardLeft`}>
+                                                    <h1>{ticket.status==='проигравший'?'попробуй еше':ticket.status}</h1>
+                                                    <div className="title">
+                                                        <h2>{ticket.number}</h2>
+                                                        <span>номер</span>
                                                     </div>
-                                                    :
-                                                    ticket.prize?
-                                                        <div className="name">
-                                                            <h2>{ticket.prize}</h2>
-                                                            <span>приз</span>
-                                                        </div>
-                                                        :
-                                                        null
-                                            }
-                                        </div>
-                                        <div className={`${ticket.status==='проигравший'?'cardLose':ticket.status==='победитель'?'cardWin':'card'} cardRight`}>
-                                        </div>
-                                    </div>
-                                    </center>
-                                    <br/>
-                                    </>
+                                                    {
+                                                        ticket.prize?
+                                                            <div className="name">
+                                                                <h2>{ticket.prize}</h2>
+                                                                <span>приз</span>
+                                                            </div>
+                                                            :
+                                                            null
+                                                    }
+                                                </div>
+                                                <div className={`${ticket.status==='победитель'?'cardWin':'card'} cardRight`}>
+                                                </div>
+                                            </div>
+                                        </center>
+                                    )
                                     :
                                     null
                             }
                             {
-                                data.lottery.status==='разыграна'&&(profile.role==='admin'||(['суперорганизация', 'организация'].includes(profile.role)&&data.lottery.organization._id===profile.organization)||ticket)?
+                                data.lottery.status==='разыграна'&&(profile.role==='admin'||(['суперорганизация', 'организация'].includes(profile.role)&&data.lottery.organization._id===profile.organization)||tickets.length)?
                                     <>
                                     <div style={{background: 'url(https://png.pngtree.com/thumb_back/fw800/background/20191228/pngtree-firework-celebration-party-new-year-background-image_325773.jpg) center center no-repeat'}} className='buttonPrize' onClick={()=>{
                                         setFullDialog('Победители', <WinnerListLottery tickets={data.lottery.tickets}/>)

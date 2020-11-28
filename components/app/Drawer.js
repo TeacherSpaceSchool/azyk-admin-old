@@ -20,6 +20,7 @@ import InfoIcon from '@material-ui/icons/Info';
 import GroupIcon from '@material-ui/icons/Group';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import LocalActivityIcon from '@material-ui/icons/LocalActivity';
+import BallotIcon from '@material-ui/icons/Ballot';
 import RateReview from '@material-ui/icons/RateReview';
 import LocalShipping from '@material-ui/icons/LocalShipping';
 import LocationCityIcon from '@material-ui/icons/LocationCity';
@@ -354,6 +355,19 @@ const MyDrawer = React.memo((props) => {
                             <ListItem style={{background: router.pathname==='/blog'?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncoverBonus(false);showDrawer(false)}}>
                                 <ListItemIcon><ArtTrackIcon color='inherit'/></ListItemIcon>
                                 <ListItemText primary='Блог' />
+                            </ListItem>
+                        </Link>
+                        <Divider/>
+                        </>
+                        :null
+                }
+                {
+                    ['admin', 'client', 'суперорганизация', 'организация', 'менеджер', 'агент'].includes(profile.role)?
+                        <>
+                        <Link href='/forms'>
+                            <ListItem style={{background: router.pathname.includes('form')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncoverBonus(false);showDrawer(false)}}>
+                                <ListItemIcon><BallotIcon color='inherit'/></ListItemIcon>
+                                <ListItemText primary='Анкеты/Опросники' />
                             </ListItem>
                         </Link>
                         <Divider/>

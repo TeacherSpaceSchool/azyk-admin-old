@@ -1,18 +1,19 @@
 import { makeStyles } from '@material-ui/core/styles';
 export default makeStyles({
-    pageM: {
-        margin: 10,
-        position: 'relative',
-        paddingBottom: 100
-    },
-    pageD: {
-        margin: 10,
-        position: 'relative',
-        paddingBottom: 100
+    page: {
+        margin: '10px'
     },
     row:{
         display: 'flex',
         flexDirection: 'row',
+    },
+    question:{
+        marginBottom: 30
+    },
+    line:{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'baseline'
     },
     column:{
         display: 'flex',
@@ -20,86 +21,70 @@ export default makeStyles({
     },
     media: {
         objectFit: 'cover',
+        maxHeight: 'calc(100vw - 72px)',
+        maxWidth: 'calc(100vw - 72px)',
         height: 300,
         width: 300,
         marginRight: 10,
         marginBottom: 10,
+        cursor: 'pointer'
     },
     name: {
         marginBottom: 10,
         fontWeight: 'bold',
-        fontSize: '20px',
+        fontSize: '1.25rem',
         fontFamily: 'Roboto'
     },
     value: {
         marginBottom: 10,
         fontWeight: '500',
-        fontSize: '16px',
+        fontSize: '1rem',
         fontFamily: 'Roboto',
         wordBreak: 'break-all'
     },
     nameField: {
+        width: 80,
         marginBottom: 10,
         fontWeight: 'bold',
-        fontSize: '16px',
+        fontSize: '1rem',
         fontFamily: 'Roboto',
         color: '#A0A0A0'
     },
     info: {
         color: '#455A64',
         marginBottom: 10,
-        fontSize: '16px',
+        fontSize: '1rem',
         fontFamily: 'Roboto',
         whiteSpace: 'pre-wrap'
     },
-    inputM: {
-        marginBottom: 10,
-        width: '100%',
-    },
-    inputD: {
-        marginBottom: 10,
-        width: 'calc(100vw - 700px)'
-    },
-    inputDF: {
-        marginBottom: 10,
-        width: 'calc(100vw - 382px)'
-    },
-    number: {
-        marginBottom: 10,
-        fontWeight: 'bold',
-        fontSize: '1rem',
-        fontFamily: 'Roboto',
-    },
-    date: {
+    geo: {
+        width: 170,
+        textAlign: 'center',
+        marginTop: -5,
         marginBottom: 10,
         fontSize: '0.875rem',
         fontFamily: 'Roboto',
+        whiteSpace: 'pre-wrap',
+        cursor: 'pointer',
+        borderBottom: '1px dashed #ffb300'
+    },
+    doc: {
+        marginBottom: 10,
+        fontSize: '0.875rem',
+        fontFamily: 'Roboto',
+        fontWeight: 'bold',
         color: '#A0A0A0'
     },
-    status: {
-        position: 'absolute',
-        top: 10,
-        right: 10,
-        padding: 4,
-        borderRadius: 10,
-        fontSize: '0.815rem',
-        fontWeight: 'bold',
-        color: 'white',
+    docUrl: {
+        marginBottom: 10,
+        fontSize: '0.875rem',
         fontFamily: 'Roboto',
-
-    },
-    selectType: {
-        width: 100,
-        textAlign: 'center',
-        margin: 10,
-        padding: 4,
         cursor: 'pointer',
-        borderRadius: 10,
-        fontSize: '1rem',
-        color: 'black',
-        fontFamily: 'Roboto',
-        border: '1px solid black'
-
+        fontWeight: 'bold'
+    },
+    input: {
+        marginBottom: 10,
+        width: '100%',
     },
     bottomRouteD: {
         width: 'calc(100vw - 300px)',
@@ -132,25 +117,6 @@ export default makeStyles({
         paddingLeft: 16,
         paddingRight: 16,
         zIndex: 10000
-    },
-    listInvoices: {
-        display: 'flex',
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        width: '100%'
-    },
-    geo: {
-        width: 200,
-        textAlign: 'center',
-        marginTop: -10,
-        marginBottom: 20,
-        fontSize: '1rem',
-        fontFamily: 'Roboto',
-        whiteSpace: 'pre-wrap',
-        cursor: 'pointer',
-        fontWeight: 'bold',
-        borderBottom: '1px dashed #ffb300'
     },
 
 })

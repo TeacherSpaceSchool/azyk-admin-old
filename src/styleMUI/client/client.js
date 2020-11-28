@@ -34,7 +34,7 @@ export default makeStyles({
     },
     value: {
         marginBottom: 10,
-        fontWeight: 'bold',
+        fontWeight: '500',
         fontSize: '1rem',
         fontFamily: 'Roboto',
         wordBreak: 'break-all'

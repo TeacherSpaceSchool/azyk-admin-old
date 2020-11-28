@@ -13,8 +13,7 @@ import * as snackbarActions from '../../redux/actions/snackbar'
 import TextField from '@material-ui/core/TextField';
 import Confirmation from '../dialog/Confirmation';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { checkInt } from '../../src/lib'
-import { getClientsForLottery } from '../../src/gql/lottery'
+import { getClients } from '../../src/gql/client'
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const CardLotteryTicket = React.memo((props) => {
@@ -43,7 +42,7 @@ const CardLotteryTicket = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    setClients((await getClientsForLottery({search: inputValue, lottery: lottery})).clientsForLottery)
+                    setClients((await getClients({search: inputValue, sort: '-name', filter: 'all'})).clients)
                     if(!open)
                         setOpen(true)
                     setLoading(false)
@@ -55,21 +54,13 @@ const CardLotteryTicket = React.memo((props) => {
     const handleChange = event => {
         setInputValue(event.target.value);
     };
-    let [number] = useState(element?element.number:randomstring.generate({length: 20, charset: 'numeric'}));
+    const number = element?element.number:randomstring.generate({length: 20, charset: 'numeric'});
     const statusColor = {
         'розыгрыш': 'orange',
         'победитель': 'green',
         'проигравший': 'red'
     }
-    let [countWin, setCountWin] = useState(element?element.countWin:1);
-    let [coupons, setCoupons] = useState(element?element.coupons:1);
-    useEffect(() => {
-        if(idx!==undefined) {
-            setCountWin(list[idx].countWin)
-            setCoupons(list[idx].coupons)
-        }
-    }, [list]);
-    let [client, setClient] = useState(element?element.client:{});
+    let [client, setClient] = useState(element?element.client:undefined);
     let handleClient =  (client) => {
         setClient(client)
         setOpen(false)
@@ -141,52 +132,6 @@ const CardLotteryTicket = React.memo((props) => {
                                     </div>
                                 </a>
                         }
-                        {
-                            ['admin', 'суперорганизация', 'организация'].includes(profile.role)&&(!element||element.status==='розыгрыш')?
-                                <>
-                                <div className={classes.row}>
-                                    <TextField
-                                        type={isMobileApp?'number':'text'}
-                                        label='Купонов'
-                                        value={coupons}
-                                        className={classes.input}
-                                        onChange={(event)=>{
-                                            if(idx===undefined)
-                                                setCoupons(event.target.value)
-                                            else {
-                                                list[idx].coupons = event.target.value
-                                                setList([...list])
-                                            }
-                                        }}
-                                        inputProps={{
-                                            'aria-label': 'description',
-                                        }}
-                                    />
-                                </div>
-                                <div className={classes.row}>
-                                    <TextField
-                                        type={isMobileApp?'number':'text'}
-                                        label='Призов'
-                                        value={countWin}
-                                        className={classes.input}
-                                        onChange={(event)=>{
-                                            if(idx===undefined)
-                                               setCountWin(event.target.value)
-                                            else
-                                            {
-                                                list[idx].countWin = event.target.value
-                                                setList([...list])
-                                            }
-                                        }}
-                                        inputProps={{
-                                            'aria-label': 'description',
-                                        }}
-                                    />
-                                </div>
-                                </>
-                        :
-                        null
-                        }
                     </CardContent>
                 </CardActionArea>
                 {
@@ -210,23 +155,8 @@ const CardLotteryTicket = React.memo((props) => {
                                     :
                                     <Button onClick={async()=> {
                                         if(client&&client._id) {
-                                            let filterList = list.filter(element=>element.client._id===client._id)
-                                            if(!filterList.length) {
-                                                const action = async () => {
-                                                    coupons = checkInt(coupons)?checkInt(coupons):1
-                                                    setCoupons(1)
-                                                    countWin = checkInt(countWin)?checkInt(countWin):1
-                                                    setCountWin(1)
-                                                    let element = {status: 'розыгрыш', number: number, client: client, coupons: coupons, countWin: countWin}
-                                                    setList([element, ...list])
-                                                }
-                                                setClient({})
-                                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                                showMiniDialog(true)
-                                            }
-                                            else {
-                                                showSnackBar('Клиент уже выбран');
-                                            }
+                                            let element = {status: 'розыгрыш', number: number, client: client}
+                                            setList([element, ...list])
                                         }
                                         else {
                                             showSnackBar('Заполните все поля');

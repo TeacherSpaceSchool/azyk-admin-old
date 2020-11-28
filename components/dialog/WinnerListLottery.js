@@ -22,7 +22,7 @@ const WinnerListLottery =  React.memo(
                                 return (
                                     <div className={classes.row} key={`winner${idx}`}>
                                         <div className={classes.nameField}>
-                                            {`${element.client.name}${element.client.address&&element.client.address[0]?` (${element.client.address[0][2]?`${element.client.address[0][2]}, `:''}${element.client.address[0][0]})`:''}`}:&nbsp;
+                                            {element.client.name}:&nbsp;
                                         </div>
                                         <div className={classes.value}>
                                             {element.prize}

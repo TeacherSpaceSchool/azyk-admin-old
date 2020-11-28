@@ -388,7 +388,7 @@ const LotteryEdit = React.memo((props) => {
                             }
                             editElement.photoReports = _photoReports
                             if(data.lottery.status!=='разыграна')
-                                editElement.tickets = tickets.map(ticket=>{return {client: ticket.client._id, number: ticket.number, countWin: checkInt(ticket.countWin)?checkInt(ticket.countWin):1, coupons: checkInt(ticket.coupons)?checkInt(ticket.coupons):1}})
+                                editElement.tickets = tickets.map(ticket=>{return {client: ticket.client._id, number: ticket.number}})
                             const action = async() => {
                                 await setLottery(editElement)
                                 Router.push(`/lottery/${data.lottery._id}`)
