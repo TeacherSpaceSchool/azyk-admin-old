@@ -7,19 +7,11 @@ import {getTemplateForm, getForm, setForm, addForm, deleteForm} from '../../src/
 import organizationStyle from '../../src/styleMUI/form/form'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Remove from '@material-ui/icons/Remove';
 import { useRouter } from 'next/router'
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import { getOrganizations } from '../../src/gql/organization'
 import Router from 'next/router'
 import * as userActions from '../../redux/actions/user'
 import * as snackbarActions from '../../redux/actions/snackbar'
@@ -46,7 +38,7 @@ const Form = React.memo((props) => {
     const { isMobileApp } = props.app;
     const { showSnackBar } = props.snackbarActions;
     let [client, setClient] = useState(data.form?data.form.client:undefined);
-    let [questions, setQuestions] = useState(data.form?data.form.questions:data.templateForm.questions.map(element=>{return {formType: element.formType, question: element.question, answers: element.answers, answer: [], file: undefined}}));
+    let [questions, setQuestions] = useState(data.form?data.form.questions:data.templateForm.questions.map(element=>{return {obligatory: element.obligatory, formType: element.formType, question: element.question, answers: element.answers, answer: [], file: undefined}}));
     const { setMiniDialog, showMiniDialog, setFullDialog, showFullDialog } = props.mini_dialogActions;
     const router = useRouter()
     const [clients, setClients] = useState([]);
@@ -170,7 +162,7 @@ const Form = React.memo((props) => {
                                             element.formType==='текст'?
                                                 <TextField
                                                     error={!element.answer[0]||!element.answer[0].length}
-                                                    label={element.question}
+                                                    label={`${element.question}${element.obligatory?'*':''}`}
                                                     value={element.answer[0]}
                                                     className={classes.input}
                                                     onChange={(event)=>{
@@ -186,7 +178,7 @@ const Form = React.memo((props) => {
                                                 :
                                                 element.formType==='один из списка'?
                                                     <FormControl error={!element.answer[0]} component='fieldset'>
-                                                        <FormLabel component='legend'>{element.question}</FormLabel>
+                                                        <FormLabel component='legend'>{`${element.question}${element.obligatory?'*':''}`}</FormLabel>
                                                         <RadioGroup aria-label='gender' name='gender1' value={questions[idx].answer[0]} onChange={(event)=>{
                                                             if(edit) {
                                                                 questions[idx].answer[0] = event.target.value
@@ -203,7 +195,7 @@ const Form = React.memo((props) => {
                                                     :
                                                     element.formType==='несколько из списка'?
                                                         <FormControl error={!element.answer.length} component='fieldset' className={classes.formControl}>
-                                                            <FormLabel component='legend'>{element.question}</FormLabel>
+                                                            <FormLabel component='legend'>{`${element.question}${element.obligatory?'*':''}`}</FormLabel>
                                                             <FormGroup>
                                                                 {
                                                                     element.answers.map((element1, idx1)=>
@@ -230,7 +222,7 @@ const Form = React.memo((props) => {
                                                             <TextField
                                                                 error={!element.answer[0]||!element.answer[0].length}
                                                                 className={classes.input}
-                                                                label={element.question}
+                                                                label={`${element.question}${element.obligatory?'*':''}`}
                                                                 type='date'
                                                                 InputLabelProps={{
                                                                     shrink: true,
@@ -256,7 +248,7 @@ const Form = React.memo((props) => {
                                                                                 setImageIdx(idx)
                                                                                 imageRef.current.click()
                                                                             }} size='small'>
-                                                                            {`Загрузить ${element.question}`}
+                                                                            {`Загрузить ${`${element.question}${element.obligatory?'*':''}`}`}
                                                                         </Button>
                                                                         :
                                                                         null
@@ -283,7 +275,7 @@ const Form = React.memo((props) => {
                                                                             }}/>)
                                                                             showFullDialog(true)
                                                                         }} size='small'>
-                                                                        Геолокация
+                                                                        {`${element.question}${element.obligatory?'*':''}`}
                                                                     </Button>
                                                                     :
                                                                     null
@@ -299,7 +291,7 @@ const Form = React.memo((props) => {
                                             let check = profile.client||client
                                             if(check) {
                                                 for (let i = 0; i < questions.length; i++) {
-                                                    if(!questions[i].answer.length&&!questions[i].file)
+                                                    if(questions[i].obligatory&&(!questions[i].answer.length||!questions[i].answer[0].length)&&!questions[i].file)
                                                         check = false
                                                 }
                                             }
@@ -327,12 +319,12 @@ const Form = React.memo((props) => {
                                                 <Button onClick={async()=>{
                                                     let check = true
                                                     for (let i = 0; i < questions.length; i++) {
-                                                        if(!questions[i].answer.length)
+                                                        if(questions[i].obligatory&&(!questions[i].answer.length||!questions[i].answer[0].length))
                                                             check = false
                                                     }
                                                     if(check) {
                                                         const action = async() => {
-                                                            await setForm({_id: router.query.id, questions: questions.map(question=>{return {formType: question.formType, question: question.question,  answer: question.answer,  answers: question.answers, file: question.file}})})
+                                                            await setForm({_id: router.query.id, questions: questions.map(question=>{return {obligatory: question.obligatory, formType: question.formType, question: question.question,  answer: question.answer,  answers: question.answers, file: question.file}})})
                                                         }
                                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                         showMiniDialog(true)

@@ -6,6 +6,7 @@ export default makeStyles({
     row:{
         display: 'flex',
         flexDirection: 'row',
+        alignItems: 'center'
     },
     question:{
         marginBottom: 10,
@@ -88,6 +89,10 @@ export default makeStyles({
     input: {
         marginBottom: 10,
         width: '100%',
+    },
+    halfInput: {
+        marginBottom: 10,
+        width: 'calc(100% - 168px)',
     },
     bottomRouteD: {
         width: 'calc(100vw - 300px)',

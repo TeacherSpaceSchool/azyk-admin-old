@@ -20,7 +20,7 @@ export const getTemplateForms = async({search, organization, skip}, client)=>{
                             editorClient
                             edit
                             questions
-                                {formType question answers}
+                                {formType question answers obligatory}
                         }
                     }`,
             })
@@ -48,7 +48,7 @@ export const getTemplateForm = async({_id}, client)=>{
                             editorClient
                             edit
                             questions
-                                {formType question answers}
+                                {formType question answers obligatory}
                         }
                     }`,
             })
@@ -97,8 +97,6 @@ export const getForms = async({templateForm, search, skip}, client)=>{
                                 {_id name}
                             organization
                                 {_id name}
-                            questions
-                                {formType question answers}
                         }
                     }`,
             })
@@ -126,7 +124,7 @@ export const getForm = async({_id}, client)=>{
                             organization
                                 {_id name}
                             questions
-                                {formType question answer answers}
+                                {formType question answer answers obligatory}
                         }
                     }`,
             })

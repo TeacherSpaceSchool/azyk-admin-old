@@ -13,8 +13,6 @@ import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../../redux/actions/mini_dialog'
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import Remove from '@material-ui/icons/Remove';
 import { useRouter } from 'next/router'
 import InputLabel from '@material-ui/core/InputLabel';
@@ -32,6 +30,9 @@ import { getClientGqlSsr } from '../../../src/getClientGQL'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
+import VerticalAlignTop from '@material-ui/icons/VerticalAlignTop';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const NewForms = React.memo((props) => {
     const { profile } = props.user;
@@ -48,7 +49,6 @@ const NewForms = React.memo((props) => {
     let [questions, setQuestions] = useState(data.templateForm!==null?data.templateForm.questions:[]);
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const router = useRouter()
-
     return (
         <App pageName={data.templateForm!==null?router.query.id==='new'?'Добавить':data.templateForm.title:'Ничего не найдено'}>
             <Head>
@@ -145,34 +145,177 @@ const NewForms = React.memo((props) => {
                             {
                                 questions.map((element, idx)=>
                                     <div key={idx} className={classes.question}>
-                                        <FormControl className={classes.input}>
-                                            <InputLabel>{`Вопрос ${idx+1}`}</InputLabel>
-                                            <Input
-                                                placeholder={`Вопрос ${idx+1}`}
-                                                value={element.question}
-                                                className={classes.input}
-                                                onChange={(event)=>{
-                                                    questions[idx].question = event.target.value
-                                                    setQuestions([...questions])
-                                                }}
-                                                inputProps={{
-                                                    'aria-label': 'description',
-                                                }}
-                                                endAdornment={
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            onClick={()=>{
-                                                                questions.splice(idx, 1)
+                                        {
+                                            isMobileApp?
+                                                <>
+                                                    <div className={classes.row}>
+                                                        {
+                                                            questions[idx-1]?
+                                                                <Tooltip title='Вверх'>
+                                                                    <IconButton
+                                                                        onClick={()=>{
+                                                                            let question1 = questions[idx-1]
+                                                                            let question2 = questions[idx]
+                                                                            questions[idx] = question1
+                                                                            questions[idx - 1] = question2
+                                                                            setQuestions([...questions])
+                                                                        }}
+                                                                        color='inherit'
+                                                                    >
+                                                                        <VerticalAlignTop />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                                :null
+                                                        }
+                                                        {
+                                                            questions[idx+1]?
+                                                                <Tooltip title='Вниз'>
+                                                                    <IconButton
+                                                                        onClick={()=>{
+                                                                            let question1 = questions[idx+1]
+                                                                            let question2 = questions[idx]
+                                                                            questions[idx] = question1
+                                                                            questions[idx + 1] = question2
+                                                                            setQuestions([...questions])
+                                                                        }}
+                                                                        color='inherit'
+                                                                    >
+                                                                        <VerticalAlignBottom />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                                :null
+                                                        }
+                                                        &nbsp;&nbsp;&nbsp;&nbsp;
+                                                        <FormControlLabel
+                                                            labelPlacement = 'left'
+                                                            control={
+                                                                <Switch
+                                                                    checked={element.obligatory}
+                                                                    size="small"
+                                                                    onChange={()=>{
+                                                                        questions[idx].obligatory = !questions[idx].obligatory
+                                                                        setQuestions([...questions])
+                                                                    }}
+                                                                    color="primary"
+                                                                    inputProps={{ 'aria-label': 'primary checkbox' }}
+                                                                />
+                                                            }
+                                                            label='Обязательно'
+                                                        />
+                                                    </div>
+                                                    <FormControl className={classes.input}>
+                                                        <InputLabel>{`Вопрос ${idx+1}`}</InputLabel>
+                                                        <Input
+                                                            placeholder={`Вопрос ${idx+1}`}
+                                                            value={element.question}
+                                                            className={classes.input}
+                                                            onChange={(event)=>{
+                                                                questions[idx].question = event.target.value
                                                                 setQuestions([...questions])
                                                             }}
-                                                            aria-label='toggle password visibility'
-                                                        >
-                                                            <Remove/>
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                }
-                                            />
-                                        </FormControl>
+                                                            inputProps={{
+                                                                'aria-label': 'description',
+                                                            }}
+                                                            endAdornment={
+                                                                <InputAdornment position="end">
+                                                                    <IconButton
+                                                                        onClick={()=>{
+                                                                            questions.splice(idx, 1)
+                                                                            setQuestions([...questions])
+                                                                        }}
+                                                                        aria-label='toggle password visibility'
+                                                                    >
+                                                                        <Remove/>
+                                                                    </IconButton>
+                                                                </InputAdornment>
+                                                            }
+                                                        />
+                                                    </FormControl>
+                                                </>
+                                                :
+                                                <div className={classes.row}>
+                                                    <FormControl className={isMobileApp?classes.input:classes.halfInput}>
+                                                        <InputLabel>{`Вопрос ${idx+1}`}</InputLabel>
+                                                        <Input
+                                                            placeholder={`Вопрос ${idx+1}`}
+                                                            value={element.question}
+                                                            className={classes.input}
+                                                            onChange={(event)=>{
+                                                                questions[idx].question = event.target.value
+                                                                setQuestions([...questions])
+                                                            }}
+                                                            inputProps={{
+                                                                'aria-label': 'description',
+                                                            }}
+                                                            endAdornment={
+                                                                <InputAdornment position="end">
+                                                                    <IconButton
+                                                                        onClick={()=>{
+                                                                            questions.splice(idx, 1)
+                                                                            setQuestions([...questions])
+                                                                        }}
+                                                                        aria-label='toggle password visibility'
+                                                                    >
+                                                                        <Remove/>
+                                                                    </IconButton>
+                                                                </InputAdornment>
+                                                            }
+                                                        />
+                                                    </FormControl>
+                                                    <FormControlLabel
+                                                        labelPlacement = 'bottom'
+                                                        control={
+                                                            <Switch
+                                                                checked={element.obligatory}
+                                                                size="small"
+                                                                onChange={()=>{
+                                                                    questions[idx].obligatory = !questions[idx].obligatory
+                                                                    setQuestions([...questions])
+                                                                }}
+                                                                color="primary"
+                                                                inputProps={{ 'aria-label': 'primary checkbox' }}
+                                                            />
+                                                        }
+                                                        label='Обязательно'
+                                                    />
+                                                    {
+                                                        questions[idx-1]?
+                                                            <Tooltip title='Вверх'>
+                                                                <IconButton
+                                                                    onClick={()=>{
+                                                                        let question1 = questions[idx-1]
+                                                                        let question2 = questions[idx]
+                                                                        questions[idx] = question1
+                                                                        questions[idx - 1] = question2
+                                                                        setQuestions([...questions])
+                                                                    }}
+                                                                    color='inherit'
+                                                                >
+                                                                    <VerticalAlignTop />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                            :null
+                                                    }
+                                                    {
+                                                        questions[idx+1]?
+                                                            <Tooltip title='Вниз'>
+                                                                <IconButton
+                                                                    onClick={()=>{
+                                                                        let question1 = questions[idx+1]
+                                                                        let question2 = questions[idx]
+                                                                        questions[idx] = question1
+                                                                        questions[idx + 1] = question2
+                                                                        setQuestions([...questions])
+                                                                    }}
+                                                                    color='inherit'
+                                                                >
+                                                                    <VerticalAlignBottom />
+                                                                </IconButton>
+                                                            </Tooltip>
+                                                            :null
+                                                    }
+                                                </div>
+                                        }
                                         <FormControl className={classes.input}>
                                             <InputLabel>Тип ответа</InputLabel>
                                             <Select value={element.formType} onChange={(event)=>{
@@ -269,6 +412,7 @@ const NewForms = React.memo((props) => {
                                                 formType: element.formType,
                                                 question: element.question,
                                                 answers: element.answers,
+                                                obligatory: element.obligatory
                                             }})}
                                             if(title.length>0&&title!==data.templateForm.title)editElement.title = title
                                             if(edit!==data.templateForm.edit)editElement.edit = edit
