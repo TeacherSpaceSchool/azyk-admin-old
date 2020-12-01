@@ -9,7 +9,7 @@ export default makeStyles({
         alignItems: 'center'
     },
     question:{
-        marginBottom: 10,
+        marginBottom: 15,
         width: '100%',
         border: '1px solid #E0E0E0',
         padding: 10
@@ -55,11 +55,8 @@ export default makeStyles({
         color: '#A0A0A0'
     },
     info: {
-        color: '#455A64',
-        marginBottom: 10,
-        fontSize: '1rem',
+        fontSize: '0.9375rem',
         fontFamily: 'Roboto',
-        whiteSpace: 'pre-wrap'
     },
     geo: {
         width: 170,

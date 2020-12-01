@@ -157,7 +157,7 @@ const Form = React.memo((props) => {
                             }
                             {
                                 questions.map((element, idx)=>
-                                    <div key={idx} style={{marginBottom: 10, width: '100%'}}>
+                                    <div key={idx} className={classes.question}>
                                         {
                                             element.formType==='текст'?
                                                 <TextField

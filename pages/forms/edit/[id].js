@@ -33,6 +33,10 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
 import VerticalAlignTop from '@material-ui/icons/VerticalAlignTop';
 import Tooltip from '@material-ui/core/Tooltip';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 const NewForms = React.memo((props) => {
     const { profile } = props.user;
@@ -331,42 +335,53 @@ const NewForms = React.memo((props) => {
                                         {
                                             ['один из списка', 'несколько из списка'].includes(element.formType)?
                                                 <>
-                                                {element.answers.map((element1, idx1)=>
-                                                    <FormControl key={idx1} className={classes.input}>
-                                                        <InputLabel>Ответ</InputLabel>
-                                                        <Input
-                                                            placeholder='Ответ'
-                                                            value={questions[idx].answers[idx1]}
-                                                            className={classes.input}
-                                                            onChange={(event)=>{
-                                                                questions[idx].answers[idx1] = event.target.value
-                                                                setQuestions([...questions])
-                                                            }}
-                                                            inputProps={{
-                                                                'aria-label': 'description',
-                                                            }}
-                                                            endAdornment={
-                                                                <InputAdornment position="end">
-                                                                    <IconButton
-                                                                        onClick={()=>{
-                                                                            questions[idx].answers.splice(idx1, 1)
-                                                                            setQuestions([...questions])
-                                                                        }}
-                                                                        aria-label='toggle password visibility'
-                                                                    >
-                                                                        <Remove/>
-                                                                    </IconButton>
-                                                                </InputAdornment>
-                                                            }
-                                                        />
-                                                    </FormControl>
-                                                )}
-                                                <Button onClick={async()=>{
-                                                    questions[idx].answers.push('')
-                                                    setQuestions([...questions])
-                                                }} size='small' color='primary'>
-                                                    Добавить ответ
-                                                </Button>
+                                                <ExpansionPanel key={idx}>
+                                                    <ExpansionPanelSummary
+                                                        expandIcon={<ExpandMoreIcon />}
+                                                    >
+                                                        <div className={classes.info}>
+                                                            Ответов {element.answers.length}
+                                                        </div>
+                                                    </ExpansionPanelSummary>
+                                                    <ExpansionPanelDetails className={classes.column}>
+                                                        {element.answers.map((element1, idx1)=>
+                                                            <FormControl key={idx1} className={classes.input}>
+                                                                <InputLabel>Ответ {idx1+1}</InputLabel>
+                                                                <Input
+                                                                    placeholder={`Ответ ${idx1+1}`}
+                                                                    value={questions[idx].answers[idx1]}
+                                                                    className={classes.input}
+                                                                    onChange={(event)=>{
+                                                                        questions[idx].answers[idx1] = event.target.value
+                                                                        setQuestions([...questions])
+                                                                    }}
+                                                                    inputProps={{
+                                                                        'aria-label': 'description',
+                                                                    }}
+                                                                    endAdornment={
+                                                                        <InputAdornment position="end">
+                                                                            <IconButton
+                                                                                onClick={()=>{
+                                                                                    questions[idx].answers.splice(idx1, 1)
+                                                                                    setQuestions([...questions])
+                                                                                }}
+                                                                                aria-label='toggle password visibility'
+                                                                            >
+                                                                                <Remove/>
+                                                                            </IconButton>
+                                                                        </InputAdornment>
+                                                                    }
+                                                                />
+                                                            </FormControl>
+                                                        )}
+                                                        <Button onClick={async()=>{
+                                                            questions[idx].answers.push('')
+                                                            setQuestions([...questions])
+                                                        }} size='small' color='primary'>
+                                                            Добавить ответ
+                                                        </Button>
+                                                    </ExpansionPanelDetails>
+                                                </ExpansionPanel>
                                                 </>
                                                 :
                                                 null
