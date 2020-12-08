@@ -17,7 +17,7 @@ import * as appActions from '../../redux/actions/app'
 const ClientGeoStatistic = React.memo((props) => {
 
     const { data } = props;
-    const { search, isMobileApp } = props.app;
+    const { search, isMobileApp, filter } = props.app;
     const { profile } = props.user;
     const { showLoad } = props.appActions;
     let [load, setLoad] = useState(true);
@@ -34,7 +34,7 @@ const ClientGeoStatistic = React.memo((props) => {
     let [greenData, setGreenData] = useState([]);
     let [yellowData, setYellowData] = useState([]);
     let [redData, setRedData] = useState([]);
-    useEffect(()=>{
+    /*useEffect(()=>{
         (async()=>{
             if(profile.role==='admin') {
                 setItem(null)
@@ -45,16 +45,22 @@ const ClientGeoStatistic = React.memo((props) => {
                 //setStatisticClientGeo((await getStatisticClientGeo({organization: organization ? organization._id : null})).statisticClientGeo)
             }
         })()
-    },[organization])
+    },[organization])*/
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
     useEffect(()=>{
         (async()=>{
             if(profile.role==='admin') {
-                await showLoad(true)
-                setStatisticClientGeo((await getStatisticClientGeo({search: search, organization: organization ? organization._id : null, item: item ? item._id : null})).statisticClientGeo)
-                await showLoad(false)
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    await showLoad(true)
+                    setStatisticClientGeo((await getStatisticClientGeo({search: search, organization: organization ? organization._id : null, item: item ? item._id : null})).statisticClientGeo)
+                    await showLoad(false)
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
             }
         })()
-    },[item, items, search/*, organization*/])
+    },[/*item, items, */search, organization])
     useEffect(()=>{
         (async()=>{
             if(profile.role==='admin'&&statisticClientGeo) {
@@ -88,10 +94,11 @@ const ClientGeoStatistic = React.memo((props) => {
             }
         })()
     },[statisticClientGeo])
+    const filters = [{name: 'Все', value: ''}, {name: 'Зеленные', value: 'green'}, {name: 'Желтые', value: 'yellow'}, {name: 'Зеленные/Желтые', value: 'green/yellow'}]
     return (
         <>
         <YMaps>
-            <App searchShow={true} pageName='Карта клиентов'>
+            <App searchShow={true} pageName='Карта клиентов' filters={filters}>
                 <Head>
                     <title>Карта клиентов</title>
                     <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -112,48 +119,63 @@ const ClientGeoStatistic = React.memo((props) => {
                                 <Map onLoad={()=>{setLoad(false)}} height={window.innerHeight-64} width={isMobileApp?window.innerWidth:window.innerWidth-300}
                                          state={{ center: [42.8700000, 74.5900000], zoom: 15 }}
                                     >
-                                    <ObjectManager
-                                        options={{
-                                            clusterize: true,
-                                            gridSize: 32,
-                                        }}
-                                        objects={{
-                                            openBalloonOnClick: true,
-                                            preset: 'islands#redDotIcon',
-                                        }}
-                                        clusters={{
-                                            preset: 'islands#redClusterIcons',
-                                        }}
-                                        features={redData}
-                                    />
-                                    <ObjectManager
-                                        options={{
-                                            clusterize: true,
-                                            gridSize: 32,
-                                        }}
-                                        objects={{
-                                            openBalloonOnClick: true,
-                                            preset: 'islands#greenDotIcon',
-                                        }}
-                                        clusters={{
-                                            preset: 'islands#greenClusterIcons',
-                                        }}
-                                        features={greenData}
-                                    />
-                                    <ObjectManager
-                                        options={{
-                                            clusterize: true,
-                                            gridSize: 32,
-                                        }}
-                                        objects={{
-                                            openBalloonOnClick: true,
-                                            preset: 'islands#yellowDotIcon',
-                                        }}
-                                        clusters={{
-                                            preset: 'islands#yellowClusterIcons',
-                                        }}
-                                        features={yellowData}
-                                    />
+                                    {
+                                        !filter.length?
+                                            <ObjectManager
+                                                options={{
+                                                    clusterize: true,
+                                                    gridSize: 32,
+                                                }}
+                                                objects={{
+                                                    openBalloonOnClick: true,
+                                                    preset: 'islands#redDotIcon',
+                                                }}
+                                                clusters={{
+                                                    preset: 'islands#redClusterIcons',
+                                                }}
+                                                features={redData}
+                                            />
+                                            :
+                                            null
+                                    }
+                                    {
+                                        !filter.length||filter.includes('green')?
+                                            <ObjectManager
+                                            options={{
+                                                clusterize: true,
+                                                gridSize: 32,
+                                            }}
+                                            objects={{
+                                                openBalloonOnClick: true,
+                                                preset: 'islands#greenDotIcon',
+                                            }}
+                                            clusters={{
+                                                preset: 'islands#greenClusterIcons',
+                                            }}
+                                            features={greenData}
+                                        />
+                                            :
+                                            null
+                                    }
+                                    {
+                                        !filter.length||filter.includes('yellow')?
+                                            <ObjectManager
+                                                options={{
+                                                    clusterize: true,
+                                                    gridSize: 32,
+                                                }}
+                                                objects={{
+                                                    openBalloonOnClick: true,
+                                                    preset: 'islands#yellowDotIcon',
+                                                }}
+                                                clusters={{
+                                                    preset: 'islands#yellowClusterIcons',
+                                                }}
+                                                features={yellowData}
+                                            />
+                                            :
+                                            null
+                                    }
                                         {
                                            /* statisticClientGeo?
                                                 (statisticClientGeo.slice(1)).map(
@@ -222,6 +244,7 @@ const ClientGeoStatistic = React.memo((props) => {
 
 ClientGeoStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.filter = 'green/yellow'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
