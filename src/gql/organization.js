@@ -29,6 +29,7 @@ export const getOrganization = async({_id: _id}, client)=>{
                             unite
                             superagent
                             onlyDistrict
+                            addedClient
                             onlyIntegrate
                             autoAccept
                             warehouse
@@ -43,15 +44,15 @@ export const getOrganization = async({_id: _id}, client)=>{
     }
 }
 
-export const getOrganizations = async({search: search, sort: sort, filter: filter}, client)=>{
+export const getOrganizations = async({search, sort, filter, city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {search: search, sort: sort, filter: filter},
+                variables: {search, sort, filter, city},
                 query: gql`
-                    query ($search: String!, $sort: String!, $filter: String!) {
-                        organizations(search: $search, sort: $sort, filter: $filter) {
+                    query ($search: String!, $sort: String!, $filter: String!, $city: String) {
+                        organizations(search: $search, sort: $sort, filter: $filter, city: $city) {
                             _id
                             createdAt
                             name
@@ -170,8 +171,8 @@ export const addOrganization = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($cities: [String]!, $miniInfo: String!, $image: Upload!, $priotiry: Int, $minimumOrder: Int, $name: String!, $address: [String]!, $email: [String]!, $phone: [String]!, $info: String!, $consignation: Boolean!, $accessToClient: Boolean!, $unite: Boolean!, $superagent: Boolean!, $onlyDistrict: Boolean!, $onlyIntegrate: Boolean!, $autoAccept: Boolean!, $warehouse: String!, $pass: String) {
-                        addOrganization(cities: $cities, miniInfo: $miniInfo, image: $image, priotiry: $priotiry, minimumOrder: $minimumOrder, name: $name, address: $address, email: $email, phone: $phone, info: $info, consignation: $consignation, unite: $unite, superagent: $superagent, accessToClient: $accessToClient, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate, autoAccept: $autoAccept, warehouse: $warehouse, pass: $pass) {
+                    mutation ($cities: [String]!, $miniInfo: String!, $image: Upload!, $priotiry: Int, $minimumOrder: Int, $name: String!, $address: [String]!, $email: [String]!, $phone: [String]!, $info: String!, $consignation: Boolean!, $accessToClient: Boolean!, $unite: Boolean!, $superagent: Boolean!, $onlyDistrict: Boolean!, $addedClient: Boolean!, $onlyIntegrate: Boolean!, $autoAccept: Boolean!, $warehouse: String!, $pass: String) {
+                        addOrganization(cities: $cities, miniInfo: $miniInfo, image: $image, priotiry: $priotiry, minimumOrder: $minimumOrder, name: $name, address: $address, email: $email, phone: $phone, info: $info, consignation: $consignation, unite: $unite, superagent: $superagent, accessToClient: $accessToClient, onlyDistrict: $onlyDistrict, addedClient: $addedClient, onlyIntegrate: $onlyIntegrate, autoAccept: $autoAccept, warehouse: $warehouse, pass: $pass) {
                              data
                         }
                     }`})
@@ -186,8 +187,8 @@ export const setOrganization = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($cities: [String], $miniInfo: String, $_id: ID!, $consignation: Boolean, $priotiry: Int, $accessToClient: Boolean, $image: Upload, $minimumOrder: Int, $name: String, $address: [String], $email: [String], $phone: [String], $info: String, $unite: Boolean, $superagent: Boolean, $onlyDistrict: Boolean, $onlyIntegrate: Boolean, $autoAccept: Boolean, $warehouse: String, $pass: String) {
-                        setOrganization(cities: $cities, miniInfo: $miniInfo, _id: $_id, priotiry: $priotiry, consignation: $consignation, accessToClient: $accessToClient, image: $image, minimumOrder: $minimumOrder, name: $name, address: $address, unite: $unite, superagent: $superagent, email: $email, phone: $phone, info: $info, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate, autoAccept: $autoAccept, warehouse: $warehouse, pass: $pass) {
+                    mutation ($cities: [String], $miniInfo: String, $_id: ID!, $consignation: Boolean, $priotiry: Int, $accessToClient: Boolean, $image: Upload, $minimumOrder: Int, $name: String, $address: [String], $email: [String], $phone: [String], $info: String, $unite: Boolean, $superagent: Boolean, $onlyDistrict: Boolean, $addedClient: Boolean, $onlyIntegrate: Boolean, $autoAccept: Boolean, $warehouse: String, $pass: String) {
+                        setOrganization(cities: $cities, miniInfo: $miniInfo, _id: $_id, priotiry: $priotiry, consignation: $consignation, accessToClient: $accessToClient, image: $image, minimumOrder: $minimumOrder, name: $name, address: $address, unite: $unite, superagent: $superagent, email: $email, phone: $phone, info: $info, addedClient: $addedClient, onlyDistrict: $onlyDistrict, onlyIntegrate: $onlyIntegrate, autoAccept: $autoAccept, warehouse: $warehouse, pass: $pass) {
                              data
                         }
                     }`})

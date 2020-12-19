@@ -32,17 +32,23 @@ const Distributer = React.memo((props) => {
     const classes = distributerStyle();
     const { data } = props;
     const router = useRouter()
-    const {search, isMobileApp, filter } = props.app;
+    const {search, isMobileApp, filter, city } = props.app;
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<allOrganizations.length){
             setPagination(pagination+100)
         }
     }
-    let allOrganizations = data.organizations;
+    let [allOrganizations, setAllOrganizations] = useState(data.organizations);
     const organization = router.query.id==='super'?{name: 'AZYK.STORE', _id: 'super'}:data.organization
     let [sales, setSales] = useState(data.distributer?data.distributer.sales:[]);
     let [provider, setProvider] = useState(data.distributer?data.distributer.provider:[]);
+    useEffect(()=>{
+        (async()=>{
+            allOrganizations = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
+            setAllOrganizations(allOrganizations)
+        })()
+    },[city])
 
     let [filtredOrganizations, setFiltredOrganizations] = useState([]);
     let [selectType, setSelectType] = useState('Все');
@@ -63,13 +69,13 @@ const Distributer = React.memo((props) => {
                 setFiltredOrganizations([...filtredOrganizations])
             }
         })()
-    },[selectType, sales, provider, search])
+    },[selectType, sales, provider, search, allOrganizations])
     const filters = [
-        {name: 'Отдел продаж', value: 'sales'},
+        ...router.query.id==='super'?[]:[{name: 'Отдел продаж', value: 'sales'}],
         {name: 'Поставщик', value: 'provider'},
     ]
     return (
-        <App searchShow={true} filters={filters} checkPagination={checkPagination} pageName={data.district?router.query.id==='new'?'Добавить':data.district.name:'Ничего не найдено'}>
+        <App cityShow searchShow={true} filters={filters} checkPagination={checkPagination} pageName={data.district?router.query.id==='new'?'Добавить':data.district.name:'Ничего не найдено'}>
             <Head>
                 <title>{organization?organization.name:'Ничего не найдено'}</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -174,7 +180,8 @@ const Distributer = React.memo((props) => {
 
 Distributer.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    ctx.store.getState().app.filter = 'sales'
+    ctx.store.getState().app.filter = ctx.query.id==='super'?'provider':'sales'
+    ctx.store.getState().app.city = 'Бишкек'
     if('admin'!==ctx.store.getState().user.profile.role)
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -200,7 +207,7 @@ Distributer.getInitialProps = async function(ctx) {
     return {
         data: {
             distributer: distributer,
-            ...await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getOrganizations({search: '', sort: 'name', filter: '', city: ctx.store.getState().app.city}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             organization: organization
         }
     };

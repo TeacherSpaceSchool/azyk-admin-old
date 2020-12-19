@@ -63,7 +63,7 @@ const Equipments = React.memo((props) => {
                     if(idx<=pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardEquipmentPlaceholder height={height}/>}>
-                                <CardEquipment key={element._id} setList={setList} element={element}/>
+                                <CardEquipment list={list} idx={idx} key={element._id} setList={setList} element={element}/>
                             </LazyLoad>
                         )}
                 ):null}

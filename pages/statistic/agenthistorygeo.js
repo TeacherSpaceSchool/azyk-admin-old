@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/statistic/statistic'
@@ -23,9 +23,10 @@ const AgentHistoryGeo = React.memo((props) => {
 
     const classes = pageListStyle();
     const { data } = props;
-    const { isMobileApp, date } = props.app;
+    const { isMobileApp, date, city } = props.app;
     const { profile } = props.user;
-    let organizations = profile.organization?[]:[{name: 'AZYK.STORE', _id: 'super'}, ...data.activeOrganization];
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(profile.organization?[]:data.activeOrganization);
     let [agentHistoryGeo, setAgentHistoryGeo] = useState(undefined);
     let [organization, setOrganization] = useState({_id: profile.organization?profile.organization:undefined});
     let [agents, setAgents] = useState([]);
@@ -44,6 +45,22 @@ const AgentHistoryGeo = React.memo((props) => {
             }
         })()
     },[])
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setActiveOrganization([{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(city)).activeOrganization])
+                setCount(0)
+                setAgents((await getAgents({})).agents)
+                setAgent({_id: undefined})
+                await showLoad(false)
+            }
+        })()
+    },[city])
     useEffect(()=>{
         (async()=>{
             if(organization&&organization._id) {
@@ -94,7 +111,7 @@ const AgentHistoryGeo = React.memo((props) => {
         }
     },[process.browser])
     return (
-        <App pageName='История посещений' dates={true}>
+        <App cityShow pageName='История посещений' dates={true}>
             <Head>
                 <title>История посещений</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -112,7 +129,7 @@ const AgentHistoryGeo = React.memo((props) => {
                             profile.role==='admin'?
                                 <Autocomplete
                                     className={classes.input}
-                                    options={organizations}
+                                    options={activeOrganization}
                                     getOptionLabel={option => option.name}
                                     value={organization}
                                     onChange={(event, newValue) => {
@@ -173,6 +190,7 @@ const AgentHistoryGeo = React.memo((props) => {
 
 AgentHistoryGeo.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -183,7 +201,7 @@ AgentHistoryGeo.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            activeOrganization: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
         }
     };
 };

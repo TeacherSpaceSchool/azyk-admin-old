@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -21,19 +21,34 @@ const UnloadingOrders = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     const { profile } = props.user;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [date, setDate] = useState(null);
     let [organization, setOrganization] = useState(profile.organization?{_id: profile.organization}:{_id: 'all'});
-    const { isMobileApp, filter } = props.app;
+    const { isMobileApp, filter, city } = props.app;
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
             appBody[0].style.paddingBottom = '0px'
         }
     },[process.browser])
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+                await showLoad(false)
+            }
+        })()
+    },[city])
     const { showLoad } = props.appActions;
     const filters = [{name: 'Дата доставки', value: 'Дата доставки'}, {name: 'Дата заказа', value: 'Дата заказа'}]
     return (
-        <App pageName='Выгрузка заказов' filters={filters}>
+        <App cityShow pageName='Выгрузка заказов' filters={filters}>
             <Head>
                 <title>Выгрузка заказов</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -51,7 +66,7 @@ const UnloadingOrders = React.memo((props) => {
                             !profile.organization ?
                                 <Autocomplete
                                     className={classes.input}
-                                    options={data.activeOrganization}
+                                    options={activeOrganization}
                                     getOptionLabel={option => option.name}
                                     value={organization}
                                     onChange={(event, newValue) => {
@@ -81,7 +96,7 @@ const UnloadingOrders = React.memo((props) => {
                     </div>
                     <br/>
                     <Button variant='contained' size='small' color='primary' onClick={async()=>{
-                        if(organization._id&&date) {
+                        if(organization&&organization._id&&date) {
                             await showLoad(true)
                             window.open(((await getUnloadingOrders({
                                 organization: organization._id,
@@ -102,6 +117,7 @@ const UnloadingOrders = React.memo((props) => {
 UnloadingOrders.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = 'Дата доставки'
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -112,7 +128,7 @@ UnloadingOrders.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data:
-            await getActiveOrganization(ctx.req ? await getClientGqlSsr(ctx.req) : undefined),
+            await getActiveOrganization(ctx.store.getState().app.city, ctx.req ? await getClientGqlSsr(ctx.req) : undefined),
     }
 };
 

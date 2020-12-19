@@ -69,7 +69,6 @@ export const deleteEquipment = async(ids)=>{
                              data
                         }
                     }`})
-        return await getEquipments(new SingletonStore().getStore().getState().app)
     } catch(err){
         console.error(err)
     }
@@ -86,8 +85,6 @@ export const setEquipment = async(element)=>{
                              data
                         }
                     }`})
-        let list = await getEquipments(new SingletonStore().getStore().getState().app)
-        return list
     } catch(err){
         console.error(err)
     }
@@ -104,7 +101,6 @@ export const addEquipment = async(element)=>{
                              data
                         }
                     }`})
-        return await getEquipments(new SingletonStore().getStore().getState().app)
     } catch(err){
         console.error(err)
     }

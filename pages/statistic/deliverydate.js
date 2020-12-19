@@ -1,6 +1,6 @@
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/statistic/statistic'
@@ -40,7 +40,7 @@ const GeoSelectClient = dynamic(() => import('../../components/dialog/GeoSelectC
 const LogistiOorder = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
-    let { isMobileApp, search } = props.app;
+    let { isMobileApp, search, city } = props.app;
     const { profile } = props.user;
     const { setMiniDialog, showMiniDialog, setFullDialog, showFullDialog} = props.mini_dialogActions;
     const { showLoad } = props.appActions;
@@ -50,6 +50,8 @@ const LogistiOorder = React.memo((props) => {
         setPriority(event.target.value)
     };
     const prioritys = [1, 0]
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [pagination, setPagination] = useState(100);
     let [districts, setDistricts] = useState([]);
     let [allClients, setAllClients] = useState([]);
@@ -94,7 +96,7 @@ const LogistiOorder = React.memo((props) => {
             setOrganizations(organizations)
             await showLoad(false)
         })()
-    },[forwarder])
+    },[forwarder, activeOrganization])
     useEffect(()=>{
         (async()=>{
             setSelectedClients([])
@@ -141,8 +143,22 @@ const LogistiOorder = React.memo((props) => {
     let close = () => {
         setAnchorEl(null);
     };
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setForwarder(undefined)
+                setActiveOrganization([{name: 'AZYK.STORE', _id: 'super'},
+                    ...(await getActiveOrganization(city)).activeOrganization])
+                await showLoad(false)
+            }
+        })()
+    },[city])
     return (
-        <App pageName='Дни доставки' checkPagination={checkPagination} searchShow={true}>
+        <App cityShow pageName='Дни доставки' checkPagination={checkPagination} searchShow={true}>
             <Head>
                 <title>Дни доставки</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -160,7 +176,7 @@ const LogistiOorder = React.memo((props) => {
                             profile.role==='admin'?
                                 <Autocomplete
                                     className={classes.input}
-                                    options={data.activeOrganization}
+                                    options={activeOrganization}
                                     getOptionLabel={option => option.name}
                                     value={forwarder}
                                     onChange={(event, newValue) => {
@@ -350,6 +366,7 @@ const LogistiOorder = React.memo((props) => {
 LogistiOorder.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = 'Заказы'
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация', 'организация', 'агент', 'менеджер'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -360,7 +377,7 @@ LogistiOorder.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            activeOrganization: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
+            activeOrganization: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
         }
     };
 };

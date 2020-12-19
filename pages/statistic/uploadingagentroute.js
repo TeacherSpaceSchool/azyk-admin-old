@@ -12,8 +12,7 @@ import initialApp from '../../src/initialApp'
 import Router from 'next/router'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import { getOrganizations } from '../../src/gql/organization'
-import { uploadingAgentRoute } from '../../src/gql/statistic'
+import { uploadingAgentRoute, getActiveOrganization } from '../../src/gql/statistic'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
@@ -26,11 +25,26 @@ const UploadingAgentRoute = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
+    const { isMobileApp, city } = props.app;
+    const { showSnackBar } = props.snackbarActions;
+    const initialRender = useRef(true);
     let [organization, setOrganization] = useState({_id: undefined});
     let [agentRoutes, setAgentRoutes] = useState([]);
     let [agentRoute, setAgentRoute] = useState({_id: undefined});
-    const { isMobileApp } = props.app;
-    const { showSnackBar } = props.snackbarActions;
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                setOrganization(undefined)
+                setAgentRoutes([])
+                setAgentRoute({_id: undefined})
+                setActiveOrganization([{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(city)).activeOrganization])
+            }
+        })()
+    },[city])
     let [document, setDocument] = useState(undefined);
     let documentRef = useRef(null);
     let handleChangeDocument = ((event) => {
@@ -49,7 +63,7 @@ const UploadingAgentRoute = React.memo((props) => {
         })()
     },[organization])
     return (
-        <App pageName='Загрузка маршрутов 1C'>
+        <App cityShow pageName='Загрузка маршрутов 1C'>
             <Head>
                 <title>Загрузка маршрутов 1C</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -68,7 +82,7 @@ const UploadingAgentRoute = React.memo((props) => {
                     <div className={classes.row}>
                         <Autocomplete
                             className={classes.input}
-                            options={data.organizations}
+                            options={activeOrganization}
                             getOptionLabel={option => option.name}
                             value={organization}
                             onChange={(event, newValue) => {
@@ -131,6 +145,7 @@ const UploadingAgentRoute = React.memo((props) => {
 
 UploadingAgentRoute.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -142,7 +157,7 @@ UploadingAgentRoute.getInitialProps = async function(ctx) {
     return {
         data:
             {
-                organizations: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations]
+                activeOrganization: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
             }
     }
 };

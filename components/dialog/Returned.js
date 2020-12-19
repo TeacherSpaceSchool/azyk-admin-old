@@ -99,7 +99,7 @@ const Returned =  React.memo(
                 }
                 <div className={classes.row}>
                     <div className={classes.nameField}>Адрес: &nbsp;</div>
-                    <div className={classes.value}>{`${element.address[2]?`${element.address[2]}, `:''}${element.address[0]}`}</div>
+                    <div className={classes.value}>{`${element.address[2]?`${element.address[2]}, `:''}${element.address[0]}${element.city?` (${element.city})`:''}`}</div>
                 </div>
                 <div className={classes.geo} style={{color: element.address[1]?'#ffb300':'red'}} onClick={()=>{
                     if(element.address[1]) {

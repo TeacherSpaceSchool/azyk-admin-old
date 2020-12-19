@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/statistic/statistic'
@@ -22,8 +22,10 @@ const ItemStatistic = React.memo((props) => {
 
     const classes = pageListStyle();
     const { data } = props;
-    const { isMobileApp, filter } = props.app;
+    const { isMobileApp, filter, city } = props.app;
     const { profile } = props.user;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [dateStart, setDateStart] = useState(pdDatePicker(new Date()));
     let [dateType, setDateType] = useState('day');
     let [statisticItem, setStatisticItem] = useState(undefined);
@@ -37,21 +39,34 @@ const ItemStatistic = React.memo((props) => {
                     company: organization ? organization._id : 'all',
                     dateStart: dateStart ? dateStart : null,
                     dateType: dateType,
-                    online: filter
+                    online: filter,
+                    city: city
                 })).statisticItem)
                 await showLoad(false)
         })()
-    },[organization, dateStart, dateType, filter])
+    },[organization, dateStart, dateType, filter, activeOrganization])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
             appBody[0].style.paddingBottom = '0px'
         }
     },[process.browser])
-
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+                await showLoad(false)
+            }
+        })()
+    },[city])
     const filters = [{name: 'Все', value: false}, {name: 'Online', value: true}]
     return (
-        <App pageName='Статистика товаров' filters={filters}>
+        <App cityShow pageName='Статистика товаров' filters={filters}>
             <Head>
                 <title>Статистика товаров</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -83,7 +98,7 @@ const ItemStatistic = React.memo((props) => {
                             profile.role === 'admin' ?
                                 <Autocomplete
                                     className={classes.input}
-                                    options={data.activeOrganization}
+                                    options={activeOrganization}
                                     getOptionLabel={option => option.name}
                                     value={organization}
                                     onChange={(event, newValue) => {
@@ -145,6 +160,7 @@ const ItemStatistic = React.memo((props) => {
 ItemStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = false
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -155,7 +171,7 @@ ItemStatistic.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };
 };

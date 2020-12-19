@@ -26,7 +26,7 @@ const Client = React.memo((props) => {
     let [paginationWork, setPaginationWork] = useState(true);
     const checkPagination = async()=>{
         if(paginationWork){
-            let addedList = (await getClients({search: search, sort: sort, filter: filter, date: date, skip: list.length})).clients
+            let addedList = (await getClients({search: search, sort: sort, filter: filter, date: date, skip: list.length, city: city})).clients
             if(addedList.length>0){
                 setList([...list, ...addedList])
             }
@@ -34,7 +34,7 @@ const Client = React.memo((props) => {
                 setPaginationWork(false)
         }
     }
-    const { search, filter, sort, date } = props.app;
+    const { search, filter, sort, date, city } = props.app;
     const { profile } = props.user;
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     useEffect(()=>{
@@ -42,17 +42,17 @@ const Client = React.memo((props) => {
             if(searchTimeOut)
                 clearTimeout(searchTimeOut)
             searchTimeOut = setTimeout(async()=>{
-                setList((await getClients({search: search, sort: sort, filter: filter, date: date, skip: 0})).clients)
-                setSimpleStatistic((await getClientsSimpleStatistic({search: search, filter: filter, date: date})).clientsSimpleStatistic[0])
+                setList((await getClients({search: search, sort: sort, filter: filter, date: date, skip: 0, city: city})).clients)
+                setSimpleStatistic((await getClientsSimpleStatistic({search: search, filter: filter, date: date, city: city})).clientsSimpleStatistic[0])
                 forceCheck()
                 setPaginationWork(true);
                 (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
             }, 500)
             setSearchTimeOut(searchTimeOut)
         })()
-    },[filter, sort, search, date])
+    },[filter, sort, search, date, city])
     return (
-        <App checkPagination={checkPagination} searchShow={true} dates={true} filters={data.filterClient} sorts={data.sortClient} pageName='Клиенты'>
+        <App cityShow checkPagination={checkPagination} searchShow={true} dates={true} filters={data.filterClient} sorts={data.sortClient} pageName='Клиенты'>
             <Head>
                 <title>Клиенты</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -76,7 +76,7 @@ const Client = React.memo((props) => {
                     )}
                 ):null}
             </div>
-            {['admin'].includes(profile.role)?
+            {profile.role==='admin'||(profile.addedClient&&['суперорганизация', 'организация', 'агент'].includes(profile.role))?
                 <Link href='/client/[id]' as={`/client/new`}>
                     <Fab color='primary' aria-label='add' className={classes.fab}>
                         <AddIcon />
@@ -91,9 +91,10 @@ const Client = React.memo((props) => {
 
 Client.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     let role = ctx.store.getState().user.profile.role
     let authenticated = ctx.store.getState().user.authenticated
-    if(authenticated&&!['admin', 'суперорганизация', 'организация', 'менеджер', 'агент', 'суперагент'].includes(role))
+    if(authenticated&&!['admin', 'суперорганизация', 'организация', 'менеджер', 'агент', 'суперагент', 'экспедитор'].includes(role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'

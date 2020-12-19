@@ -25,16 +25,16 @@ const Brand = React.memo((props) => {
     const { data } = props;
     const router = useRouter()
     let [list, setList] = useState(data.brands);
-    const { search, filter, sort, countBasket } = props.app;
+    const { search, filter, sort, countBasket, city } = props.app;
     const { profile } = props.user;
     useEffect(()=>{
         (async()=>{
             if(data)
-                setList((await getBrands({organization: router.query.id, search: search, sort: sort})).brands)
+                setList((await getBrands({city: city, organization: router.query.id, search: search, sort: sort})).brands)
             setPagination(100)
             forceCheck()
         })()
-    },[filter, sort, search])
+    },[filter, sort, search, city])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -42,7 +42,7 @@ const Brand = React.memo((props) => {
         }
     }
     return (
-        <App checkPagination={checkPagination} searchShow={true} sorts={data?data.sortItem:undefined} pageName={data&&data.brands[0]?data.brands[0].organization.name:'Ничего не найдено'}>
+        <App cityShow checkPagination={checkPagination} searchShow={true} sorts={data?data.sortItem:undefined} pageName={data&&data.brands[0]?data.brands[0].organization.name:'Ничего не найдено'}>
             <Head>
                 <title>{data&&data.brands[0]?data.brands[0].organization.name:'Ничего не найдено'}</title>
                 <meta name='description' content={data&&data.brands[0]?data.brands[0].organization.info:'Ничего не найдено'} />
@@ -92,6 +92,7 @@ const Brand = React.memo((props) => {
 
 Brand.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!ctx.store.getState().user.profile.role)
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -102,7 +103,7 @@ Brand.getInitialProps = async function(ctx) {
             Router.push('/contact')
     ctx.store.getState().app.sort = 'name'
     return {
-        data: await getBrands({organization: ctx.query.id, search: '', sort: ctx.store.getState().app.sort}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+        data: await getBrands({city: ctx.store.getState().app.city, organization: ctx.query.id, search: '', sort: ctx.store.getState().app.sort}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
     };
 };
 

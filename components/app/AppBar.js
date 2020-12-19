@@ -22,7 +22,8 @@ import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Search from '@material-ui/icons/SearchRounded';
 import Sort from '@material-ui/icons/SortRounded';
-import Business from '@material-ui/icons/Business';
+import BusinessCenterIcon from '@material-ui/icons/BusinessCenter';
+import LocationCityIcon from '@material-ui/icons/LocationCity';
 import FilterList from '@material-ui/icons/FilterListRounded';
 import DateRange from '@material-ui/icons/DateRange';
 import PermIdentity from '@material-ui/icons/PermIdentity';
@@ -33,14 +34,15 @@ import Sign from '../dialog/Sign'
 import Confirmation from '../dialog/Confirmation'
 import SetDate from '../dialog/SetDate'
 import SetOrganizations from '../dialog/SetOrganizations'
+import SetCities from '../dialog/SetCities'
 import { getActiveOrganization } from '../../src/gql/statistic'
 
 const MyAppBar = React.memo((props) => {
     //props
     const classes = appbarStyle();
-    const { filters, sorts, pageName, dates, searchShow, unread, defaultOpenSearch, organizations } = props
-    const { drawer, search, filter, sort, isMobileApp, date, organization } = props.app;
-    const { showDrawer, setSearch, setFilter, setSort, setDate, setOrganization } = props.appActions;
+    const { filters, sorts, pageName, dates, searchShow, unread, defaultOpenSearch, organizations, cityShow } = props
+    const { drawer, search, filter, sort, isMobileApp, date, organization, city } = props.app;
+    const { showDrawer, setSearch, setFilter, setSort, setDate, setOrganization, setCity } = props.appActions;
     const { authenticated, profile } = props.user;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { logout } = props.userActions;
@@ -93,6 +95,14 @@ const MyAppBar = React.memo((props) => {
     let handleCloseOrganizations = () => {
         setAnchorElOrganizations(null);
     }
+    const [anchorElCities, setAnchorElCities] = useState(null);
+    const openCities = Boolean(anchorElCities);
+    let handleMenuCities = (event) => {
+        setAnchorElCities(event.currentTarget);
+    }
+    let handleCloseCities = () => {
+        setAnchorElCities(null);
+    }
     const [openSearch, setOpenSearch] = useState(defaultOpenSearch);
     let handleSearch = (event) => {
         setSearch(event.target.value)
@@ -138,7 +148,7 @@ const MyAppBar = React.memo((props) => {
                             :
                             <>
                             {
-                                dates||searchShow||filters||sorts?
+                                cityShow||dates||searchShow||filters||sorts?
                                     <IconButton
                                         aria-owns={openMobileMenu ? 'menu-appbar' : undefined}
                                         aria-haspopup='true'
@@ -266,7 +276,7 @@ const MyAppBar = React.memo((props) => {
                                     [
                                         <MenuItem onClick={handleMenuOrganizations}>
                                             <div style={{display: 'flex', color: '#606060'}}>
-                                                <Business/>&nbsp;Организации
+                                                <BusinessCenterIcon/>&nbsp;Организации
                                             </div>
                                         </MenuItem>,
                                         <Menu
@@ -284,10 +294,42 @@ const MyAppBar = React.memo((props) => {
                                             open={openOrganizations}
                                             onClose={handleCloseOrganizations}
                                         >
-                                            <MenuItem style={{background: organization?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{let activeOrganization = (await getActiveOrganization()).activeOrganization;setMiniDialog('Организации', <SetOrganizations activeOrganization={activeOrganization}/>);showMiniDialog(true);handleCloseOrganizations();handleCloseMobileMenu();}}>
+                                            <MenuItem style={{background: organization?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{let activeOrganization = (await getActiveOrganization(city)).activeOrganization;setMiniDialog('Организации', <SetOrganizations activeOrganization={activeOrganization}/>);showMiniDialog(true);handleCloseOrganizations();handleCloseMobileMenu();}}>
                                                 По организации
                                             </MenuItem>
                                             <MenuItem style={{background: !organization?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setOrganization(undefined);handleCloseOrganizations();}}>
+                                                Все
+                                            </MenuItem>
+                                        </Menu>
+                                    ]
+                                    :null
+                                }
+                                {cityShow&&['admin'].includes(profile.role)?
+                                    [
+                                        <MenuItem onClick={handleMenuCities}>
+                                            <div style={{display: 'flex', color: '#606060'}}>
+                                                <LocationCityIcon/>&nbsp;Город
+                                            </div>
+                                        </MenuItem>,
+                                        <Menu
+                                            key='Cities'
+                                            id='menu-appbar'
+                                            anchorEl={anchorElCities}
+                                            anchorOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
+                                            }}
+                                            transformOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
+                                            }}
+                                            open={openCities}
+                                            onClose={handleCloseCities}
+                                        >
+                                            <MenuItem style={{background: city?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{setMiniDialog('Город', <SetCities/>);showMiniDialog(true);handleCloseCities();handleCloseMobileMenu();}}>
+                                                По городу
+                                            </MenuItem>
+                                            <MenuItem style={{background: !city?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setCity(undefined);handleCloseCities();}}>
                                                 Все
                                             </MenuItem>
                                         </Menu>
@@ -377,6 +419,44 @@ const MyAppBar = React.memo((props) => {
                             </Paper>
                             :
                             <>
+                            {cityShow&&['admin'].includes(profile.role)?
+                                <>
+                                <Tooltip title='Город'>
+                                    <IconButton
+                                        aria-owns={openCities ? 'menu-appbar' : undefined}
+                                        aria-haspopup='true'
+                                        onClick={handleMenuCities}
+                                        color='inherit'
+                                    >
+                                        <LocationCityIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                                <Menu
+                                    key='Cities'
+                                    id='menu-appbar'
+                                    anchorEl={anchorElCities}
+                                    anchorOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    transformOrigin={{
+                                        vertical: 'top',
+                                        horizontal: 'right',
+                                    }}
+                                    open={openCities}
+                                    onClose={handleCloseCities}
+                                >
+                                    <MenuItem style={{background: city?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{setMiniDialog('Город', <SetCities/>);showMiniDialog(true);handleCloseCities();}}>
+                                        По городу
+                                    </MenuItem>
+                                    <MenuItem style={{background: !city?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setCity(undefined);handleCloseCities();}}>
+                                        Все
+                                    </MenuItem>
+                                </Menu>
+                                &nbsp;
+                                </>
+                                :null
+                            }
                             {organizations&&['суперагент', 'admin', 'client'].includes(profile.role)?
                                 <>
                                 <Tooltip title='Организации'>
@@ -386,7 +466,7 @@ const MyAppBar = React.memo((props) => {
                                         onClick={handleMenuOrganizations}
                                         color='inherit'
                                     >
-                                        <Business/>
+                                        <BusinessCenterIcon/>
                                     </IconButton>
                                 </Tooltip>
                                 <Menu
@@ -404,7 +484,7 @@ const MyAppBar = React.memo((props) => {
                                     open={openOrganizations}
                                     onClose={handleCloseOrganizations}
                                 >
-                                    <MenuItem style={{background: organization?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{let activeOrganization = (await getActiveOrganization()).activeOrganization;setMiniDialog('Организация', <SetOrganizations activeOrganization={activeOrganization}/>);showMiniDialog(true);handleCloseOrganizations();}}>
+                                    <MenuItem style={{background: organization?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{let activeOrganization = (await getActiveOrganization(city)).activeOrganization;setMiniDialog('Организация', <SetOrganizations activeOrganization={activeOrganization}/>);showMiniDialog(true);handleCloseOrganizations();}}>
                                         По организации
                                     </MenuItem>
                                     <MenuItem style={{background: !organization?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setOrganization(undefined);handleCloseOrganizations();}}>

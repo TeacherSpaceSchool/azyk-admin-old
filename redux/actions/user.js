@@ -37,6 +37,7 @@ export function signup(payload) {
                            organization
                            client
                            employment
+                           addedClient
                            _id
                         }
                     }`})
@@ -97,6 +98,7 @@ export function signin(payload) {
                            organization
                            client
                            employment
+                           addedClient
                            _id
                         }
                     }`})
@@ -205,6 +207,7 @@ export function setProfile() {
                            organization
                            client
                            employment
+                           addedClient
                            _id
                           }
                     }`
@@ -234,6 +237,7 @@ export async function getProfile(client) {
                           organization
                            client
                            employment
+                           addedClient
                           _id
                          }
                    }`

@@ -9,8 +9,8 @@ export const getOrders = async(args, client)=>{
             .query({
                 variables: args,
                 query: gql`
-                    query ($search: String!, $sort: String!, $filter: String!, $date: String!, $skip: Int, $organization: ID) {
-                        invoices(search: $search, sort: $sort, filter: $filter, date: $date, skip: $skip, organization: $organization) {
+                    query ($search: String!, $sort: String!, $filter: String!, $date: String!, $skip: Int, $organization: ID, $city: String) {
+                        invoices(search: $search, sort: $sort, filter: $filter, date: $date, skip: $skip, organization: $organization, city: $city) {
                             _id
                             agent 
                                 {_id name}
@@ -59,6 +59,7 @@ export const getOrders = async(args, client)=>{
                             paymentConsignation
                             taken
                             sync
+                            city
                             dateDelivery
                             usedBonus
                         }
@@ -108,6 +109,7 @@ export const getOrdersFromDistrict = async(args, client)=>{
                             returnedPrice
                             info
                             address
+                            city
                             paymentMethod
                             discount
                             adss
@@ -170,6 +172,7 @@ export const getOrdersTrash = async(args, client)=>{
                             allTonnage
                             allSize
                             del
+                            city
                             client 
                                 { 
                                     _id
@@ -228,8 +231,8 @@ export const getInvoicesSimpleStatistic = async(args, client)=>{
             .query({
                 variables: args,
                 query: gql`
-                    query ($search: String!, $filter: String!, $date: String!, $organization: ID) {
-                        invoicesSimpleStatistic(search: $search, filter: $filter, date: $date, organization: $organization) 
+                    query ($search: String!, $filter: String!, $date: String!, $organization: ID, $city: String) {
+                        invoicesSimpleStatistic(search: $search, filter: $filter, date: $date, organization: $organization, city: $city) 
                     }`,
             })
         return res.data
@@ -307,6 +310,7 @@ export const getOrdersForRouting = async(arg)=>{
                             createdAt
                             updatedAt
                             allTonnage
+                            city
                             allSize
                             client 
                                 { 
@@ -375,6 +379,7 @@ export const getOrder = async({_id})=>{
                                 {_id name}
                             allTonnage
                             allSize
+                            city
                             orders 
                                 { 
                                     _id

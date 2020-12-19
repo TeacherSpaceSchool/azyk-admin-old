@@ -98,7 +98,7 @@ const UnloadingInvoices = React.memo((props) => {
                     </div>
                     <br/>
                     <Button variant='contained' size='small' color='primary' onClick={async()=>{
-                        if(organization._id&&date) {
+                        if(organization&&organization._id&&date) {
                             await showLoad(true)
                             window.open(((await getUnloadingInvoices({
                                 organization: organization._id,
@@ -129,7 +129,7 @@ UnloadingInvoices.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data:
-            await getActiveOrganization(ctx.req ? await getClientGqlSsr(ctx.req) : undefined),
+            await getActiveOrganization('Бишкек', ctx.req ? await getClientGqlSsr(ctx.req) : undefined),
     }
 };
 

@@ -87,7 +87,7 @@ const LotteryEdit = React.memo((props) => {
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { showSnackBar } = props.snackbarActions;
     return (
-        <App searchShow={screen==='tickets'} checkPagination={checkPagination}  pageName={data.lottery!==null?router.query.id==='new'?'Добавить':'Редактировать':'Ничего не найдено'}>
+        <App cityShow={screen==='tickets'} searchShow={screen==='tickets'} checkPagination={checkPagination}  pageName={data.lottery!==null?router.query.id==='new'?'Добавить':'Редактировать':'Ничего не найдено'}>
             <Head>
                 <title>{data.lottery!==null?router.query.id==='new'?'Добавить':'Редактировать':'Ничего не найдено'}</title>
                 <meta name='description' content={data.lottery!==null?'Редактировать':'Ничего не найдено'} />

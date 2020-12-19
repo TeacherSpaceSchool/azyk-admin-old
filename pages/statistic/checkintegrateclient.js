@@ -22,7 +22,7 @@ const CheckIntegrateClient = React.memo((props) => {
 
     const classes = pageListStyle();
     const { data } = props;
-    const { isMobileApp } = props.app;
+    const { isMobileApp, city } = props.app;
     const { profile } = props.user;
     const types = ['повторяющиеся guid', 'повторящиеся клиенты', 'схожие клиенты', 'отличая от 1С']
     const { showSnackBar } = props.snackbarActions;
@@ -32,6 +32,8 @@ const CheckIntegrateClient = React.memo((props) => {
     let [organization, setOrganization] = useState({_id: undefined});
     let [document1, setDocument1] = useState(undefined);
     let document1Ref = useRef(null);
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let handleChangeDocument1 = ((event) => {
         if(event.target.files[0].size/1024/1024<50){
             setDocument1(event.target.files[0])
@@ -53,13 +55,26 @@ const CheckIntegrateClient = React.memo((props) => {
         })()
     },[organization, type, document1])
     useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+                await showLoad(false)
+            }
+        })()
+    },[city])
+    useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
             appBody[0].style.paddingBottom = '0px'
         }
     },[process.browser])
     return (
-        <App pageName='Проверка интеграции клиентов'>
+        <App cityShow pageName='Проверка интеграции клиентов'>
             <Head>
                 <title>Проверка интеграции клиентов</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -75,7 +90,7 @@ const CheckIntegrateClient = React.memo((props) => {
                     <div className={classes.row}>
                         <Autocomplete
                             className={classes.input}
-                            options={data.activeOrganization}
+                            options={activeOrganization}
                             getOptionLabel={option => option.name}
                             value={organization}
                             onChange={(event, newValue) => {
@@ -141,6 +156,7 @@ const CheckIntegrateClient = React.memo((props) => {
 
 CheckIntegrateClient.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -151,7 +167,7 @@ CheckIntegrateClient.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };
 };

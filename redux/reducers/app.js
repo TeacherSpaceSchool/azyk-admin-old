@@ -1,4 +1,4 @@
-import { SHOW_APPBAR, SHOW_DRAWER, SET_FILTER, SET_SORT, SET_SEARCH, SET_IS_MOBILE_APP, SHOW_LOAD, SET_COUNT_BASKET, SET_DATE, SET_ORGANIZATION } from '../constants/app'
+import { SET_CITY, SHOW_APPBAR, SHOW_DRAWER, SET_FILTER, SET_SORT, SET_SEARCH, SET_IS_MOBILE_APP, SHOW_LOAD, SET_COUNT_BASKET, SET_DATE, SET_ORGANIZATION } from '../constants/app'
 
 const initialState = {
     showAppBar: true,
@@ -10,6 +10,7 @@ const initialState = {
     load: false,
     countBasket: 0,
     date: '',
+    city: undefined,
     organization: undefined,
 }
 
@@ -35,6 +36,8 @@ export default function mini_dialog(state = initialState, action) {
             return {...state, date: action.payload}
         case SET_ORGANIZATION:
             return {...state, organization: action.payload}
+        case SET_CITY:
+            return {...state, city: action.payload}
         default:
             return state
     }

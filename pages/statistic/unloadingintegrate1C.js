@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -12,8 +12,8 @@ import initialApp from '../../src/initialApp'
 import Router from 'next/router'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import { getOrganizations } from '../../src/gql/organization'
 import { unloadingIntegrate1C } from '../../src/gql/integrate1C'
+import { getActiveOrganization } from '../../src/gql/statistic'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
@@ -24,8 +24,21 @@ const UnloadingIntegrate1C = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                setOrganization(undefined)
+                setActiveOrganization([{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(city)).activeOrganization])
+            }
+        })()
+    },[city])
     let [organization, setOrganization] = useState({_id: undefined});
-    const { isMobileApp } = props.app;
+    const { isMobileApp, city } = props.app;
     const { showSnackBar } = props.snackbarActions;
     let [document, setDocument] = useState(undefined);
     let documentRef = useRef(null);
@@ -37,11 +50,11 @@ const UnloadingIntegrate1C = React.memo((props) => {
         }
     })
     return (
-        <App pageName='Загрузка 1С'>
+        <App cityShow pageName='Загрузка GUID клиентов 1С'>
             <Head>
-                <title>Загрузка 1С</title>
+                <title>Загрузка GUID клиентов 1С</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
-                <meta property='og:title' content='Загрузка 1С' />
+                <meta property='og:title' content='Загрузка GUID клиентов 1С' />
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
@@ -56,7 +69,7 @@ const UnloadingIntegrate1C = React.memo((props) => {
                     <div className={classes.row}>
                         <Autocomplete
                             className={classes.input}
-                            options={data.organizations}
+                            options={activeOrganization}
                             getOptionLabel={option => option.name}
                             value={organization}
                             onChange={(event, newValue) => {
@@ -73,7 +86,7 @@ const UnloadingIntegrate1C = React.memo((props) => {
                     </div>
                     <br/>
                     <Button variant='contained' size='small' color='primary' onClick={async()=>{
-                        if(organization._id&&document) {
+                        if(organization&&organization._id&&document) {
                             const action = async() => {
                                 let res = await unloadingIntegrate1C({
                                     organization: organization._id,
@@ -104,6 +117,7 @@ const UnloadingIntegrate1C = React.memo((props) => {
 
 UnloadingIntegrate1C.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -115,7 +129,7 @@ UnloadingIntegrate1C.getInitialProps = async function(ctx) {
     return {
         data:
             {
-                organizations: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations]
+                activeOrganization: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
             }
     }
 };

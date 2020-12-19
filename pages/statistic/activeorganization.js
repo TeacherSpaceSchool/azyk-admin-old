@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/statistic/statistic'
@@ -19,18 +19,33 @@ import { bindActionCreators } from 'redux'
 const OrganizationStatisticActive = React.memo((props) => {
     const { data } = props;
     const classes = pageListStyle();
-    const { isMobileApp, filter } = props.app;
+    const { isMobileApp, filter, city } = props.app;
     const { showLoad } = props.appActions;
     const { profile } = props.user;
     let [statisticActive, setStatisticActive] = useState(undefined);
+    const initialRender = useRef(true);
     let [organization, setOrganization] = useState(undefined);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     useEffect(()=>{
         (async()=>{
             await showLoad(true)
-            setStatisticActive((await getStatisticOrganizationActivity({online: filter, ...(organization&&organization._id?{organization: organization._id}:{})}, undefined)).statisticOrganizationActivity)
+            setStatisticActive((await getStatisticOrganizationActivity({online: filter, city, ...(organization&&organization._id?{organization: organization._id}:{})}, undefined)).statisticOrganizationActivity)
             await showLoad(false)
         })()
-    },[filter, organization])
+    },[filter, organization, activeOrganization])
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+                await showLoad(false)
+            }
+        })()
+    },[city])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
@@ -40,7 +55,7 @@ const OrganizationStatisticActive = React.memo((props) => {
     let [showStat, setShowStat] = useState(false);
     const filters = [{name: 'Все', value: false}, {name: 'Online', value: true}]
     return (
-        <App pageName='Активность организаций' filters={filters}>
+        <App cityShow pageName='Активность организаций' filters={filters}>
             <Head>
                 <title>Активность организаций</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -58,7 +73,7 @@ const OrganizationStatisticActive = React.memo((props) => {
                             <div className={classes.row}>
                                 <Autocomplete
                                     className={classes.input}
-                                    options={data.activeOrganization}
+                                    options={activeOrganization}
                                     getOptionLabel={option => option.name}
                                     value={organization}
                                     onChange={(event, newValue) => {
@@ -104,6 +119,7 @@ const OrganizationStatisticActive = React.memo((props) => {
 OrganizationStatisticActive.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = false
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -114,7 +130,7 @@ OrganizationStatisticActive.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };
 };

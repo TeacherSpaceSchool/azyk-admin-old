@@ -23,7 +23,7 @@ const DistributerStatistic = React.memo((props) => {
 
     const classes = pageListStyle();
     const { data } = props;
-    const { isMobileApp, date, filter } = props.app;
+    const { isMobileApp, date, filter, city } = props.app;
     const { profile } = props.user;
     let [dateType, setDateType] = useState('day');
     let [statistic, setStatistic] = useState(undefined);
@@ -43,12 +43,13 @@ const DistributerStatistic = React.memo((props) => {
                     organization: organization ? organization._id : undefined,
                     type: filter,
                     dateStart: date ? date : null,
-                    dateType: dateType
+                    dateType: dateType,
+                    city: city
                 })).statisticDistributer)
                 await showLoad(false)
             }
         })()
-    },[organization, date, dateType, filter, distributer])
+    },[organization, date, dateType, filter, distributer, city])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
@@ -58,7 +59,7 @@ const DistributerStatistic = React.memo((props) => {
 
     const filters = [{name: 'Организации', value: 'all'}, {name: 'Районы', value: 'districts'}, {name: 'Агенты', value: 'agents'}]
     return (
-        <App pageName='Статистика дистрибьюторов' dates={true} filters={filters}>
+        <App cityShow pageName='Статистика дистрибьюторов' dates={true} filters={filters}>
             <Head>
                 <title>Статистика дистрибьюторов</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -153,6 +154,7 @@ DistributerStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = 'all'
     ctx.store.getState().app.date = pdDatePicker(new Date())
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {

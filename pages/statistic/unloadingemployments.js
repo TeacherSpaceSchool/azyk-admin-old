@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -11,8 +11,7 @@ import initialApp from '../../src/initialApp'
 import Router from 'next/router'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import { getOrganizations } from '../../src/gql/organization'
-import { getUnloadingEmployments } from '../../src/gql/statistic'
+import { getUnloadingEmployments, getActiveOrganization } from '../../src/gql/statistic'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
@@ -22,8 +21,23 @@ const UnloadingEmployments = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     let [organization, setOrganization] = useState({_id: 'all'});
-    const { isMobileApp } = props.app;
+    const { isMobileApp, city } = props.app;
     const { showLoad } = props.appActions;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+                await showLoad(false)
+            }
+        })()
+    },[city])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
@@ -31,7 +45,7 @@ const UnloadingEmployments = React.memo((props) => {
         }
     },[process.browser])
     return (
-        <App pageName='Выгрузка сотрудников'>
+        <App cityShow pageName='Выгрузка сотрудников'>
             <Head>
                 <title>Выгрузка сотрудников</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -47,7 +61,7 @@ const UnloadingEmployments = React.memo((props) => {
                     <div className={classes.row}>
                         <Autocomplete
                             className={classes.input}
-                            options={data.organizations}
+                            options={activeOrganization}
                             getOptionLabel={option => option.name}
                             value={organization}
                             onChange={(event, newValue) => {
@@ -61,7 +75,7 @@ const UnloadingEmployments = React.memo((props) => {
                     </div>
                     <br/>
                     <Button variant='contained' size='small' color='primary' onClick={async()=>{
-                        if(organization._id) {
+                        if(organization&&organization._id) {
                             await showLoad(true)
                             window.open(((await getUnloadingEmployments({
                                 organization: organization._id
@@ -79,6 +93,7 @@ const UnloadingEmployments = React.memo((props) => {
 
 UnloadingEmployments.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -90,7 +105,10 @@ UnloadingEmployments.getInitialProps = async function(ctx) {
     return {
         data:
             {
-                organizations: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations]
+                activeOrganization: [
+                    {name: 'AZYK.STORE', _id: 'super'},
+                    ...(await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization
+                ]
             }
     }
 };

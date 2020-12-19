@@ -3,15 +3,15 @@ import { SingletonApolloClient } from '../singleton/client';
 import { SingletonStore } from '../singleton/store';
 import { getReceiveDataByIndex, putReceiveDataByIndex } from '../service/idb/receiveData';
 
-export const getBrandOrganizations = async({search: search, sort: sort, filter: filter}, client)=>{
+export const getBrandOrganizations = async({search: search, sort: sort, filter: filter, city: city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {search: search, sort: sort, filter: filter},
+                variables: {search: search, sort: sort, filter: filter, city: city},
                 query: gql`
-                    query ($search: String!, $sort: String!, $filter: String!) {
-                        brandOrganizations(search: $search, sort: $sort, filter: $filter) {
+                    query ($search: String!, $sort: String!, $filter: String!, $city: String) {
+                        brandOrganizations(search: $search, sort: $sort, filter: $filter, city: $city) {
                             _id
                             createdAt
                             name
@@ -102,6 +102,7 @@ export const getItems = async({subCategory,  search,  sort,  filter}, client)=>{
                             latest
                             favorite
                             basket
+                            costPrice
                         }
                         sortItem {
                             name
@@ -165,15 +166,15 @@ export const getItemsTrash = async({search}, client)=>{
     }
 }
 
-export const getBrands = async({organization,  search,  sort}, client)=>{
+export const getBrands = async({organization,  search,  sort, city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {organization: organization, search: search, sort: sort},
+                variables: {organization: organization, search: search, sort: sort, city},
                 query: gql`
-                    query ($organization: ID!,$search: String!, $sort: String!) {
-                        brands(organization: $organization, search: $search, sort: $sort) {
+                    query ($organization: ID!,$search: String!, $sort: String!, $city: String) {
+                        brands(organization: $organization, search: $search, sort: $sort, city: $city) {
                             _id
                             subCategory
                                 {_id name}
@@ -195,6 +196,7 @@ export const getBrands = async({organization,  search,  sort}, client)=>{
                             latest
                             favorite
                             basket
+                            costPrice
                         }
                         sortItem {
                             name

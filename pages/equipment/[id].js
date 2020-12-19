@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import {getEquipment, setEquipment, deleteEquipment, addEquipment} from '../../src/gql/equipment'
@@ -10,7 +10,7 @@ import Button from '@material-ui/core/Button';
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import { useRouter } from 'next/router'
-import { getOrganizations } from '../../src/gql/organization'
+import { getActiveOrganization } from '../../src/gql/statistic'
 import { getClients } from '../../src/gql/client'
 import Router from 'next/router'
 import * as userActions from '../../redux/actions/user'
@@ -21,30 +21,75 @@ import { urlMain } from '../../redux/constants/other'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import initialApp from '../../src/initialApp'
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const Equipment = React.memo((props) => {
     const { profile } = props.user;
     const classes = organizationStyle();
     const { data } = props;
-    const { isMobileApp } = props.app;
+    const { isMobileApp, city } = props.app;
     const { user } = props.user;
     const { showSnackBar } = props.snackbarActions;
-    const clients = data.clients;
-    const organizations = data.organizations;
+    const initialRender = useRef(true);
+    const [clients, setClients] = useState([]);
+    const [inputValue, setInputValue] = React.useState('');
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        (async()=>{
+            if (inputValue.length<3) {
+                setClients([]);
+                if(open)
+                    setOpen(false)
+                if(loading)
+                    setLoading(false)
+            }
+            else {
+                if(!loading)
+                    setLoading(true)
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    setClients((await getClients({search: inputValue, sort: '-name', filter: 'all', city})).clients)
+                    if(!open)
+                        setOpen(true)
+                    setLoading(false)
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+            }
+        })()
+    }, [inputValue]);
+    const handleChange = event => {
+        setInputValue(event.target.value);
+    };
+    let handleClient =  (client) => {
+        setClient(client)
+        setOpen(false)
+    };
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [number, setNumber] = useState(data.equipment!==null?data.equipment.number:'');
     let [name, setName] = useState(data.equipment!==null?data.equipment.name:'');
     let [organization, setOrganization] = useState(data.equipment!==null?data.equipment.organization:{});
     let [client, setClient] = useState(data.equipment!==null?data.equipment.client:{});
-    let handleClient =  (client) => {
-        setClient(client)
-    };
     let handleOrganization =  (organization) => {
         setOrganization(organization)
     };
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const router = useRouter()
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+            }
+        })()
+    },[city])
     return (
-        <App pageName={data.equipment?router.query.id==='new'?'Добавить':data.equipment.name:'Ничего не найдено'}>
+        <App cityShow pageName={data.equipment?router.query.id==='new'?'Добавить':data.equipment.name:'Ничего не найдено'}>
             <Head>
                 <title>{data.equipment!==null?router.query.id==='new'?'Добавить':data.equipment.name:'Ничего не найдено'}</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -84,7 +129,7 @@ const Equipment = React.memo((props) => {
                             ['admin'].includes(profile.role)?
                                 <Autocomplete
                                     className={classes.input}
-                                    options={organizations}
+                                    options={activeOrganization}
                                     getOptionLabel={option => option.name}
                                     value={organization}
                                     onChange={(event, newValue) => {
@@ -101,16 +146,29 @@ const Equipment = React.memo((props) => {
                         {
                             ['admin', 'суперорганизация', 'организация'].includes(profile.role)?
                                 <Autocomplete
+                                    onClose={()=>setOpen(false)}
+                                    open={open}
+                                    disableOpenOnFocus
                                     className={classes.input}
                                     options={clients}
-                                    value={client}
-                                    getOptionLabel={option => option.name}
+                                    getOptionLabel={option => `${option.name}${option.address&&option.address[0]?` (${option.address[0][2]?`${option.address[0][2]}, `:''}${option.address[0][0]})`:''}`}
                                     onChange={(event, newValue) => {
                                         handleClient(newValue)
                                     }}
                                     noOptionsText='Ничего не найдено'
                                     renderInput={params => (
-                                        <TextField {...params} label='Выберите клиента' fullWidth />
+                                        <TextField {...params} label='Выберите клиента' variant='outlined' fullWidth
+                                                   onChange={handleChange}
+                                                   InputProps={{
+                                                       ...params.InputProps,
+                                                       endAdornment: (
+                                                           <React.Fragment>
+                                                               {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                                               {params.InputProps.endAdornment}
+                                                           </React.Fragment>
+                                                       ),
+                                                   }}
+                                        />
                                     )}
                                 />
                                 :
@@ -132,15 +190,14 @@ const Equipment = React.memo((props) => {
                                             const action = async() => {
                                                 let equipment = {
                                                     name: name,
-                                                    number: number,
-                                                    organization: organization._id
+                                                    number: number
                                                 }
                                                 if(client&&client._id)
                                                     equipment.client = client._id
                                                 if(organization&&organization._id)
                                                     equipment.organization = organization._id
                                                 await addEquipment(equipment)
-                                                Router.push('/equipments')
+                                                //Router.push('/equipments')
                                             }
                                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                             showMiniDialog(true)
@@ -193,6 +250,7 @@ const Equipment = React.memo((props) => {
 
 Equipment.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -204,8 +262,7 @@ Equipment.getInitialProps = async function(ctx) {
     return {
         data: {
             ...ctx.query.id!=='new'?await getEquipment({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{equipment:{name: '',number: '',client: {_id: '',},organization: {_id: ''},}},
-            ...await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            ...await getClients({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            activeOrganization: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
         }
     };
 };

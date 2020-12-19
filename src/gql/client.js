@@ -64,8 +64,8 @@ export const getClients = async(arg, client)=>{
             .query({
                 variables: arg,
                 query: gql`
-                    query ($search: String!, $sort: String!, $filter: String!, $date: String, $skip: Int) {
-                        clients(search: $search, sort: $sort, filter: $filter, date: $date, skip: $skip) {
+                    query ($search: String!, $sort: String!, $filter: String!, $date: String, $skip: Int, $city: String) {
+                        clients(search: $search, sort: $sort, filter: $filter, date: $date, skip: $skip, city: $city) {
                             _id
                             image
                             createdAt
@@ -113,8 +113,8 @@ export const getClientsSimpleStatistic = async(arg, client)=>{
             .query({
                 variables: arg,
                 query: gql`
-                    query ($search: String!, $filter: String!, $date: String) {
-                        clientsSimpleStatistic(search: $search, filter: $filter, date: $date)
+                    query ($search: String!, $filter: String!, $date: String, $city: String) {
+                        clientsSimpleStatistic(search: $search, filter: $filter, date: $date, city: $city)
                     }`,
             })
         return res.data

@@ -139,7 +139,7 @@ const LotteryEdit = React.memo((props) => {
                                         <center key={idx}>
                                             <div className="cardWrap">
                                                 <div className={`${ticket.status==='победитель'?'cardWin':'card'} cardLeft`}>
-                                                    <h1>{ticket.status==='проигравший'?'попробуй еше':ticket.status}</h1>
+                                                    <h1>{ticket.status==='проигравший'?'попробуй еще':ticket.status}</h1>
                                                     <div className="title">
                                                         <h2>{ticket.number}</h2>
                                                         <span>номер</span>

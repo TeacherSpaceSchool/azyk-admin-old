@@ -14,7 +14,7 @@ import Link from 'next/link';
 
 const CardEquipment = React.memo((props) => {
     const classes = cardEquipmentStyle();
-    const { element, setList } = props;
+    const { element, setList, idx, list } = props;
     const { isMobileApp } = props.app;
     const { profile } = props.user;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
@@ -68,7 +68,8 @@ const CardEquipment = React.memo((props) => {
                             <CardActions>
                                 <Button onClick={async()=>{
                                     const action = async() => {
-                                        const list = (await deleteEquipment([element._id])).equipments
+                                        await deleteEquipment([element._id])
+                                        list.splice(idx, 1)
                                         setList(list)
                                     }
                                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)

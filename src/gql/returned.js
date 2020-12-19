@@ -73,8 +73,8 @@ export const getReturneds = async(args, client)=>{
             .query({
                 variables: args,
                 query: gql`
-                    query ($search: String!, $sort: String!, $date: String!, $skip: Int) {
-                        returneds(search: $search, sort: $sort, date: $date, skip: $skip) {
+                    query ($search: String!, $sort: String!, $date: String!, $skip: Int, $city: String) {
+                        returneds(search: $search, sort: $sort, date: $date, skip: $skip, city: $city) {
                             _id
                             createdAt
                             updatedAt
@@ -121,6 +121,7 @@ export const getReturneds = async(args, client)=>{
                                 {_id name}
                             cancelForwarder
                             sync
+                            city
                         }
                         sortReturned {
                             name
@@ -239,8 +240,8 @@ export const getReturnedsSimpleStatistic = async(args, client)=>{
             .query({
                 variables: args,
                 query: gql`
-                    query ($search: String!, $date: String!) {
-                        returnedsSimpleStatistic(search: $search, date: $date) 
+                    query ($search: String!, $date: String!, $city: String) {
+                        returnedsSimpleStatistic(search: $search, date: $date, city: $city) 
                     }`,
             })
         return res.data

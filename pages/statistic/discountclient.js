@@ -1,6 +1,6 @@
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/statistic/statistic'
@@ -36,11 +36,13 @@ const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'
 const DiscountClient = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
-    let { isMobileApp, search } = props.app;
+    let { isMobileApp, search, city } = props.app;
     const { profile } = props.user;
     const { setMiniDialog, showMiniDialog} = props.mini_dialogActions;
     const { showLoad } = props.appActions;
     const { showSnackBar } = props.snackbarActions;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [pagination, setPagination] = useState(100);
     let [districts, setDistricts] = useState([]);
     let [allClients, setAllClients] = useState([]);
@@ -64,6 +66,19 @@ const DiscountClient = React.memo((props) => {
     },[])
     useEffect(()=>{
         (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setForwarder(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+                await showLoad(false)
+            }
+        })()
+    },[city])
+    useEffect(()=>{
+        (async()=>{
             await showLoad(true)
             setOrganization(undefined)
             setDistrict(undefined)
@@ -81,7 +96,7 @@ const DiscountClient = React.memo((props) => {
             setOrganizations(organizations)
             await showLoad(false)
         })()
-    },[forwarder])
+    },[forwarder, activeOrganization])
     useEffect(()=>{
         (async()=>{
             setSelectedClients([])
@@ -129,7 +144,7 @@ const DiscountClient = React.memo((props) => {
         setAnchorEl(null);
     };
     return (
-        <App pageName='Скидки клиента' checkPagination={checkPagination} searchShow={true}>
+        <App cityShow pageName='Скидки клиента' checkPagination={checkPagination} searchShow={true}>
             <Head>
                 <title>Скидки клиента</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -147,7 +162,7 @@ const DiscountClient = React.memo((props) => {
                             profile.role==='admin'?
                                 <Autocomplete
                                     className={classes.input}
-                                    options={data.activeOrganization}
+                                    options={activeOrganization}
                                     getOptionLabel={option => option.name}
                                     value={forwarder}
                                     onChange={(event, newValue) => {
@@ -293,6 +308,7 @@ const DiscountClient = React.memo((props) => {
 DiscountClient.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = 'Заказы'
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация', 'организация', 'агент', 'менеджер'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -303,7 +319,7 @@ DiscountClient.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...(await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined))
+            ...(await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined))
         }
     };
 };

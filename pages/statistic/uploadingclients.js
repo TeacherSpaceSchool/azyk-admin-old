@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -12,8 +12,7 @@ import initialApp from '../../src/initialApp'
 import Router from 'next/router'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import { getOrganizations } from '../../src/gql/organization'
-import { uploadingClients } from '../../src/gql/statistic'
+import { uploadingClients, getActiveOrganization } from '../../src/gql/statistic'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
@@ -25,10 +24,24 @@ const UploadingClients = React.memo((props) => {
     const { data } = props;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     let [organization, setOrganization] = useState({_id: undefined});
+    const { city } = props.app;
     const { isMobileApp } = props.app;
     const { showSnackBar } = props.snackbarActions;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [document, setDocument] = useState(undefined);
     let documentRef = useRef(null);
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+            }
+        })()
+    },[city])
     let handleChangeDocument = ((event) => {
         if(event.target.files[0].size/1024/1024<50){
             setDocument(event.target.files[0])
@@ -37,7 +50,7 @@ const UploadingClients = React.memo((props) => {
         }
     })
     return (
-        <App pageName='Загрузка клиентов 1C'>
+        <App cityShow pageName='Загрузка клиентов 1C'>
             <Head>
                 <title>Загрузка клиентов 1C</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -56,7 +69,7 @@ const UploadingClients = React.memo((props) => {
                     <div className={classes.row}>
                         <Autocomplete
                             className={classes.input}
-                            options={data.organizations}
+                            options={activeOrganization}
                             getOptionLabel={option => option.name}
                             value={organization}
                             onChange={(event, newValue) => {
@@ -73,7 +86,7 @@ const UploadingClients = React.memo((props) => {
                     </div>
                     <br/>
                     <Button variant='contained' size='small' color='primary' onClick={async()=>{
-                        if(organization._id&&document) {
+                        if(organization&&organization._id&&document) {
                             const action = async() => {
                                 let res = await uploadingClients({
                                     organization: organization._id,
@@ -104,6 +117,7 @@ const UploadingClients = React.memo((props) => {
 
 UploadingClients.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -113,8 +127,9 @@ UploadingClients.getInitialProps = async function(ctx) {
         } else
             Router.push('/contact')
     return {
-        data:
-            await getOrganizations({search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req ? await getClientGqlSsr(ctx.req) : undefined),
+        data: {
+            ...await getActiveOrganization(ctx.store.getState().app.city,  ctx.req?await getClientGqlSsr(ctx.req):undefined),
+        }
     }
 };
 

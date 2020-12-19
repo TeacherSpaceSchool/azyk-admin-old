@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import Router from 'next/router'
@@ -13,13 +13,16 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import { bindActionCreators } from 'redux'
 import * as appActions from '../../redux/actions/app'
+import {setSearch} from '../../redux/actions/app';
 
 const ClientGeoStatistic = React.memo((props) => {
 
     const { data } = props;
-    const { search, isMobileApp, filter } = props.app;
+    const { search, isMobileApp, filter, city } = props.app;
     const { profile } = props.user;
     const { showLoad } = props.appActions;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [load, setLoad] = useState(true);
     useEffect(()=>{
         if(process.browser){
@@ -54,13 +57,26 @@ const ClientGeoStatistic = React.memo((props) => {
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
                     await showLoad(true)
-                    setStatisticClientGeo((await getStatisticClientGeo({search: search, organization: organization ? organization._id : null, item: item ? item._id : null})).statisticClientGeo)
+                    setStatisticClientGeo((await getStatisticClientGeo({city: city, search: search, organization: organization ? organization._id : null, item: item ? item._id : null})).statisticClientGeo)
                     await showLoad(false)
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
             }
         })()
-    },[/*item, items, */search, organization])
+    },[/*item, items, */search, organization, activeOrganization])
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+                await showLoad(false)
+            }
+        })()
+    },[city])
     useEffect(()=>{
         (async()=>{
             if(profile.role==='admin'&&statisticClientGeo) {
@@ -98,7 +114,7 @@ const ClientGeoStatistic = React.memo((props) => {
     return (
         <>
         <YMaps>
-            <App searchShow={true} pageName='Карта клиентов' filters={filters}>
+            <App cityShow searchShow={true} pageName='Карта клиентов' filters={filters}>
                 <Head>
                     <title>Карта клиентов</title>
                     <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -202,7 +218,7 @@ const ClientGeoStatistic = React.memo((props) => {
         </YMaps>
         <Autocomplete
             style={{width: 150, position: 'fixed', top: 74, right: 10, padding: 10, borderRadius: 5, boxShadow: '0 0 10px rgba(0,0,0,0.5)', background: '#fff'}}
-            options={data.activeOrganization}
+            options={activeOrganization}
             getOptionLabel={option => option.name}
             value={organization}
             onChange={(event, newValue) => {
@@ -245,6 +261,7 @@ const ClientGeoStatistic = React.memo((props) => {
 ClientGeoStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = 'green/yellow'
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -255,7 +272,7 @@ ClientGeoStatistic.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };
 };

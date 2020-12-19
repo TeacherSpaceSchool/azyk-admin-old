@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
 import { getOrganizations } from '../src/gql/organization'
@@ -12,10 +12,18 @@ import CardOrganizationPlaceholder from '../components/organization/CardOrganiza
 import { getClientGqlSsr } from '../src/getClientGQL'
 import initialApp from '../src/initialApp'
 import Router from 'next/router'
+import { forceCheck } from 'react-lazyload';
 
 const Districts = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
+    const { city } = props.app;
+    useEffect(()=>{
+        (async()=>{
+            list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
+            setList(list)
+        })()
+    },[city])
     let [list, setList] = useState(data.organizations);
     const { profile } = props.user;
     let height = 80
@@ -25,8 +33,12 @@ const Districts = React.memo((props) => {
             setPagination(pagination+100)
         }
     }
+    useEffect(()=>{
+        setPagination(100)
+        forceCheck()
+    },[list])
     return (
-        <App checkPagination={checkPagination} pageName='Районы'>
+        <App cityShow checkPagination={checkPagination} pageName='Районы'>
             <Head>
                 <title>Районы</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -69,6 +81,7 @@ const Districts = React.memo((props) => {
 
 Districts.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -80,7 +93,7 @@ Districts.getInitialProps = async function(ctx) {
     return {
         data: {
             organizations:
-                (await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
+                (await getOrganizations({city: ctx.store.getState().app.city, search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
         }
     };
 };

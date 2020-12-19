@@ -33,12 +33,12 @@ const Returneds = React.memo((props) => {
     let [simpleStatistic, setSimpleStatistic] = useState(['0']);
     let [list, setList] = useState(data.returneds);
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
-    const { search, sort, date } = props.app;
+    const { search, sort, date, city } = props.app;
     const { profile } = props.user;
     let [paginationWork, setPaginationWork] = useState(true);
     const checkPagination = async()=>{
         if(paginationWork){
-            let addedList = (await getReturneds({search: search, sort: sort, date: date, skip: list.length})).returneds
+            let addedList = (await getReturneds({search: search, sort: sort, date: date, skip: list.length, city})).returneds
             if(addedList.length>0){
                 setList([...list, ...addedList])
             }
@@ -47,9 +47,9 @@ const Returneds = React.memo((props) => {
         }
     }
     const getList = async ()=>{
-        let returneds = (await getReturneds({search: search, sort: sort, date: date, skip: 0})).returneds
+        let returneds = (await getReturneds({search: search, sort: sort, date: date, skip: 0, city})).returneds
         setList(returneds)
-        setSimpleStatistic((await getReturnedsSimpleStatistic({search: search, date: date})).returnedsSimpleStatistic)
+        setSimpleStatistic((await getReturnedsSimpleStatistic({search: search, date: date, city})).returnedsSimpleStatistic)
     }
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     useEffect(()=>{
@@ -63,7 +63,7 @@ const Returneds = React.memo((props) => {
             (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         }, 500)
         setSearchTimeOut(searchTimeOut)
-    },[sort, search, date])
+    },[sort, search, date, city])
 
     let [showStat, setShowStat] = useState(false);
     let [selected, setSelected] = useState([]);
@@ -76,7 +76,7 @@ const Returneds = React.memo((props) => {
     };
 
     return (
-        <App checkPagination={checkPagination} setList={setList} list={list} searchShow={true} dates={true} sorts={data.sortReturned} pageName='Возвраты'>
+        <App cityShow checkPagination={checkPagination} setList={setList} list={list} searchShow={true} dates={true} sorts={data.sortReturned} pageName='Возвраты'>
             <Head>
                 <title>Возвраты</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -214,6 +214,7 @@ const Returneds = React.memo((props) => {
 
 Returneds.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация', 'организация', 'менеджер', 'агент', 'суперагент'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -224,7 +225,7 @@ Returneds.getInitialProps = async function(ctx) {
             Router.push('/contact')
     ctx.store.getState().app.sort = '-createdAt'
     return {
-        data: await getReturneds({search: '', sort: '-createdAt', date: '', skip: 0}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+        data: await getReturneds({city: ctx.store.getState().app.city, search: '', sort: '-createdAt', date: '', skip: 0}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     };
 };
 

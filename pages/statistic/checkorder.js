@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/statistic/statistic'
@@ -20,12 +20,14 @@ const CheckOrder = React.memo((props) => {
 
     const classes = pageListStyle();
     const { data } = props;
-    const { isMobileApp } = props.app;
+    const { isMobileApp, city } = props.app;
     const { profile } = props.user;
     let [dateStart, setDateStart] = useState(null);
     let [checkOrder, setCheckOrder] = useState(undefined);
     let [organization, setOrganization] = useState({_id: undefined});
     const { showLoad } = props.appActions;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     useEffect(()=>{
         (async()=>{
             if(profile.role==='admin') {
@@ -33,11 +35,25 @@ const CheckOrder = React.memo((props) => {
                 setCheckOrder((await getCheckOrder({
                     company: organization?organization._id:undefined,
                     today: dateStart ? dateStart : new Date(),
+                    city: city
                 })).checkOrder)
                 await showLoad(false)
             }
         })()
-    },[organization, dateStart])
+    },[organization, dateStart, activeOrganization])
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+                await showLoad(false)
+            }
+        })()
+    },[city])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
@@ -45,7 +61,7 @@ const CheckOrder = React.memo((props) => {
         }
     },[process.browser])
     return (
-        <App pageName='Проверка заказов'>
+        <App cityShow pageName='Проверка заказов'>
             <Head>
                 <title>Проверка заказов</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -61,7 +77,7 @@ const CheckOrder = React.memo((props) => {
                     <div className={classes.row}>
                         <Autocomplete
                             className={classes.input}
-                            options={data.activeOrganization}
+                            options={activeOrganization}
                             getOptionLabel={option => option.name}
                             value={organization}
                             onChange={(event, newValue) => {
@@ -109,6 +125,7 @@ const CheckOrder = React.memo((props) => {
 
 CheckOrder.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -119,7 +136,7 @@ CheckOrder.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };
 };

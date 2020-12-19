@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -20,8 +20,10 @@ import * as appActions from '../../redux/actions/app'
 const UnloadingAdsOrders = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
-    const { isMobileApp } = props.app;
+    const { isMobileApp, city } = props.app;
     const { profile } = props.user;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [date, setDate] = useState(null);
     let [organization, setOrganization] = useState({_id: profile.role==='admin'?undefined:profile.organization});
     useEffect(()=>{
@@ -30,9 +32,22 @@ const UnloadingAdsOrders = React.memo((props) => {
             appBody[0].style.paddingBottom = '0px'
         }
     },[process.browser])
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+                await showLoad(false)
+            }
+        })()
+    },[city])
     const { showLoad } = props.appActions;
     return (
-        <App pageName='Выгрузка акционных заказов'>
+        <App cityShow pageName='Выгрузка акционных заказов'>
             <Head>
                 <title>Выгрузка акционных заказов</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -50,7 +65,7 @@ const UnloadingAdsOrders = React.memo((props) => {
                             profile.role==='admin'?
                                 <Autocomplete
                                     className={classes.input}
-                                    options={data.activeOrganization}
+                                    options={activeOrganization}
                                     getOptionLabel={option => option.name}
                                     value={organization}
                                     onChange={(event, newValue) => {
@@ -80,7 +95,7 @@ const UnloadingAdsOrders = React.memo((props) => {
                     </div>
                     <br/>
                     <Button variant='contained' size='small' color='primary' onClick={async()=>{
-                        if(organization._id&&date) {
+                        if(organization&&organization._id&&date) {
                             await showLoad(true)
                             window.open(((await getUnloadingAdsOrders({
                                 organization: organization._id,
@@ -99,6 +114,7 @@ const UnloadingAdsOrders = React.memo((props) => {
 
 UnloadingAdsOrders.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация', 'организация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -109,7 +125,7 @@ UnloadingAdsOrders.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data:
-            await getActiveOrganization(ctx.req ? await getClientGqlSsr(ctx.req) : undefined),
+            await getActiveOrganization(ctx.store.getState().app.city, ctx.req ? await getClientGqlSsr(ctx.req) : undefined),
     }
 };
 

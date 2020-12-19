@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -10,9 +10,8 @@ import initialApp from '../../src/initialApp'
 import Router from 'next/router'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import { getOrganizations } from '../../src/gql/organization'
 import { getAgentRoutes } from '../../src/gql/agentRoute'
-import { getCheckAgentRoute } from '../../src/gql/statistic'
+import { getCheckAgentRoute, getActiveOrganization } from '../../src/gql/statistic'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import * as appActions from '../../redux/actions/app'
@@ -26,7 +25,25 @@ const CheckAgentRoute = React.memo((props) => {
     let [organization, setOrganization] = useState({_id: profile.organization?profile.organization:undefined});
     let [agentRoutes, setAgentRoutes] = useState([]);
     let [agentRoute, setAgentRoute] = useState({_id: undefined});
-    const { isMobileApp } = props.app;
+    const { isMobileApp, city } = props.app;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setAgentRoutes([])
+                setAgentRoute({_id: undefined})
+                setActiveOrganization([{name: 'AZYK.STORE', _id: 'super'},
+                    ...(await getActiveOrganization(city)).activeOrganization])
+                await showLoad(false)
+            }
+        })()
+    },[city])
     let [checkAgentRoute, setCheckAgentRoute] = useState(undefined);
     useEffect(()=>{
         (async()=>{
@@ -54,7 +71,7 @@ const CheckAgentRoute = React.memo((props) => {
         }
     },[process.browser])
     return (
-        <App pageName='Проверка маршрутов'>
+        <App cityShow pageName='Проверка маршрутов'>
             <Head>
                 <title>Проверка маршрутов</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -72,7 +89,7 @@ const CheckAgentRoute = React.memo((props) => {
                             profile.role === 'admin' ?
                                 <Autocomplete
                                     className={classes.input}
-                                    options={data.organizations}
+                                    options={activeOrganization}
                                     getOptionLabel={option => option.name}
                                     value={organization}
                                     onChange={(event, newValue) => {
@@ -121,6 +138,7 @@ const CheckAgentRoute = React.memo((props) => {
 
 CheckAgentRoute.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -132,7 +150,7 @@ CheckAgentRoute.getInitialProps = async function(ctx) {
     return {
         data:
             {
-                organizations: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations]
+                activeOrganization: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
             }
     }
 };

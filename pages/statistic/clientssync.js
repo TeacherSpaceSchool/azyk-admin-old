@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -14,21 +14,38 @@ import CardOrganizationPlaceholder from '../../components/organization/CardOrgan
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import initialApp from '../../src/initialApp'
 import Router from 'next/router'
+import { forceCheck } from 'react-lazyload';
 
 const ClientsSync = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
+    const { city } = props.app;
     let [list, setList] = useState(data.organizations);
     const { profile } = props.user;
     let height = 80
     let [pagination, setPagination] = useState(100);
+    const initialRender = useRef(true);
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                setList((await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations)
+            }
+        })()
+    },[city])
+    useEffect(()=>{
+        setPagination(100)
+        forceCheck()
+    },[list])
     const checkPagination = ()=>{
         if(pagination<list.length){
             setPagination(pagination+100)
         }
     }
     return (
-        <App checkPagination={checkPagination} pageName='Интеграция клиентов 1С'>
+        <App cityShow checkPagination={checkPagination} pageName='Интеграция клиентов 1С'>
             <Head>
                 <title>Интеграция клиентов 1С</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -62,6 +79,7 @@ const ClientsSync = React.memo((props) => {
 
 ClientsSync.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -73,7 +91,7 @@ ClientsSync.getInitialProps = async function(ctx) {
     return {
         data: {
             organizations:
-                (await getOrganizations({search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
+            (await getOrganizations({city: ctx.store.getState().app.city, search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
         }
     };
 };

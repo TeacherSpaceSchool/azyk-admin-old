@@ -22,14 +22,14 @@ const Organization = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     let [list, setList] = useState(data.organizations);
-    const { search, filter, sort } = props.app;
+    const { search, filter, sort, city } = props.app;
     const { profile } = props.user;
     let height = 80
     useEffect(()=>{
         (async()=>{
-            setList((await getOrganizations({search: search, sort: sort, filter: filter})).organizations)
+            setList((await getOrganizations({search: search, sort: sort, filter: filter, city: city})).organizations)
         })()
-    },[filter, sort, search])
+    },[filter, sort, search, city])
     useEffect(()=>{
         setPagination(100)
         forceCheck()
@@ -41,7 +41,7 @@ const Organization = React.memo((props) => {
         }
     }
     return (
-        <App checkPagination={checkPagination} searchShow={true} filters={data.filterOrganization} sorts={data.sortOrganization} pageName='Организации'>
+        <App cityShow checkPagination={checkPagination} searchShow={true} filters={data.filterOrganization} sorts={data.sortOrganization} pageName='Организации'>
             <Head>
                 <title>Организации</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -84,6 +84,7 @@ const Organization = React.memo((props) => {
 
 Organization.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!ctx.store.getState().user.profile.role)
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -94,7 +95,7 @@ Organization.getInitialProps = async function(ctx) {
             Router.push('/contact')
     ctx.store.getState().app.sort = 'name'
     return {
-        data: await getOrganizations({search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+        data: await getOrganizations({city: ctx.store.getState().app.city, search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     };
 };
 

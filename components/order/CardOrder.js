@@ -103,7 +103,7 @@ const CardOrder = React.memo((props) => {
                     }
                     <div className={classes.row}>
                         <div className={classes.nameField}>Адрес:&nbsp;</div>
-                        <div style={{color: element.address[1]?'rgba(0, 0, 0, 0.87)':'red'}} className={classes.value}>{`${element.address[2]?`${element.address[2]}, `:''}${element.address[0]}`}</div>
+                        <div style={{color: element.address[1]?'rgba(0, 0, 0, 0.87)':'red'}} className={classes.value}>{`${element.address[2]?`${element.address[2]}, `:''}${element.address[0]}${element.city?` (${element.city})`:''}`}</div>
                     </div>
                     <div className={classes.row}>
                         <div className={classes.nameField}>Получатель:&nbsp;</div>

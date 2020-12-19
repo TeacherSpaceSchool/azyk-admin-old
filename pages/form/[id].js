@@ -109,6 +109,7 @@ const Form = React.memo((props) => {
                             {router.query.id==='new'&&profile.role!=='client'?
                                 <>
                                 <Autocomplete
+                                    onClose={()=>setOpen(false)}
                                     open={open}
                                     disableOpenOnFocus
                                     className={classes.input}

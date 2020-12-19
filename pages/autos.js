@@ -19,6 +19,13 @@ import initialApp from '../src/initialApp'
 const Autos = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
+    const { city } = props.app;
+    useEffect(()=>{
+        (async()=>{
+            list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
+            setList(list)
+        })()
+    },[city])
     let [list, setList] = useState(data.organizations);
     const { profile } = props.user;
     let height = 80
@@ -34,7 +41,7 @@ const Autos = React.memo((props) => {
     }
 
     return (
-        <App checkPagination={checkPagination} pageName='Транспорт'>
+        <App cityShow checkPagination={checkPagination} pageName='Транспорт'>
             <Head>
                 <title>Транспорт</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -77,6 +84,7 @@ const Autos = React.memo((props) => {
 
 Autos.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -88,7 +96,7 @@ Autos.getInitialProps = async function(ctx) {
     return {
         data: {
             organizations:
-            (await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
+            (await getOrganizations({city: ctx.store.getState().app.city, search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
         }
     };
 };

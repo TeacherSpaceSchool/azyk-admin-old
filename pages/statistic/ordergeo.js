@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import Router from 'next/router'
@@ -18,9 +18,11 @@ import { pdDatePicker } from '../../src/lib'
 const OrderGeoStatistic = React.memo((props) => {
 
     const { data } = props;
-    const { isMobileApp } = props.app;
+    const { isMobileApp, city } = props.app;
     const { profile } = props.user;
     const { showLoad } = props.appActions;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [load, setLoad] = useState(true);
     let [dateStart, setDateStart] = useState(pdDatePicker(new Date()));
     useEffect(()=>{
@@ -40,11 +42,25 @@ const OrderGeoStatistic = React.memo((props) => {
             }
         })()
     },[organization, dateStart])
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+                setStatisticOrderGeo([])
+                await showLoad(false)
+            }
+        })()
+    },[city])
 
     return (
         <>
         <YMaps>
-            <App pageName='Карта заказов'>
+            <App cityShow pageName='Карта заказов'>
                 <Head>
                     <title>Карта заказов</title>
                     <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -89,7 +105,7 @@ const OrderGeoStatistic = React.memo((props) => {
                 <>
                 <Autocomplete
                     style={{width: 150, position: 'fixed', top: 74, right: 10, padding: 10, borderRadius: 5, boxShadow: '0 0 10px rgba(0,0,0,0.5)', background: '#fff'}}
-                    options={data.activeOrganization}
+                    options={activeOrganization}
                     getOptionLabel={option => option.name}
                     value={organization}
                     onChange={(event, newValue) => {
@@ -142,6 +158,7 @@ const OrderGeoStatistic = React.memo((props) => {
 
 OrderGeoStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -152,7 +169,7 @@ OrderGeoStatistic.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };
 };

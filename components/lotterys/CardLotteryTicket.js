@@ -19,7 +19,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 const CardLotteryTicket = React.memo((props) => {
     const classes = cardCategoryStyle();
     const { element, setList, list, idx, lottery } = props;
-    const { isMobileApp } = props.app;
+    const { isMobileApp, city } = props.app;
     const { showSnackBar } = props.snackbarActions;
     const { profile } = props.user;
     const [clients, setClients] = useState([]);
@@ -42,7 +42,7 @@ const CardLotteryTicket = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    setClients((await getClients({search: inputValue, sort: '-name', filter: 'all'})).clients)
+                    setClients((await getClients({city: city, search: inputValue, sort: '-name', filter: 'all'})).clients)
                     if(!open)
                         setOpen(true)
                     setLoading(false)
@@ -98,6 +98,7 @@ const CardLotteryTicket = React.memo((props) => {
                                 <>
                                 <div className={classes.row}>
                                     <Autocomplete
+                                        onClose={()=>setOpen(false)}
                                         open={open}
                                         disableOpenOnFocus
                                         className={classes.input}

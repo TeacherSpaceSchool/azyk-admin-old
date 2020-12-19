@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -19,6 +19,7 @@ import Router from 'next/router'
 const Ads = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
+    const { city } = props.app;
     let [list, setList] = useState(data.organizations);
     let height = 80
     let [pagination, setPagination] = useState(100);
@@ -27,8 +28,14 @@ const Ads = React.memo((props) => {
             setPagination(pagination+100)
         }
     }
+    useEffect(()=>{
+        (async()=>{
+            list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
+            setList(list)
+        })()
+    },[city])
     return (
-        <App checkPagination={checkPagination} pageName='Акции'>
+        <App cityShow checkPagination={checkPagination} pageName='Акции'>
             <Head>
                 <title>Акции</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -64,6 +71,7 @@ const Ads = React.memo((props) => {
 
 Ads.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!ctx.store.getState().user.profile.role)
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -76,7 +84,7 @@ Ads.getInitialProps = async function(ctx) {
         data: {
             organizations:
                 ctx.store.getState().user.profile.role==='admin'?
-                    (await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
+                    (await getOrganizations({city: ctx.store.getState().app.city, search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
                     :
                     (await getAdsOrganizations(ctx.req?await getClientGqlSsr(ctx.req):undefined)).adsOrganizations
         }

@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/statistic/statistic'
@@ -22,8 +22,10 @@ const ReturnedStatistic = React.memo((props) => {
 
     const classes = pageListStyle();
     const { data } = props;
-    const { isMobileApp } = props.app;
+    const { isMobileApp, city } = props.app;
     const { profile } = props.user;
+    const initialRender = useRef(true);
+    let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [dateStart, setDateStart] = useState(pdDatePicker(new Date()));
     let [dateType, setDateType] = useState('day');
     let [statisticReturned, setStatisticReturned] = useState(undefined);
@@ -36,20 +38,34 @@ const ReturnedStatistic = React.memo((props) => {
                 setStatisticReturned((await getStatisticReturned({
                     company: organization ? organization._id : undefined,
                     dateStart: dateStart ? dateStart : null,
-                    dateType: dateType
+                    dateType: dateType,
+                    city: city
                 })).statisticReturned)
                 await showLoad(false)
         })()
-    },[organization, dateStart, dateType])
+    },[organization, dateStart, dateType, activeOrganization])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
             appBody[0].style.paddingBottom = '0px'
         }
     },[process.browser])
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setActiveOrganization((await getActiveOrganization(city)).activeOrganization)
+                await showLoad(false)
+            }
+        })()
+    },[city])
 
     return (
-        <App pageName='Статистика возвратов'>
+        <App cityShow pageName='Статистика возвратов'>
             <Head>
                 <title>Статистика возвратов</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -81,7 +97,7 @@ const ReturnedStatistic = React.memo((props) => {
                             profile.role === 'admin' ?
                                 <Autocomplete
                                     className={classes.input}
-                                    options={data.activeOrganization}
+                                    options={activeOrganization}
                                     getOptionLabel={option => option.name}
                                     value={organization}
                                     onChange={(event, newValue) => {
@@ -140,6 +156,7 @@ const ReturnedStatistic = React.memo((props) => {
 
 ReturnedStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -150,7 +167,7 @@ ReturnedStatistic.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getActiveOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };
 };

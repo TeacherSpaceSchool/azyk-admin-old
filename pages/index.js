@@ -20,7 +20,7 @@ const Organization = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     let [list, setList] = useState(data.brandOrganizations);
-    const { search, filter, sort, isMobileApp } = props.app;
+    const { search, filter, sort, isMobileApp, city } = props.app;
     const { profile } = props.user;
     const height = 80
     const popularItemsRef = useRef(null);
@@ -57,10 +57,10 @@ const Organization = React.memo((props) => {
     }, []);
     useEffect(()=>{
         (async()=>{
-            list = (await getBrandOrganizations({search: search, sort: sort, filter: filter})).brandOrganizations
+            list = (await getBrandOrganizations({search: search, sort: sort, filter: filter, city: city})).brandOrganizations
             setList(list)
         })()
-    },[filter, sort, search])
+    },[filter, sort, search, city])
     useEffect(()=>{
         setPagination(100)
         forceCheck()
@@ -72,7 +72,7 @@ const Organization = React.memo((props) => {
         }
     }
     return (
-        <App checkPagination={checkPagination} searchShow={true} filters={data.filterOrganization} sorts={data.sortOrganization} pageName='Бренды'>
+        <App cityShow checkPagination={checkPagination} searchShow={true} filters={data.filterOrganization} sorts={data.sortOrganization} pageName='Бренды'>
             <Head>
                 <title>Бренды</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -86,6 +86,17 @@ const Organization = React.memo((props) => {
             <div className='count'>
                 {`Всего брендов: ${list.length}`}
             </div>
+            {
+                /*profile.role==='client'&&*/isMobileApp?
+                    <div className={classes.scrollDown} onClick={()=>{
+                        let appBody = (document.getElementsByClassName('App-body'))[0]
+                        appBody.scroll({top: appBody.offsetHeight+appBody.scrollTop-122, left: 0, behavior: 'smooth' })
+                    }}>
+                        ▼ЕЩЕ БРЕНДЫ▼
+                    </div>
+                    :
+                    null
+            }
             {/*
                 profile.role==='client'&&data.popularItems&&data.popularItems.length>0&&widthPopularItem?
                     <div ref={popularItemsRef} className={classes.populars}>
@@ -112,6 +123,7 @@ Organization.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     let role = ctx.store.getState().user.profile.role
     ctx.store.getState().app.sort = 'name'
+    ctx.store.getState().app.city = 'Бишкек'
     let authenticated = ctx.store.getState().user.authenticated
     if(!['admin', 'client'].includes(role))
         if(ctx.res) {
@@ -125,7 +137,7 @@ Organization.getInitialProps = async function(ctx) {
         }
     return {
         data: {
-            ...await getBrandOrganizations({search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getBrandOrganizations({search: '', sort: ctx.store.getState().app.sort, filter: '', city: ctx.store.getState().app.city}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             ...await getPopularItems(ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };

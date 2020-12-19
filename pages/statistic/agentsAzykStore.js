@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/statistic/statistic'
@@ -22,7 +22,9 @@ const AzykStoreStatistic = React.memo((props) => {
 
     const classes = pageListStyle();
     const { data } = props;
-    const { isMobileApp, filter } = props.app;
+    const { isMobileApp, filter, city } = props.app;
+    const initialRender = useRef(true);
+    let [superagentOrganization, setSuperagentOrganization] = useState(data.superagentOrganization);
     let [dateStart, setDateStart] = useState(pdDatePicker(new Date()));
     let [dateType, setDateType] = useState('day');
     let [statisticOrder, setStatisticOrder] = useState(undefined);
@@ -36,11 +38,12 @@ const AzykStoreStatistic = React.memo((props) => {
                 ...organization?{company: organization._id}:{},
                 dateStart: dateStart ? dateStart : null,
                 dateType: dateType,
-                filter: filter
+                filter: filter,
+                city: city
             })).statisticAzykStoreAgents)
             await showLoad(false)
         })()
-    },[organization, dateStart, dateType, filter])
+    },[organization, dateStart, dateType, filter, superagentOrganization])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
@@ -48,8 +51,21 @@ const AzykStoreStatistic = React.memo((props) => {
         }
     },[process.browser])
     const filters = [{name: 'Агент', value: 'агент'}, {name: 'Организация', value: 'организация'},]
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            }
+            else {
+                await showLoad(true)
+                setOrganization(undefined)
+                setSuperagentOrganization((await getSuperagentOrganization(city)).superagentOrganization)
+                await showLoad(false)
+            }
+        })()
+    },[city])
     return (
-        <App pageName='Статистика агентов AZYK.STORE' filters={filters}>
+        <App cityShow pageName='Статистика агентов AZYK.STORE' filters={filters}>
             <Head>
                 <title>Статистика агентов AZYK.STORE</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -79,7 +95,7 @@ const AzykStoreStatistic = React.memo((props) => {
                     <div className={classes.row}>
                         <Autocomplete
                             className={classes.input}
-                            options={data.superagentOrganization}
+                            options={superagentOrganization}
                             getOptionLabel={option => option.name}
                             value={organization}
                             onChange={(event, newValue) => {
@@ -139,6 +155,7 @@ const AzykStoreStatistic = React.memo((props) => {
 AzykStoreStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = 'агент'
+    ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -149,7 +166,7 @@ AzykStoreStatistic.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getSuperagentOrganization(ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            ...await getSuperagentOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };
 };
