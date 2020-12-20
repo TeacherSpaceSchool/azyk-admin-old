@@ -35,7 +35,11 @@ export default makeStyles({
         bottom: 10,
         fontSize: '1rem',
         fontWeight: 'bold',
-        //color: 'white',
+        userSelect: 'none',
+        '-webkit-user-select': 'none',
+        '-khtml-user-select': 'none',
+        '-moz-user-select': 'none',
+        '-ms-user-select': 'none',
         background: '#ffb300'
     }
 })
