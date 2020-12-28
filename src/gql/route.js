@@ -102,7 +102,6 @@ export const getRoute = async({_id}, client)=>{
                                     taken
                                     sync
                                     dateDelivery
-                                    usedBonus
                                 }
                                 tonnage
                             }
@@ -160,7 +159,6 @@ export const getRoute = async({_id}, client)=>{
                                     taken
                                     sync
                                     dateDelivery
-                                    usedBonus
                                 }
                             dateDelivery
                             status
@@ -287,7 +285,6 @@ export const buildRoute = async({autoTonnage, orders, provider, length})=>{
                                 taken
                                 sync
                                 dateDelivery
-                                usedBonus
                             }
                             tonnage
                         }

@@ -12,25 +12,19 @@ export const getClientsSync = async(arg, client)=>{
                 query: gql`
                     query ($search: String!, $organization: ID!, $skip: Int!) {
                         clientsSync(search: $search, organization: $organization, skip: $skip) {
-                            _id
-                            image
-                            createdAt
-                            name
-                            email
-                            address
-                            lastActive
-                            device
-                            notification
-                            info
-                            reiting
-                            city
-                            category
-                            updatedAt
-                            phone
-                            organization 
-                                {_id name}
-                            user 
-                                {_id role status login}
+                                            _id
+                                            image
+                                            createdAt
+                                            name
+                                            address
+                                            lastActive
+                                            category
+                                            device
+                                            notification
+                                            city
+                                            phone
+                                            user 
+                                                {status}
                           }
                     }`,
             })
@@ -66,25 +60,19 @@ export const getClients = async(arg, client)=>{
                 query: gql`
                     query ($search: String!, $sort: String!, $filter: String!, $date: String, $skip: Int, $city: String) {
                         clients(search: $search, sort: $sort, filter: $filter, date: $date, skip: $skip, city: $city) {
-                            _id
-                            image
-                            createdAt
-                            name
-                            email
-                            address
-                            lastActive
-                            device
-                            notification
-                            info
-                            reiting
-                            city
-                            category
-                            updatedAt
-                            phone
-                            organization 
-                                {_id name}
-                            user 
-                                {_id role status login}
+                                            _id
+                                            image
+                                            createdAt
+                                            name
+                                            address
+                                            lastActive
+                                            device
+                                            notification
+                                            city
+                                            phone
+                                            category
+                                            user 
+                                                {status}
                           }
                           sortClient {
                            name
@@ -132,26 +120,19 @@ export const getClientsTrash = async(arg, client)=>{
                 query: gql`
                     query ($search: String!, $skip: Int) {
                         clientsTrash(search: $search, skip: $skip) {
-                            _id
-                            image
-                            createdAt
-                            name
-                            email
-                            address
-                            lastActive
-                            device
-                            notification
-                            updatedAt
-                            info
-                            reiting
-                            city
-                            category
-                            del
-                            phone
-                            organization 
-                                {_id name}
-                            user 
-                                {_id role status login}
+                                            _id
+                                            image
+                                            createdAt
+                                            name
+                                            address
+                                            lastActive
+                                            category
+                                            device
+                                            notification
+                                            city
+                                            phone
+                                            user 
+                                                {status}
                           }
                     }`,
             })
@@ -178,33 +159,28 @@ export const getClientsTrashSimpleStatistic = async(arg, client)=>{
     }
 }
 
-export const getClientsWithoutDistrict = async(organization, client)=>{
+export const getClientsWithoutDistrict = async({organization, city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {organization: organization},
+                variables: {organization, city},
                 query: gql`
-                    query ($organization: ID) {
-                        clientsWithoutDistrict(organization: $organization) {
-                            _id
-                            image
-                            createdAt
-                            name
-                            email
-                            address
-                            lastActive
-                            device
-                            notification
-                            info
-                            reiting
-                            city
-                            category
-                            phone
-                            organization 
-                                {_id name}
-                            user 
-                                {_id role status login}
+                    query ($organization: ID, $city: String) {
+                        clientsWithoutDistrict(organization: $organization, city: $city) {
+                                            _id
+                                            image
+                                            createdAt
+                                            name
+                                            address
+                                            lastActive
+                                            device
+                                            category
+                                            notification
+                                            city
+                                            phone
+                                            user 
+                                                {status}
                         }
                     }`,
             })
@@ -235,8 +211,6 @@ export const getClient = async({_id: _id}, client)=>{
                             city
                             category
                             phone
-                            organization 
-                                {_id name}
                             user 
                                 {_id role status login}
                         }
@@ -327,8 +301,6 @@ export const setClient = async(element, client)=>{
                              data
                         }
                     }`})
-        /*let list = await getClients(new SingletonStore().getStore().getState().app)
-        return list*/
     } catch(err){
         console.error(err)
     }
@@ -345,7 +317,6 @@ export const addClient = async(element)=>{
                              data
                         }
                     }`})
-        //return await getEmployments(new SingletonStore().getStore().getState().app)
     } catch(err){
         console.error(err)
     }

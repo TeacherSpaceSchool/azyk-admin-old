@@ -1,6 +1,5 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
-import { SingletonStore } from '../singleton/store';
 
 export const getFaqs = async({search: search}, client)=>{
     try{
@@ -37,7 +36,6 @@ export const deleteFaq = async(ids)=>{
                              data
                         }
                     }`})
-        return await getFaqs(new SingletonStore().getStore().getState().app)
     } catch(err){
         console.error(err)
     }
@@ -46,15 +44,20 @@ export const deleteFaq = async(ids)=>{
 export const addFaq = async(element)=>{
     try{
         const client = new SingletonApolloClient().getClient()
-        await client.mutate({
+        let res = await client.mutate({
             variables: element,
             mutation : gql`
                     mutation ($file: Upload, $title: String!, $video: String, $typex: String!) {
                         addFaq(file: $file, title: $title, video: $video, typex: $typex) {
-                             data
+                            _id
+                            url
+                            title
+                            video
+                            createdAt
+                            typex
                         }
                     }`})
-        return await getFaqs(new SingletonStore().getStore().getState().app)
+        return res.data
     } catch(err){
         console.error(err)
     }
@@ -71,7 +74,6 @@ export const setFaq = async(element)=>{
                              data
                         }
                     }`})
-        return await getFaqs(new SingletonStore().getStore().getState().app)
     } catch(err){
         console.error(err)
     }

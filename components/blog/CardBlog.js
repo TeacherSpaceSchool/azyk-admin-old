@@ -18,7 +18,7 @@ import Confirmation from '../dialog/Confirmation'
 
 const CardBlog = React.memo((props) => {
     const classes = cardPageListStyle();
-    const { element, setList } = props;
+    const { element, setList, list, idx} = props;
     const { profile } = props.user;
     const { isMobileApp } = props.app;
     //addCard
@@ -96,7 +96,7 @@ const CardBlog = React.memo((props) => {
                                     if(text.length>0&&text!==element.text)editElement.text = text
                                     if(image!==undefined)editElement.image = image
                                     const action = async() => {
-                                        setList((await setBlog(editElement)))
+                                        await setBlog(editElement)
                                     }
                                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                     showMiniDialog(true)
@@ -105,7 +105,10 @@ const CardBlog = React.memo((props) => {
                                 </Button>
                                 <Button onClick={async()=>{
                                     const action = async() => {
-                                        setList((await deleteBlog([element._id])))
+                                        await deleteBlog([element._id])
+                                        let _list = [...list]
+                                        _list.splice(idx, 1)
+                                        setList(_list)
                                     }
                                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                     showMiniDialog(true)
@@ -121,7 +124,10 @@ const CardBlog = React.memo((props) => {
                                         setTitle('')
                                         setText('')
                                         const action = async() => {
-                                            setList((await addBlog({image: image, text: text, title: title})))
+                                            setList([
+                                                (await addBlog({image: image, text: text, title: title})).addBlog,
+                                                ...list
+                                            ])
                                         }
                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                         showMiniDialog(true)

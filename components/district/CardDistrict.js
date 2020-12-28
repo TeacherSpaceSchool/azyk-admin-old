@@ -8,14 +8,13 @@ import cardRouteStyle from '../../src/styleMUI/route/cardRoute'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as snackbarActions from '../../redux/actions/snackbar'
 import { deleteDistrict } from '../../src/gql/district'
 import Link from 'next/link';
 import Confirmation from '../dialog/Confirmation'
 
 const CardDistrict = React.memo((props) => {
     const classes = cardRouteStyle();
-    const { element, setList } = props;
+    const { element, setList, list, idx } = props;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { profile } = props.user;
     const { isMobileApp } = props.app;
@@ -72,7 +71,10 @@ const CardDistrict = React.memo((props) => {
                     ['суперорганизация', 'организация', 'admin'].includes(profile.role)?
                         <Button onClick={async()=>{
                             const action = async() => {
-                                setList((await deleteDistrict([element._id], element.organization?element.organization._id:'super')).districts)
+                                await deleteDistrict([element._id])
+                                let _list = [...list]
+                                _list.splice(idx, 1)
+                                setList(_list)
                             }
                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                             showMiniDialog(true)
@@ -96,8 +98,7 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
+        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch)
     }
 }
 

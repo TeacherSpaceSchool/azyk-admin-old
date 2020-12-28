@@ -1,6 +1,5 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
-import { SingletonStore } from '../singleton/store';
 
 export const getCategorys = async({search: search, sort: sort, filter: filter}, client)=>{
     try{
@@ -44,7 +43,6 @@ export const deleteCategory = async(ids)=>{
                              data
                         }
                     }`})
-        return await getCategorys(new SingletonStore().getStore().getState().app)
     } catch(err){
         console.error(err)
     }
@@ -61,7 +59,6 @@ export const onoffCategory = async(ids)=>{
                              data
                         }
                     }`})
-        return await getCategorys(new SingletonStore().getStore().getState().app)
     } catch(err){
         console.error(err)
     }
@@ -70,15 +67,19 @@ export const onoffCategory = async(ids)=>{
 export const addCategory = async(element)=>{
     try{
         const client = new SingletonApolloClient().getClient()
-        await client.mutate({
+        let res = await client.mutate({
             variables: element,
             mutation : gql`
                     mutation ($image: Upload!, $name: String!) {
                         addCategory(image: $image, name: $name) {
-                             data
-                        }
+                            _id
+                            image
+                            name
+                            status
+                            createdAt
+                          }
                     }`})
-        return await getCategorys(new SingletonStore().getStore().getState().app)
+        return res.data
     } catch(err){
         console.error(err)
     }
@@ -95,7 +96,6 @@ export const setCategory = async(element)=>{
                              data
                         }
                     }`})
-        return await getCategorys(new SingletonStore().getStore().getState().app)
     } catch(err){
         console.error(err)
     }

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
@@ -6,7 +6,6 @@ import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
 import Order from './Order';
-import * as snackbarActions from '../../redux/actions/snackbar'
 import Button from '@material-ui/core/Button';
 
 const OpenRoute =  React.memo(
@@ -43,14 +42,12 @@ const OpenRoute =  React.memo(
 
 function mapStateToProps (state) {
     return {
-        mini_dialog: state.mini_dialog,
         app: state.app
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch)
     }
 }

@@ -8,7 +8,6 @@ import cardReturnedStyle from '../../src/styleMUI/returned/cardReturned'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as snackbarActions from '../../redux/actions/snackbar'
 import { pdDDMMYYHHMM } from '../../src/lib'
 import Returned from '../dialog/Returned'
 import Confirmation from '../../components/dialog/Confirmation'
@@ -209,8 +208,7 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
+        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch)
     }
 }
 

@@ -1,9 +1,7 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as userActions from '../redux/actions/user'
 import { getOrganizations } from '../src/gql/organization'
 import pageListStyle from '../src/styleMUI/organization/orgaizationsList'
 import CardOrganization from '../components/organization/CardOrganization'
@@ -25,15 +23,26 @@ const Organization = React.memo((props) => {
     const { search, filter, sort, city } = props.app;
     const { profile } = props.user;
     let height = 80
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            setList((await getOrganizations({search: search, sort: sort, filter: filter, city: city})).organizations)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    setList((await getOrganizations({search: search, sort: sort, filter: filter, city: city})).organizations)
+                    setPagination(100);
+                    forceCheck();
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
     },[filter, sort, search, city])
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -57,7 +66,7 @@ const Organization = React.memo((props) => {
             </div>
             <div className={classes.page}>
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOrganizationPlaceholder height={height}/>}>
                                 <Link href='/organization/[id]' as={`/organization/${element._id}`}>
@@ -85,7 +94,7 @@ const Organization = React.memo((props) => {
 Organization.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.city = 'Бишкек'
-    if(!ctx.store.getState().user.profile.role)
+    if(!ctx.store.getState().user.profile.role||ctx.store.getState().user.profile.organization)
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'
@@ -106,10 +115,4 @@ function mapStateToProps (state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        userActions: bindActionCreators(userActions, dispatch),
-     }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Organization);
+export default connect(mapStateToProps)(Organization);

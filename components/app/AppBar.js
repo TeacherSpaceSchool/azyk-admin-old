@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -39,6 +39,7 @@ import { getActiveOrganization } from '../../src/gql/statistic'
 
 const MyAppBar = React.memo((props) => {
     //props
+    const initialRender = useRef(true);
     const classes = appbarStyle();
     const { filters, sorts, pageName, dates, searchShow, unread, defaultOpenSearch, organizations, cityShow } = props
     const { drawer, search, filter, sort, isMobileApp, date, organization, city } = props.app;
@@ -108,8 +109,12 @@ const MyAppBar = React.memo((props) => {
         setSearch(event.target.value)
     };
     useEffect(()=>{
-        if(document.getElementById('search'))
-            document.getElementById('search').focus();
+        if(initialRender.current) {
+            initialRender.current = false;
+        } else {
+            if (document.getElementById('search'))
+                document.getElementById('search').focus();
+        }
     },[openSearch])
     return (
         <div className={classes.root}>

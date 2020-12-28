@@ -2,8 +2,6 @@ import Head from 'next/head';
 import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as userActions from '../../redux/actions/user'
 import { getOrganizations } from '../../src/gql/organization'
 import pageListStyle from '../../src/styleMUI/organization/orgaizationsList'
 import CardOrganization from '../../components/organization/CardOrganization'
@@ -21,7 +19,6 @@ const Integrates = React.memo((props) => {
     const { data } = props;
     const { city } = props.app;
     let [list, setList] = useState(data.organizations);
-    const { profile } = props.user;
     let height = 80
     let [pagination, setPagination] = useState(100);
     const initialRender = useRef(true);
@@ -61,7 +58,7 @@ const Integrates = React.memo((props) => {
             </div>
             <div className={classes.page}>
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOrganizationPlaceholder height={height}/>}>
                                 <Link href='/statistic/receivedata/[id]' as={`/statistic/receivedata/${element._id}`}>
@@ -98,15 +95,8 @@ Integrates.getInitialProps = async function(ctx) {
 
 function mapStateToProps (state) {
     return {
-        user: state.user,
         app: state.app,
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        userActions: bindActionCreators(userActions, dispatch),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Integrates);
+export default connect(mapStateToProps)(Integrates);

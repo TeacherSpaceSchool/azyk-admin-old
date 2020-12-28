@@ -17,8 +17,6 @@ import {getClients} from '../../src/gql/client'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { forceCheck } from 'react-lazyload';
-import Confirmation from '../../components/dialog/Confirmation'
-import { addReturned } from '../../src/gql/returned';
 import Divider from '@material-ui/core/Divider';
 import LazyLoad from 'react-lazyload';
 import CardCatalogPlaceholder from '../../components/catalog/CardCatalogPlaceholder'
@@ -220,7 +218,7 @@ const Catalog = React.memo((props) => {
                                 price = row.stock
                             else
                                 price = row.price
-                            if(idx<=pagination)
+                            if(idx<pagination)
                                 return(
                                     <LazyLoad scrollContainer={'.App-body'} key={row._id} offset={[186, 0]} debounce={0} once={true}  placeholder={<CardCatalogPlaceholder/>}>
                                         <div>

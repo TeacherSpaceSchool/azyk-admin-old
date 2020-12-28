@@ -17,7 +17,7 @@ import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 
 const NotificationStatistic = React.memo((props) => {
     const classes = cardAdsStyle();
-    const { element, setList } = props;
+    const { element, setList, list } = props;
     const { isMobileApp } = props.app;
     //addCard
     let [preview, setPreview] = useState(element?element.icon:'/static/add.png');
@@ -112,8 +112,10 @@ const NotificationStatistic = React.memo((props) => {
                                     setUrl('')
                                     setPreview('/static/add.png')
                                     const action = async() => {
-                                        let res = (await addNotificationStatistic({text: text, title: title, url: url, tag: tag, icon: icon})).notificationStatistics
-                                        setList(res)
+                                        setList([
+                                            (await addNotificationStatistic({text: text, title: title, url: url, tag: tag, icon: icon})).addNotificationStatistic,
+                                            ...list
+                                        ])
                                     }
                                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                     showMiniDialog(true)
@@ -201,7 +203,6 @@ const NotificationStatistic = React.memo((props) => {
 
 function mapStateToProps (state) {
     return {
-        user: state.user,
         app: state.app
     }
 }

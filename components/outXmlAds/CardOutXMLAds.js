@@ -18,7 +18,6 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 const CardOutXMLAds = React.memo((props) => {
     const classes = cardPageListStyle();
     const { element, setList, districts, idx, list, organization } = props;
-    const { profile } = props.user;
     const { isMobileApp } = props.app;
     //addCard
     let [guid, setGuid] = useState(element?element.guid:'');
@@ -70,8 +69,6 @@ const CardOutXMLAds = React.memo((props) => {
                                         if (district !== undefined && district._id !== element.district._id) editElement.district = district._id
                                         const action = async () => {
                                             await setOutXMLAdsShoro(editElement)
-                                            list[idx] = editElement
-                                            setList([...list])
                                         }
                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                         showMiniDialog(true)
@@ -97,7 +94,11 @@ const CardOutXMLAds = React.memo((props) => {
                                 <Button onClick={async()=> {
                                     if (district !== undefined && district._id && guid.length > 0) {
                                         const action = async() => {
-                                            setList(await addOutXMLAdsShoro({organization: organization, guid: guid, district: district._id}))
+                                            setList()
+                                            setList([
+                                                (await addOutXMLAdsShoro({organization: organization, guid: guid, district: district._id})).addOutXMLAdsShoro,
+                                                ...list
+                                            ])
                                             setDistrict({})
                                             setGuid('')
                                         }
@@ -118,7 +119,6 @@ const CardOutXMLAds = React.memo((props) => {
 
 function mapStateToProps (state) {
     return {
-        user: state.user,
         app: state.app
     }
 }

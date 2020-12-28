@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
 import { getOrganizations } from '../src/gql/organization'
@@ -18,10 +18,18 @@ const Routes = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     const { city } = props.app;
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
-            setList(list)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
+                setList(list)
+                setPagination(100);
+                (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                forceCheck();
+            }
         })()
     },[city])
     let [list, setList] = useState(data.organizations);
@@ -33,10 +41,6 @@ const Routes = React.memo((props) => {
             setPagination(pagination+100)
         }
     }
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
     return (
         <App cityShow checkPagination={checkPagination} pageName='Маршрут экспедитора'>
             <Head>
@@ -63,7 +67,7 @@ const Routes = React.memo((props) => {
                         :null
                 }
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOrganizationPlaceholder height={height}/>}>
                                 <Link href='/routes/[id]' as={`/routes/${element._id}`}>

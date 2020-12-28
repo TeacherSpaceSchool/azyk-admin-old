@@ -72,7 +72,7 @@ const Files = React.memo((props) => {
             </Head>
             <div className={classes.page}>
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardFilePlaceholder height={height}/>}>
                                 <CardFile key={element._id} element={element}/>

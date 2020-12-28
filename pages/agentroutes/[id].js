@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import CardAgentRoute from '../../components/agentRoute/CardAgentRoute'
 import pageListStyle from '../../src/styleMUI/agentRoute/agentRouteList'
@@ -25,18 +25,26 @@ const AgentRoutes = React.memo((props) => {
     const { data } = props;
     let [list, setList] = useState(data.agentRoutes);
     const { search } = props.app;
-    let getList = async()=>{
-        setList((await getAgentRoutes({organization: router.query.id, search: search})).agentRoutes)
-    }
-    useEffect(()=>{
-        getList()
-    },[search]);
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            setPagination(100)
-            forceCheck()
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    setList((await getAgentRoutes({organization: router.query.id, search: search})).agentRoutes)
+                    setPagination(100);
+                    forceCheck();
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
-    },[list])
+    },[search])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -44,7 +52,7 @@ const AgentRoutes = React.memo((props) => {
         }
     }
     return (
-        <App checkPagination={checkPagination} getList={getList} searchShow={true} pageName='Маршруты агентов'>
+        <App checkPagination={checkPagination} searchShow={true} pageName='Маршруты агентов'>
             <Head>
                 <title>Маршруты агентов</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -60,10 +68,10 @@ const AgentRoutes = React.memo((props) => {
             </div>
             <div className={classes.page}>
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardAgentRoutePlaceholder/>}>
-                                <CardAgentRoute setList={setList} key={element._id} element={element}/>
+                                <CardAgentRoute list={list} idx={idx} setList={setList} key={element._id} element={element}/>
                             </LazyLoad>
                         )}
                 ):null}

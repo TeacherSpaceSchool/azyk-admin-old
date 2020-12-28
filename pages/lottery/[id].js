@@ -13,7 +13,6 @@ import Router from 'next/router'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as appActions from '../../redux/actions/app'
-import * as snackbarActions from '../../redux/actions/snackbar'
 import Confirmation from '../../components/dialog/Confirmation'
 import { urlMain } from '../../redux/constants/other'
 import { getClientGqlSsr } from '../../src/getClientGQL'
@@ -313,7 +312,6 @@ function mapStateToProps (state) {
 function mapDispatchToProps(dispatch) {
     return {
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
         appActions: bindActionCreators(appActions, dispatch),
     }
 }

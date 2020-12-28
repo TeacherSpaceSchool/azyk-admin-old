@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
@@ -8,7 +8,6 @@ import cardOrderStyle from '../../src/styleMUI/orders/cardOrder'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as snackbarActions from '../../redux/actions/snackbar'
 import { pdDDMMYYHHMM, pdDDMMYYYYWW } from '../../src/lib'
 import Order from '../dialog/Order'
 import Confirmation from '../../components/dialog/Confirmation'
@@ -34,7 +33,7 @@ const CardOrder = React.memo((props) => {
     return (
         <Card className={isMobileApp?classes.cardM:classes.cardD}>
             {
-                ['admin', 'организация', 'суперагент', 'менеджер', 'агент'].includes(profile.role)?
+                ['admin', 'организация', 'суперорганизация', 'экспедитор', 'суперагент', 'менеджер', 'агент'].includes(profile.role)?
                     [1,2].includes(element.sync)?
                         <SyncOn style={{color: element.sync===1?'orange':'green'}} className={classes.sync}/>
                         :
@@ -114,15 +113,6 @@ const CardOrder = React.memo((props) => {
                         <div className={classes.value}>{element.organization.name}</div>
                     </div>
                     {
-                        /*element.sale&&element.sale.name?
-                            <div className={classes.row}>
-                                <div className={classes.nameField}>Дистрибьютор: &nbsp;</div>
-                                <div className={classes.value}>{element.sale.name}</div>
-                            </div>
-                            :
-                            null*/
-                    }
-                    {
                         ['агент', 'организация', 'менеджер', 'admin'].includes(profile.role)&&element.district?
                             <div className={classes.row}>
                                 <div className={classes.nameField}>Район: &nbsp;</div>
@@ -166,15 +156,6 @@ const CardOrder = React.memo((props) => {
                                                 null
                                     )}
                                 </div>
-                            </div>
-                            :
-                            null
-                    }
-                    {
-                        element.usedBonus&&element.usedBonus>0?
-                            <div className={classes.row}>
-                                <div className={classes.nameField}>Использованный бонус:&nbsp;</div>
-                                <div className={classes.value}>{element.usedBonus}&nbsp;сом</div>
                             </div>
                             :
                             null
@@ -281,8 +262,7 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
+        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch)
     }
 }
 

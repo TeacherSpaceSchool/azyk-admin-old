@@ -17,7 +17,7 @@ import Confirmation from '../dialog/Confirmation'
 
 const CardCategory = React.memo((props) => {
     const classes = cardCategoryStyle();
-    const { element, setList } = props;
+    const { element, setList, list, idx } = props;
     const { profile } = props.user;
     const { isMobileApp } = props.app;
     //addCard
@@ -31,6 +31,7 @@ const CardCategory = React.memo((props) => {
             showSnackBar('Файл слишком большой')
         }
     })
+    let [status, setStatus] = useState(element?element.status:'active');
     let [name, setName] = useState(element?element.name:'');
     let handleName =  (event) => {
         setName(event.target.value)
@@ -73,7 +74,7 @@ const CardCategory = React.memo((props) => {
                                         if(name.length>0&&name!==element.name)editElement.name = name
                                         if(image!==undefined)editElement.image = image
                                         const action = async() => {
-                                            setList((await setCategory(editElement)).categorys)
+                                            await setCategory(editElement)
                                         }
                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                         showMiniDialog(true)
@@ -82,16 +83,20 @@ const CardCategory = React.memo((props) => {
                                     </Button>
                                     <Button onClick={async()=>{
                                         const action = async() => {
-                                            setList((await onoffCategory([element._id])).categorys)
+                                            await onoffCategory([element._id])
+                                            setStatus(status==='active'?'deactive':'active')
                                         }
                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                         showMiniDialog(true)
-                                    }} size='small' color='primary'>
-                                        {element.status==='active'?'Отключить':'Включить'}
+                                    }} size='small' color={status==='active'?'primary':'secondary'}>
+                                        {status==='active'?'Отключить':'Включить'}
                                     </Button>
                                     <Button size='small' color='primary' onClick={()=>{
                                         const action = async() => {
-                                            setList((await deleteCategory([element._id])).categorys)
+                                            await deleteCategory([element._id])
+                                            let _list = [...list]
+                                            _list.splice(idx, 1)
+                                            setList(_list)
                                         }
                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                         showMiniDialog(true)
@@ -110,7 +115,7 @@ const CardCategory = React.memo((props) => {
                                 setPreview('/static/add.png')
                                 setName('')
                                 const action = async() => {
-                                    setList((await addCategory({image: image, name: name})).categorys)
+                                    setList([(await addCategory({image: image, name: name})).addCategory, ...list])
                                 }
                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                 showMiniDialog(true)

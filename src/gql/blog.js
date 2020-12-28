@@ -1,6 +1,5 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
-import { SingletonStore } from '../singleton/store';
 
 export const getBlogs = async({search: search, sort: sort}, client)=>{
     try{
@@ -21,10 +20,6 @@ export const getBlogs = async({search: search, sort: sort}, client)=>{
                            name
                             field
                           }
-                          filterBlog {
-                           name
-                           value
-                          }
                     }`,
             })
         return res.data.blogs
@@ -44,7 +39,6 @@ export const deleteBlog = async(ids)=>{
                              data
                         }
                     }`})
-        return await getBlogs(new SingletonStore().getStore().getState().app)
     } catch(err){
         console.error(err)
     }
@@ -53,16 +47,19 @@ export const deleteBlog = async(ids)=>{
 export const addBlog = async(element)=>{
     try{
         const client = new SingletonApolloClient().getClient()
-        await client.mutate({
+        let res = await client.mutate({
             variables: element,
             mutation : gql`
                     mutation ($image: Upload!, $text: String!, $title: String!) {
                         addBlog(image: $image, text: $text, title: $title) {
-                             data
+                            _id
+                            image
+                            text
+                            title
+                            createdAt
                         }
                     }`})
-        let list = await getBlogs(new SingletonStore().getStore().getState().app)
-        return list
+        return res.data
     } catch(err){
         console.error(err)
     }
@@ -79,8 +76,6 @@ export const setBlog = async(element)=>{
                              data
                         }
                     }`})
-        let list = await getBlogs(new SingletonStore().getStore().getState().app)
-        return list
     } catch(err){
         console.error(err)
     }

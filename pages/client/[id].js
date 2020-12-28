@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import clientStyle from '../../src/styleMUI/client/client'
@@ -9,7 +9,6 @@ import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as userActions from '../../redux/actions/user'
 import { getClient, onoffClient, setClient, addClient, deleteClient } from '../../src/gql/client'
 import Remove from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
@@ -24,7 +23,6 @@ import Confirmation from '../../components/dialog/Confirmation'
 import Geo from '../../components/dialog/Geo'
 import { useRouter } from 'next/router'
 import { pdDDMMYYHHMM } from '../../src/lib'
-import { pdDatePicker } from '../../src/lib'
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import * as snackbarActions from '../../redux/actions/snackbar'
@@ -80,23 +78,12 @@ const Client = React.memo((props) => {
     let handleCity =  (event) => {
         setCity(event.target.value)
     };
-
-    let [newAddress, setNewAddress] = useState('');
-    let addAddress = ()=>{
-        address = [...address, [newAddress]]
-        setAddress(address)
-        setNewAddress('')
-    };
     let editAddress = (event, idx)=>{
         address[idx][0] = event.target.value
         setAddress([...address])
     };
     let editAddressName = (event, idx)=>{
         address[idx][2] = event.target.value
-        setAddress([...address])
-    };
-    let deleteAddress = (idx)=>{
-        address.splice(idx, 1);
         setAddress([...address])
     };
     let setAddressGeo = (geo, idx)=>{
@@ -116,7 +103,6 @@ const Client = React.memo((props) => {
         }
     })
     const { setMiniDialog, showMiniDialog, showFullDialog, setFullDialog } = props.mini_dialogActions;
-    const { logout } = props.userActions;
     let [newPass, setNewPass] = useState('');
     let handleNewPass =  (event) => {
         setNewPass(event.target.value)
@@ -245,18 +231,6 @@ const Client = React.memo((props) => {
                                                         inputProps={{
                                                             'aria-label': 'description',
                                                         }}
-                                                        /*endAdornment={
-                                                            <InputAdornment position="end">
-                                                                <IconButton
-                                                                    onClick={()=>{
-                                                                        deleteAddress(idx)
-                                                                    }}
-                                                                    aria-label='toggle password visibility'
-                                                                >
-                                                                    <Remove/>
-                                                                </IconButton>
-                                                            </InputAdornment>
-                                                                    }*/
                                                     />
                                                 </FormControl>
                                                 <FormControl className={classes.input}>
@@ -285,13 +259,6 @@ const Client = React.memo((props) => {
                                             </div>
                                         ):
                                         <br/>}
-                                    {/*<Button onClick={async()=>{
-                                        addAddress()
-                                    }} size='small' color='primary'>
-                                        Добавить адрес
-                                    </Button>
-                                    <br/>
-                                    <br/>*/}
                                     {phone?phone.map((element, idx)=>
                                         <div key={idx}>
                                             <FormControl className={classes.input}>
@@ -402,17 +369,6 @@ const Client = React.memo((props) => {
                                                         {status==='active'?'Отключить':'Включить'}
                                                     </Button>
                                                     :
-                                                    /*data.client.user&&profile._id===data.client.user._id?
-                                                        <Button onClick={()=>{
-                                                            const action = async() => {
-                                                                logout(true)
-                                                            }
-                                                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                                            showMiniDialog(true)
-                                                        }} size='small' color='primary'>
-                                                            Выйти
-                                                        </Button>
-                                                        :*/
                                                         null
                                                 }
                                                 </>
@@ -581,7 +537,6 @@ function mapStateToProps (state) {
 function mapDispatchToProps(dispatch) {
     return {
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        userActions: bindActionCreators(userActions, dispatch),
         snackbarActions: bindActionCreators(snackbarActions, dispatch),
     }
 }

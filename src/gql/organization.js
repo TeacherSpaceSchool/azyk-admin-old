@@ -53,19 +53,10 @@ export const getOrganizations = async({search, sort, filter, city}, client)=>{
                 query: gql`
                     query ($search: String!, $sort: String!, $filter: String!, $city: String) {
                         organizations(search: $search, sort: $sort, filter: $filter, city: $city) {
-                            _id
-                            createdAt
                             name
+                            _id
                             image
-                            address
-                            email
-                            phone
-                            info
                             miniInfo
-                            reiting
-                            status
-                            accessToClient
-                            consignation
                           }
                           sortOrganization {
                            name
@@ -92,20 +83,10 @@ export const getOrganizationsTrash = async({search: search}, client)=>{
                 query: gql`
                     query ($search: String!) {
                         organizationsTrash(search: $search) {
-                            _id
-                            createdAt
                             name
+                            _id
                             image
-                            address
-                            email
-                            phone
-                            info
                             miniInfo
-                            reiting
-                            status
-                            accessToClient
-                            consignation
-                            del
                           }
                     }`,
             })

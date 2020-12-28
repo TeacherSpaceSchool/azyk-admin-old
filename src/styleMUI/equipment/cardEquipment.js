@@ -43,4 +43,16 @@ export default makeStyles({
         flexDirection: 'row',
         alignItems: 'baseline'
     },
+    status: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        padding: 4,
+        borderRadius: 10,
+        fontSize: '0.815rem',
+        fontWeight: 'bold',
+        color: 'white',
+        fontFamily: 'Roboto',
+
+    },
 })

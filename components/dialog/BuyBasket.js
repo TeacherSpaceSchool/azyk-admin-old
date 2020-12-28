@@ -6,10 +6,7 @@ import { bindActionCreators } from 'redux'
 import { addOrders } from '../../src/gql/order'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import * as snackbarActions from '../../redux/actions/snackbar'
-import * as userActions from '../../redux/actions/user'
-import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -34,7 +31,7 @@ const BuyBasket =  React.memo(
     (props) =>{
         const { isMobileApp } = props.app;
         const { profile } = props.user;
-        const { client, allPrice, organization, bonus, adss, agent, basket, geo, classes } = props;
+        const { client, allPrice, organization, adss, agent, basket, geo, classes } = props;
         const { showMiniDialog, setMiniDialog } = props.mini_dialogActions;
         const { showSnackBar } = props.snackbarActions;
         const width = isMobileApp? (window.innerWidth-112) : 500
@@ -44,7 +41,6 @@ const BuyBasket =  React.memo(
             setComent(event.target.value)
         };
         let [paymentMethod, setPaymentMethod] = useState('Наличные');
-        let [useBonus, setUseBonus] = useState(false);
         let [discount, setDiscount] = useState(undefined);
         let [dateDelivery, setDateDelivery] = useState(undefined);
         let handleDateDelivery =  (event) => {
@@ -178,19 +174,6 @@ const BuyBasket =  React.memo(
                         :null
                 }
                 {
-                    /*bonus&&bonus.addedBonus?
-                        <FormControlLabel
-                            style={{width: width}}
-                            onChange={(e)=>{
-                                setUseBonus(e.target.checked)
-                            }}
-                            control={<Checkbox/>}
-                            label={`Использовать бонус ${bonus.addedBonus} сом`}
-                        />
-                        :
-                        null*/
-                }
-                {
                     agent||['A','Horeca'].includes(client.category)?
                         <FormControlLabel
                             style={{width: width}}
@@ -225,7 +208,6 @@ const BuyBasket =  React.memo(
                                                priority: priority,
                                                unite: organization.unite,
                                                info: coment,
-                                               usedBonus: useBonus,
                                                paymentMethod: paymentMethod,
                                                organization: organization._id,
                                                client: client._id,
@@ -240,7 +222,6 @@ const BuyBasket =  React.memo(
                                                priority: priority,
                                                unite: organization.unite,
                                                info: coment,
-                                               usedBonus: useBonus,
                                                paymentMethod: paymentMethod,
                                                organization: organization._id,
                                                client: client._id,
@@ -280,7 +261,6 @@ const BuyBasket =  React.memo(
 
 function mapStateToProps (state) {
     return {
-        mini_dialog: state.mini_dialog,
         user: state.user,
         app: state.app
     }
@@ -289,7 +269,6 @@ function mapStateToProps (state) {
 function mapDispatchToProps(dispatch) {
     return {
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        userActions: bindActionCreators(userActions, dispatch),
         snackbarActions: bindActionCreators(snackbarActions, dispatch),
     }
 }

@@ -413,7 +413,7 @@ const Route = React.memo((props) => {
                                     :
                                     <div className={classes.listInvoices}>
                                         {orders?orders.map((element, idx)=> {
-                                            if(idx<=pagination)
+                                            if(idx<pagination)
                                                 return(
                                                     <div key={idx} style={isMobileApp ? {alignItems: 'baseline'} : {}}
                                                          className={isMobileApp ? classes.column1 : classes.row1}>

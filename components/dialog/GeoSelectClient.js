@@ -7,11 +7,9 @@ import classifyPoint from 'robust-point-in-polygon'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
 import { Map, YMaps, Placemark, Polygon, ObjectManager } from 'react-yandex-maps';
-import * as snackbarActions from '../../redux/actions/snackbar'
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Confirmation from './Confirmation'
-import * as appActions from '../../redux/actions/app'
 import Fab from '@material-ui/core/Fab';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
@@ -169,17 +167,12 @@ const GeoSelectClient =  React.memo(
     }
 )
 
-function mapStateToProps (state) {
-    return {
-        mini_dialog: state.mini_dialog,
-        app: state.app
-    }
+function mapStateToProps () {
+    return {}
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        appActions: bindActionCreators(appActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch)
     }
 }

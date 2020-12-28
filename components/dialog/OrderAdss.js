@@ -5,7 +5,6 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import {getAdss, checkAdss} from '../../src/gql/ads'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as userActions from '../../redux/actions/user'
 import CardAds from '../ads/CardAds'
 import Button from '@material-ui/core/Button';
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
@@ -91,7 +90,6 @@ const OrderAdss =  React.memo(
 
 function mapStateToProps (state) {
     return {
-        mini_dialog: state.mini_dialog,
         user: state.user,
         app: state.app
     }
@@ -100,7 +98,6 @@ function mapStateToProps (state) {
 function mapDispatchToProps(dispatch) {
     return {
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        userActions: bindActionCreators(userActions, dispatch),
     }
 }
 

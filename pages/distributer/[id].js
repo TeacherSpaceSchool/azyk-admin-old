@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getOrganization } from '../../src/gql/organization'
@@ -13,7 +13,6 @@ import CardContent from '@material-ui/core/CardContent';
 import Checkbox from '@material-ui/core/Checkbox';
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as snackbarActions from '../../redux/actions/snackbar'
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Router from 'next/router'
@@ -28,7 +27,6 @@ const height = 140
 const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'))
 
 const Distributer = React.memo((props) => {
-    const { profile } = props.user;
     const classes = distributerStyle();
     const { data } = props;
     const router = useRouter()
@@ -43,17 +41,30 @@ const Distributer = React.memo((props) => {
     const organization = router.query.id==='super'?{name: 'AZYK.STORE', _id: 'super'}:data.organization
     let [sales, setSales] = useState(data.distributer?data.distributer.sales:[]);
     let [provider, setProvider] = useState(data.distributer?data.distributer.provider:[]);
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            allOrganizations = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
-            setAllOrganizations(allOrganizations)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    allOrganizations = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
+                    setAllOrganizations(allOrganizations)
+                    setPagination(100);
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
     },[city])
 
     let [filtredOrganizations, setFiltredOrganizations] = useState([]);
     let [selectType, setSelectType] = useState('Все');
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
-    const { showSnackBar } = props.snackbarActions;
     const _new = !data.distributer||!data.distributer._id
     useEffect(()=>{
         (async()=>{
@@ -108,7 +119,7 @@ const Distributer = React.memo((props) => {
                                     Своб
                                 </div>
                                 <div style={{background: selectType==='Выбраные'?'#ffb300':'#ffffff'}} onClick={()=>{setSelectType('Выбраные')}} className={classes.selectType}>
-                                    Выбр
+                                    Выбр {filter==='sales'?sales.length:provider.length}
                                 </div>
                             </div>
                             <br/>
@@ -222,8 +233,7 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
+        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch)
     }
 }
 

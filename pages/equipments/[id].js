@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -27,15 +27,26 @@ const Equipments = React.memo((props) => {
     const { profile } = props.user;
     const router = useRouter()
     let height = ['суперорганизация', 'организация', 'admin'].includes(profile.role)?186:140
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            setList((await getEquipments({organization: router.query.id, search: search, sort: sort})).equipments)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    setList((await getEquipments({organization: router.query.id, search: search, sort: sort})).equipments)
+                    setPagination(100);
+                    forceCheck();
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
     },[sort, search])
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -44,11 +55,11 @@ const Equipments = React.memo((props) => {
     }
 
     return (
-        <App checkPagination={checkPagination} searchShow={true} sorts={data.sortEquipment} pageName={'Оборудование'}>
+        <App checkPagination={checkPagination} searchShow={true} sorts={data.sortEquipment} pageName={'Перечень'}>
             <Head>
-                <title>Оборудование</title>
+                <title>Перечень</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
-                <meta property='og:title' content='Оборудование' />
+                <meta property='og:title' content='Перечень' />
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
@@ -60,7 +71,7 @@ const Equipments = React.memo((props) => {
             </div>
             <div className={classes.page}>
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardEquipmentPlaceholder height={height}/>}>
                                 <CardEquipment list={list} idx={idx} key={element._id} setList={setList} element={element}/>
@@ -68,7 +79,7 @@ const Equipments = React.memo((props) => {
                         )}
                 ):null}
             </div>
-            {['admin', 'суперорганизация', 'организация'].includes(profile.role)?
+            {['admin', 'суперорганизация', 'организация', 'агент'].includes(profile.role)?
                 <Link href='/equipment/[id]' as={`/equipment/new`}>
                     <Fab color='primary' aria-label='add' className={classes.fab}>
                         <AddIcon />
@@ -83,7 +94,7 @@ const Equipments = React.memo((props) => {
 
 Equipments.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    if(!(ctx.store.getState().user.profile.role))
+    if(!(['admin', 'суперорганизация', 'организация', 'менеджер', 'агент', 'ремонтник'].includes(ctx.store.getState().user.profile.role)))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'

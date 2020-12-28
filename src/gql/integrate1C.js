@@ -185,7 +185,7 @@ export const getIntegrate1C = async(_id, client)=>{
     }
 }
 
-export const deleteIntegrate1C = async(ids, organization)=>{
+export const deleteIntegrate1C = async(ids)=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
@@ -238,19 +238,7 @@ export const setIntegrate1C = async(element)=>{
             mutation : gql`
                     mutation ($_id: ID!, $item: ID, $client: ID, $guid: String, $agent: ID, $ecspeditor: ID) {
                         setIntegrate1C(_id: $_id, item: $item, client: $client, guid: $guid, agent: $agent, ecspeditor: $ecspeditor) {
-                        _id
-                            createdAt
-                            ecspeditor
-                                {_id name}
-                            guid
-                            organization
-                                {_id name}
-                            client
-                                {_id name}
-                            agent
-                                {_id name}
-                            item
-                                {_id name}
+                             data
                        }
                     }`})
         return res.data.setIntegrate1C

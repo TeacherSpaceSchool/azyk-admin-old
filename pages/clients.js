@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import pageListStyle from '../src/styleMUI/client/clientList'
 import {getClients, getClientsSimpleStatistic} from '../src/gql/client'
@@ -22,7 +22,7 @@ const Client = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     let [list, setList] = useState(data.clients);
-    let [simpleStatistic, setSimpleStatistic] = useState(['0']);
+    let [simpleStatistic, setSimpleStatistic] = useState(data.clientsSimpleStatistic[0]);
     let [paginationWork, setPaginationWork] = useState(true);
     const checkPagination = async()=>{
         if(paginationWork){
@@ -36,19 +36,36 @@ const Client = React.memo((props) => {
     }
     const { search, filter, sort, date, city } = props.app;
     const { profile } = props.user;
+    const initialRender = useRef(true);
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     useEffect(()=>{
         (async()=>{
-            if(searchTimeOut)
-                clearTimeout(searchTimeOut)
-            searchTimeOut = setTimeout(async()=>{
-                setList((await getClients({search: search, sort: sort, filter: filter, date: date, skip: 0, city: city})).clients)
-                setSimpleStatistic((await getClientsSimpleStatistic({search: search, filter: filter, date: date, city: city})).clientsSimpleStatistic[0])
-                forceCheck()
-                setPaginationWork(true);
-                (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
-            }, 500)
-            setSearchTimeOut(searchTimeOut)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if (searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async () => {
+                    setList((await getClients({
+                        search: search,
+                        sort: sort,
+                        filter: filter,
+                        date: date,
+                        skip: 0,
+                        city: city
+                    })).clients)
+                    setSimpleStatistic((await getClientsSimpleStatistic({
+                        search: search,
+                        filter: filter,
+                        date: date,
+                        city: city
+                    })).clientsSimpleStatistic[0])
+                    forceCheck()
+                    setPaginationWork(true);
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+            }
         })()
     },[filter, sort, search, date, city])
     return (
@@ -91,7 +108,7 @@ const Client = React.memo((props) => {
 
 Client.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    ctx.store.getState().app.city = 'Бишкек'
+    ctx.store.getState().app.city = ''
     let role = ctx.store.getState().user.profile.role
     let authenticated = ctx.store.getState().user.authenticated
     if(authenticated&&!['admin', 'суперорганизация', 'организация', 'менеджер', 'агент', 'суперагент', 'экспедитор'].includes(role))
@@ -105,6 +122,7 @@ Client.getInitialProps = async function(ctx) {
     return {
         data: {
             ...(await getClients({search: '', sort: '-createdAt', filter: '', skip: 0}, ctx.req?await getClientGqlSsr(ctx.req):undefined)),
+            ...(await getClientsSimpleStatistic({search: '', sort: '-createdAt', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined))
         }
     };
 };

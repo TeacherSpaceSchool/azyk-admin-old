@@ -13,14 +13,13 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import * as snackbarActions from '../../redux/actions/snackbar'
 import TextField from '@material-ui/core/TextField';
 import Confirmation from '../dialog/Confirmation';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
 const CardIntegrate = React.memo((props) => {
     const classes = cardCategoryStyle();
-    const { element, setList, organization, items, clients, agents, ecspeditors, list, idx, getList } = props;
+    const { element, setList, organization, items, clients, agents, ecspeditors, list, idx } = props;
     const { isMobileApp } = props.app;
     //addCard
     let [itemsByCity, setItemsByCity] = useState([]);
@@ -196,12 +195,7 @@ const CardIntegrate = React.memo((props) => {
                                 if(agent)editElement.agent = agent._id
                                 if(item)editElement.item = item._id
                                 const action = async() => {
-                                    let res = await setIntegrate1C(editElement)
-                                    if(res){
-                                        let _list = [...list]
-                                        _list[idx] = res
-                                        setList(_list)
-                                    }
+                                    await setIntegrate1C(editElement)
                                 }
                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                 showMiniDialog(true)
@@ -210,7 +204,7 @@ const CardIntegrate = React.memo((props) => {
                             </Button>
                             <Button size='small' color='primary' onClick={()=>{
                                 const action = async() => {
-                                    await deleteIntegrate1C([element._id], organization)
+                                    await deleteIntegrate1C([element._id])
                                     let _list = [...list]
                                     _list.splice(idx, 1)
                                     setList(_list)
@@ -248,15 +242,13 @@ const CardIntegrate = React.memo((props) => {
 
 function mapStateToProps (state) {
     return {
-        user: state.user,
         app: state.app
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
+        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch)
     }
 }
 

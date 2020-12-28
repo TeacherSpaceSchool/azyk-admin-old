@@ -1,11 +1,10 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import cardItemStyle from '../../src/styleMUI/item/cardItem'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as snackbarActions from '../../redux/actions/snackbar'
 import Link from 'next/link';
 import { onoffItem, deleteItem, restoreItem } from '../../src/gql/items'
 import Button from '@material-ui/core/Button';
@@ -17,7 +16,7 @@ import { setItem } from '../../src/gql/items'
 
 const CardItem = React.memo((props) => {
     const classes = cardItemStyle();
-    const { element, setList, subCategory, list } = props;
+    const { element, setList, list, idx } = props;
     const { profile } = props.user;
     let [status, setStatus] = useState(element!==undefined?element.status:'');
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
@@ -103,71 +102,39 @@ const CardItem = React.memo((props) => {
                         </>
                 }
                 </div>
-                {profile.role==='client'?
-                    <>
-                    <img
-                        className={classes.media}
-                        src={element.image}
-                        alt={element.info}
-                    />
-                    <div className={classes.name}>
+                <Link href={`/${profile.role==='client'?'catalog':'item'}/[id]`} as={`/${profile.role==='client'?'catalog':'item'}/${profile.role==='client'?element.organization._id:element._id}`}>
+                    <a>
+                        <img
+                            className={classes.media}
+                            src={element.image}
+                            alt={element.info}
+                        />
+                    </a>
+                </Link>
+                <Link href={`${profile.role==='client'?'catalog':'item'}/[id]`} as={`/${profile.role==='client'?'catalog':'item'}/${profile.role==='client'?element.organization._id:element._id}`}>
+                    <a className={classes.name}>
                         {element.name}
-                    </div>
+                    </a>
+                </Link>
+                <Link href={`/${profile.role==='client'?'catalog':'item'}/[id]`} as={`/${profile.role==='client'?'catalog':'item'}/${profile.role==='client'?element.organization._id:element._id}`}>
                     <div className={classes.row}>
-                            {
-                                element.stock===0||element.stock===undefined?
-                                    <div className={classes.price}>
-                                        {`${element.price} сом`}
-                                    </div>
-                                    :
-                                    <>
-                                    <div className={classes.crossedPrice}>
-                                        {`${element.price}`}
-                                    </div>
-                                    <div className={classes.stockPrice}>
-                                        {`${element.stock} сом`}
-                                    </div>
-                                    </>
-                            }
-                        </div>
-                    </>
-                    :
-                    <>
-                    <Link href='/item/[id]' as={`/item/${element!==undefined?element._id:'new'}`}>
-                        <a>
-                            <img
-                                className={classes.media}
-                                src={element.image}
-                                alt={element.info}
-                            />
-                        </a>
-                    </Link>
-                    <Link href='/item/[id]' as={`/item/${element!==undefined?element._id:'new'}`}>
-                        <a className={classes.name}>
-                            {element.name}
-                        </a>
-                    </Link>
-                    <Link href='/item/[id]' as={`/item/${element!==undefined?element._id:'new'}`}>
-                        <div className={classes.row}>
-                            {
-                                element.stock===0||element.stock===undefined?
-                                    <div className={classes.price}>
-                                        {`${element.price} сом`}
-                                    </div>
-                                    :
-                                    <>
-                                    <div className={classes.crossedPrice}>
-                                        {`${element.price}`}
-                                    </div>
-                                    <div className={classes.stockPrice}>
-                                        {`${element.stock} сом`}
-                                    </div>
-                                    </>
-                            }
-                        </div>
-                    </Link>
-                    </>
-                }
+                        {
+                            element.stock===0||element.stock===undefined?
+                                <div className={classes.price}>
+                                    {`${element.price} сом`}
+                                </div>
+                                :
+                                <>
+                                <div className={classes.crossedPrice}>
+                                    {`${element.price}`}
+                                </div>
+                                <div className={classes.stockPrice}>
+                                    {`${element.stock} сом`}
+                                </div>
+                                </>
+                        }
+                    </div>
+                </Link>
                                         {'admin'===profile.role||(['суперорганизация', 'организация'].includes(profile.role)&&profile.organization===element.organization._id)?
                                             element.del!=='deleted'?
                                             <>
@@ -185,8 +152,10 @@ const CardItem = React.memo((props) => {
                                                 'admin'===profile.role?
                                                     <Button onClick={async()=>{
                                                         const action = async() => {
-                                                            const list = (await deleteItem([element._id], subCategory)).items
-                                                            setList(list)
+                                                            await deleteItem([element._id])
+                                                            let _list = [...list]
+                                                            _list.splice(idx, 1)
+                                                            setList(_list)
                                                         }
                                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                         showMiniDialog(true)
@@ -201,7 +170,7 @@ const CardItem = React.memo((props) => {
                                                         const action = async() => {
                                                             await restoreItem([element._id])
                                                             let _list = [...list]
-                                                            _list.splice(_list.indexOf(element), 1)
+                                                            _list.splice(idx, 1)
                                                             setList(_list)
                                                         }
                                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
@@ -221,15 +190,13 @@ const CardItem = React.memo((props) => {
 
 function mapStateToProps (state) {
     return {
-        user: state.user,
-        app: state.app
+        user: state.user
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
     }
 }
 

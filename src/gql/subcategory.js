@@ -41,7 +41,7 @@ export const getSubCategorys = async({category,  search,  sort,  filter}, client
     }
 }
 
-export const deleteSubCategory = async(ids, category)=>{
+export const deleteSubCategory = async(ids)=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
@@ -52,13 +52,12 @@ export const deleteSubCategory = async(ids, category)=>{
                              data
                         }
                     }`})
-        return await getSubCategorys({category: category, ...(new SingletonStore().getStore().getState().app)})
     } catch(err){
         console.error(err)
     }
 }
 
-export const onoffSubCategory = async(ids, category)=>{
+export const onoffSubCategory = async(ids)=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
@@ -69,7 +68,6 @@ export const onoffSubCategory = async(ids, category)=>{
                              data
                         }
                     }`})
-        return await getSubCategorys({category: category, ...(new SingletonStore().getStore().getState().app)})
     } catch(err){
         console.error(err)
     }
@@ -78,21 +76,26 @@ export const onoffSubCategory = async(ids, category)=>{
 export const addSubCategory = async(element, category)=>{
     try{
         const client = new SingletonApolloClient().getClient()
-        await client.mutate({
+        let res = await client.mutate({
             variables: {...element, category: category},
             mutation : gql`
                     mutation ($category: ID!, $name: String!) {
                         addSubCategory(category: $category, name: $name) {
-                             data
+                            _id
+                            category
+                                {_id name}
+                            name
+                            status
+                            createdAt
                         }
                     }`})
-        return await getSubCategorys({category: category, ...(new SingletonStore().getStore().getState().app)})
+        return res.data
     } catch(err){
         console.error(err)
     }
 }
 
-export const setSubCategory = async(element, category)=>{
+export const setSubCategory = async(element)=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
@@ -103,7 +106,6 @@ export const setSubCategory = async(element, category)=>{
                              data
                         }
                     }`})
-        return await getSubCategorys({category: category, ...(new SingletonStore().getStore().getState().app)})
     } catch(err){
         console.error(err)
     }

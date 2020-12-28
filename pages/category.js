@@ -1,9 +1,7 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as userActions from '../redux/actions/user'
 import { getCategorys } from '../src/gql/category'
 import pageListStyle from '../src/styleMUI/category/categoryList'
 import CardCategory from '../components/category/CardCategory'
@@ -22,16 +20,26 @@ const Index = React.memo((props) => {
     const { search, filter, sort } = props.app;
     const { profile } = props.user;
     let height = profile.role==='admin'?161:83
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            setPagination(100)
-            setList((await getCategorys({search: search, sort: sort, filter: filter})).categorys)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    setList((await getCategorys({search: search, sort: sort, filter: filter})).categorys)
+                    setPagination(100);
+                    forceCheck();
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
     },[filter, sort, search])
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -47,7 +55,7 @@ const Index = React.memo((props) => {
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
-                <meta property="og:url" content={`${urlMain}`} />
+                <meta property='og:url' content={`${urlMain}`} />
                 <link rel='canonical' href={`${urlMain}`}/>
             </Head>
             <div className={classes.page}>
@@ -56,17 +64,17 @@ const Index = React.memo((props) => {
                 </div>
                 {profile.role==='admin'?
                     <>
-                    <CardCategory setList={setList}/>
+                    <CardCategory list={list} setList={setList}/>
                     </>
                     :
                     null
                 }
                 <CardCategory element={{image: '/static/allitem.svg', name: 'Все подкатегории', _id: 'all'}} setList='all'/>
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardCategoryPlaceholder height={height}/>}>
-                                <CardCategory key={element._id} setList={setList} element={element}/>
+                                <CardCategory list={list} idx={idx}  key={element._id} setList={setList} element={element}/>
                             </LazyLoad>
                         )}
                 ):null}
@@ -102,10 +110,4 @@ function mapStateToProps (state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        userActions: bindActionCreators(userActions, dispatch),
-     }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Index);
+export default connect(mapStateToProps)(Index);

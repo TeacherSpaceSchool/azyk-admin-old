@@ -134,7 +134,6 @@ const CardReceiveData = React.memo((props) => {
 
 function mapStateToProps (state) {
     return {
-        user: state.user,
         app: state.app
     }
 }

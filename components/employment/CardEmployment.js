@@ -14,7 +14,7 @@ import Confirmation from '../../components/dialog/Confirmation'
 
 const CardEmployment = React.memo((props) => {
     const classes = cardEmploymentStyle();
-    const { element, setList, list } = props;
+    const { element, setList, list, idx } = props;
     const { isMobileApp } = props.app;
     const { profile } = props.user;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
@@ -79,15 +79,17 @@ const CardEmployment = React.memo((props) => {
                             }
                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                             showMiniDialog(true)
-                        }} size='small' color='primary'>
+                        }} size='small'  color={status==='active'?'primary':'secondary'}>
                             {status==='active'?'Отключить':'Включить'}
                         </Button>
                         {
                             profile.role === 'admin'?
                                 <Button onClick={async()=>{
                                     const action = async() => {
-                                        const list = (await deleteEmployment([element._id], element.organization?element.organization._id:'super')).employments
-                                        setList(list)
+                                        await deleteEmployment([element._id])
+                                        let _list = [...list]
+                                        _list.splice(idx, 1)
+                                        setList(_list)
                                     }
                                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                     showMiniDialog(true)

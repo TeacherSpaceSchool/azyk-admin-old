@@ -8,11 +8,9 @@ import cardIntegrateOutShoroStyle from '../../src/styleMUI/integrateOutShoro/car
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as snackbarActions from '../../redux/actions/snackbar'
 import { pdDDMMYY, pdDDMMYYHHMM } from '../../src/lib'
 import Confirmation from '../../components/dialog/Confirmation'
 import { deleteOutXMLReturnedShoro, deleteOutXMLShoro, restoreOutXMLReturnedShoro, restoreOutXMLShoro } from '../../src/gql/integrateOutShoro'
-import {alert} from '../../layouts/App';
 
 const CardIntegrateOutShoro = React.memo((props) => {
     const classes = cardIntegrateOutShoroStyle();
@@ -126,15 +124,13 @@ const CardIntegrateOutShoro = React.memo((props) => {
 
 function mapStateToProps (state) {
     return {
-        user: state.user,
         app: state.app
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
+        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch)
     }
 }
 

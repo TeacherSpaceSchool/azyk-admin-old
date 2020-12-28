@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import CardReturned from '../components/returned/CardReturned'
 import pageListStyle from '../src/styleMUI/returned/returnedList'
@@ -47,22 +47,28 @@ const Returneds = React.memo((props) => {
         }
     }
     const getList = async ()=>{
-        let returneds = (await getReturneds({search: search, sort: sort, date: date, skip: 0, city})).returneds
-        setList(returneds)
+        setList((await getReturneds({search: search, sort: sort, date: date, skip: 0, city})).returneds)
         setSimpleStatistic((await getReturnedsSimpleStatistic({search: search, date: date, city})).returnedsSimpleStatistic)
     }
     let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
-        if(searchTimeOut)
-            clearTimeout(searchTimeOut)
-        searchTimeOut = setTimeout(async()=>{
-            setSelected([])
-            await getList()
-            forceCheck()
-            setPaginationWork(true);
-            (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
-        }, 500)
-        setSearchTimeOut(searchTimeOut)
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+                setSimpleStatistic((await getReturnedsSimpleStatistic({search: search, date: date, city})).returnedsSimpleStatistic)
+            } else {
+                if (searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async () => {
+                    setSelected([])
+                    await getList()
+                    forceCheck()
+                    setPaginationWork(true);
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+        }})()
     },[sort, search, date, city])
 
     let [showStat, setShowStat] = useState(false);
@@ -95,15 +101,12 @@ const Returneds = React.memo((props) => {
                             showStat?
                                 <>
                                 <br/>
-                                <br/>
                                 {simpleStatistic[1]&&simpleStatistic[1]!=='0'?`Всего сумма: ${simpleStatistic[1]} сом`:null}
                                 {
                                     simpleStatistic[2]&&simpleStatistic[2]!=='0'?
                                         <>
                                         <br/>
-                                        <br/>
                                         {`Всего консигнаций: ${simpleStatistic[2]} сом`}
-                                        <br/>
                                         <br/>
                                         {`Оплачено консигнаций: ${simpleStatistic[3]} сом`}
                                         </>
@@ -114,7 +117,6 @@ const Returneds = React.memo((props) => {
                                     simpleStatistic[4]&&simpleStatistic[4]!=='0'?
                                         <>
                                         <br/>
-                                        <br/>
                                         {`Всего тоннаж: ${simpleStatistic[4]} кг`}
                                         </>
                                         :
@@ -123,7 +125,6 @@ const Returneds = React.memo((props) => {
                                 {
                                     simpleStatistic[5]&&simpleStatistic[5]!=='0'?
                                         <>
-                                        <br/>
                                         <br/>
                                         {`Всего кубатура: ${simpleStatistic[5]} см³`}
                                         </>

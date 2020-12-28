@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import CardDistrict from '../../components/district/CardDistrict'
 import pageListStyle from '../../src/styleMUI/district/districtList'
@@ -25,25 +25,24 @@ const Districts = React.memo((props) => {
     const { data } = props;
     let [list, setList] = useState(data.districts);
     const { search, sort } = props.app;
-    let getList = async()=>{
-        setList((await getDistricts({organization: router.query.id, search: search, sort: sort})).districts)
-    }
-    useEffect(()=>{
-        (async()=>{
-            setPagination(100)
-            forceCheck()
-        })()
-    },[list])
     let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            if(searchTimeOut)
-                clearTimeout(searchTimeOut)
-            searchTimeOut = setTimeout(async()=>{
-                getList();
-                (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
-            }, 500)
-            setSearchTimeOut(searchTimeOut)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    setList((await getDistricts({organization: router.query.id, search: search, sort: sort})).districts)
+                    setPagination(100);
+                    forceCheck();
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
     },[sort, search])
     let [pagination, setPagination] = useState(100);
@@ -53,7 +52,7 @@ const Districts = React.memo((props) => {
         }
     }
     return (
-        <App checkPagination={checkPagination} getList={getList} searchShow={true} sorts={data.sortDistrict} pageName='Районы'>
+        <App checkPagination={checkPagination} searchShow={true} sorts={data.sortDistrict} pageName='Районы'>
             <Head>
                 <title>Районы</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -69,10 +68,10 @@ const Districts = React.memo((props) => {
             </div>
             <div className={classes.page}>
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardDistrictPlaceholder/>}>
-                                <CardDistrict setList={setList} key={element._id} element={element}/>
+                                <CardDistrict list={list} idx={idx} setList={setList} key={element._id} element={element}/>
                             </LazyLoad>
                         )}
                 ):null}

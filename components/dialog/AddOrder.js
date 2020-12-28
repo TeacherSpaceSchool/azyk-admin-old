@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import * as appActions from '../../redux/actions/app'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as userActions from '../../redux/actions/user'
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import dialogContentStyle from '../../src/styleMUI/route/route'
 import { getOrdersForRouting } from '../../src/gql/order'
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
-
 import Checkbox from '@material-ui/core/Checkbox';
 import CardOrder from '../../components/order/CardOrder';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -19,13 +13,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Input from '@material-ui/core/Input';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import Router from 'next/router'
-import {checkFloat, pdDatePicker} from '../../src/lib'
-import dynamic from 'next/dynamic'
-import { urlMain } from '../../redux/constants/other'
-import { getClientGqlSsr } from '../../src/getClientGQL'
-import initialApp from '../../src/initialApp'
-import Autocomplete from '@material-ui/lab/Autocomplete';
 import Fab from '@material-ui/core/Fab';
 import Menu from '@material-ui/core/Menu';
 import SettingsIcon from '@material-ui/icons/Settings';
@@ -58,7 +45,6 @@ const AddOrder =  React.memo(
         useEffect(()=>{
             (async ()=>{
                 if(selectProdusers.length>0&&selectDistricts.length>0&&dateStart) {
-                    //await showLoad(true)
                     let clients = []
                     for(let i=0;i<selectDistricts.length;i++){
                         clients = [...clients, ...selectDistricts[i].client.map(element=>element._id)]
@@ -66,7 +52,6 @@ const AddOrder =  React.memo(
                     orders = (await getOrdersForRouting({produsers: selectProdusers.map(element=>element._id), clients: clients, dateStart: dateStart, dateEnd: dateEnd})).invoicesForRouting
                     orders = orders.filter(order=>mainOrders.findIndex(element1=>element1._id===order._id)===-1)
                     setOrders(orders)
-                    //await showLoad(false)
                 }
             })()
         },[selectProdusers, selectDistricts, dateStart])
@@ -169,7 +154,7 @@ const AddOrder =  React.memo(
                         :
                         <div className={classes.listInvoices}>
                             {orders?orders.map((element, idx)=> {
-                                if(idx<=pagination)
+                                if(idx<pagination)
                                     return(
                                         <div key={idx} style={isMobileApp ? {alignItems: 'baseline'} : {}}
                                              className={isMobileApp ? classes.column1 : classes.row1}>
@@ -231,8 +216,6 @@ const AddOrder =  React.memo(
 
 function mapStateToProps (state) {
     return {
-        mini_dialog: state.mini_dialog,
-        user: state.user,
         app: state.app
     }
 }
@@ -240,8 +223,6 @@ function mapStateToProps (state) {
 function mapDispatchToProps(dispatch) {
     return {
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        userActions: bindActionCreators(userActions, dispatch),
-        appActions: bindActionCreators(appActions, dispatch),
     }
 }
 

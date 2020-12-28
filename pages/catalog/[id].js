@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/catalog/catalog'
@@ -15,7 +15,6 @@ import BuyBasket from '../../components/dialog/BuyBasket'
 import Image from '../../components/dialog/Image'
 import { useRouter } from 'next/router'
 import { urlMain } from '../../redux/constants/other'
-import { getBonusesClient } from '../../src/gql/bonusclient'
 import { getClient } from '../../src/gql/client'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import { forceCheck } from 'react-lazyload';
@@ -36,9 +35,10 @@ const Catalog = React.memo((props) => {
     const { search, filter, sort } = props.app;
     const [list, setList] = useState(data.brands);
     const [basket, setBasket] = useState({});
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            //await deleteBasketAll()
             if(sessionStorage.catalog&&sessionStorage.catalog!=='{}'){
                 setBasket(JSON.parse(sessionStorage.catalog))
             }
@@ -46,13 +46,22 @@ const Catalog = React.memo((props) => {
     },[])
     useEffect(()=>{
         (async()=>{
-            setList((await getBrands({organization: router.query.id, search: search, sort: sort})).brands)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    setList((await getBrands({organization: router.query.id, search: search, sort: sort})).brands)
+                    setPagination(100);
+                    forceCheck();
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
     },[filter, sort, search])
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
     let [allPrice, setAllPrice] = useState(0);
     const { isMobileApp } = props.app;
     let increment = async (idx)=>{
@@ -127,13 +136,15 @@ const Catalog = React.memo((props) => {
         }
     }
     useEffect(()=>{
-        sessionStorage.catalog = JSON.stringify(basket)
-        let keys = Object.keys(basket)
-        allPrice = 0
-        for(let i=0; i<keys.length; i++){
-            allPrice += basket[keys[i]].allPrice
+        if(!initialRender.current) {
+            sessionStorage.catalog = JSON.stringify(basket)
+            let keys = Object.keys(basket)
+            allPrice = 0
+            for (let i = 0; i < keys.length; i++) {
+                allPrice += basket[keys[i]].allPrice
+            }
+            setAllPrice(checkFloat(allPrice))
         }
-        setAllPrice(checkFloat(allPrice))
     },[basket])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
@@ -166,7 +177,7 @@ const Catalog = React.memo((props) => {
                                 price = row.stock
                             else
                                 price = row.price
-                            if(idx<=pagination)
+                            if(idx<pagination)
                                 return(
                                     <LazyLoad scrollContainer={'.App-body'} key={row._id} offset={[186, 0]} debounce={0} once={true}  placeholder={<CardCatalogPlaceholder/>}>
                                         <div style={{width: '100%'}}>
@@ -306,7 +317,6 @@ Catalog.getInitialProps = async function(ctx) {
     return {
         data: {
             ...(ctx.store.getState().user.profile._id?await getClient({_id: ctx.store.getState().user.profile._id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{}),
-            ...await getBonusesClient({search: '', sort: '-createdAt'}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             ...await getOrganization({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             ...await getBrands({organization: ctx.query.id, search: ctx.query.search?ctx.query.search:'', sort: '-name'}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             ...await getAdss({search: '', organization: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)

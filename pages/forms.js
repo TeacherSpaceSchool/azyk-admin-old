@@ -67,7 +67,7 @@ const Forms = React.memo((props) => {
                     list?list.map((element, idx)=> {
                             return(
                                 <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardFormsPlaceholder height={height}/>}>
-                                    <CardForms list={list} idx={idx} element={element} organizations={data.brandOrganizations} setList={setList}/>
+                                    <CardForms list={list} idx={idx} element={element} setList={setList}/>
                                 </LazyLoad>
                             )}
                     ):null
@@ -98,7 +98,6 @@ Forms.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getBrandOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             ...await getTemplateForms({skip: 0, search: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };

@@ -10,14 +10,10 @@ export const getLotterys = async(client)=>{
                 query: gql`
                     query {
                         lotterys {
-                            _id
-                            createdAt
                             image
-                            organization
-                                {_id name}
-                            status
                             text
                             date
+                            _id
                           }
                     }`,
             })

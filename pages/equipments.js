@@ -1,9 +1,7 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as userActions from '../redux/actions/user'
 import { getOrganizations } from '../src/gql/organization'
 import pageListStyle from '../src/styleMUI/organization/orgaizationsList'
 import CardOrganization from '../components/organization/CardOrganization'
@@ -20,10 +18,18 @@ const Equipments = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     const { city } = props.app;
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
-            setList(list)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
+                setList(list)
+                setPagination(100);
+                (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                forceCheck();
+            }
         })()
     },[city])
     let [list, setList] = useState(data.organizations);
@@ -35,16 +41,12 @@ const Equipments = React.memo((props) => {
             setPagination(pagination+100)
         }
     }
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
     return (
-        <App cityShow checkPagination={checkPagination} pageName='Оборудование'>
+        <App cityShow checkPagination={checkPagination} pageName='Перечень'>
             <Head>
-                <title>Оборудование</title>
+                <title>Перечень</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
-                <meta property='og:title' content='Оборудование' />
+                <meta property='og:title' content='Перечень' />
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
@@ -65,7 +67,7 @@ const Equipments = React.memo((props) => {
                         :null
                 }
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOrganizationPlaceholder height={height}/>}>
                                 <Link href='/equipments/[id]' as={`/equipments/${element._id}`}>
@@ -107,10 +109,4 @@ function mapStateToProps (state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        userActions: bindActionCreators(userActions, dispatch),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Equipments);
+export default connect(mapStateToProps)(Equipments);

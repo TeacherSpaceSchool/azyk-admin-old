@@ -24,7 +24,7 @@ const AzykStoreStatistic = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     const { isMobileApp } = props.app;
-    let [dateStart, setDateStart] = useState(pdDatePicker(new Date()));
+    let [dateStart, setDateStart] = useState(data.dateStart);
     let [dateType, setDateType] = useState('day');
     let [statisticOrder, setStatisticOrder] = useState(undefined);
     let [showStat, setShowStat] = useState(false);
@@ -147,9 +147,13 @@ AzykStoreStatistic.getInitialProps = async function(ctx) {
             ctx.res.end()
         } else
             Router.push('/contact')
+    let dateStart = new Date()
+    if (dateStart.getHours()<3)
+        dateStart.setDate(dateStart.getDate() - 1)
     return {
         data: {
-            ...await getAgents({_id: 'super'}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            ...await getAgents({_id: 'super'}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            dateStart: pdDatePicker(dateStart)
         }
     };
 };

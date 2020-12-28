@@ -41,5 +41,17 @@ export default makeStyles({
         '-moz-user-select': 'none',
         '-ms-user-select': 'none',
         background: '#ffb300'
+    },
+    scrollDownContainer: {
+        width: '100%',
+        height: '100%',
+        position: 'relative'
+    },
+    scrollDownDiv: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        width: '100%',
+        height: '100%',
     }
 })

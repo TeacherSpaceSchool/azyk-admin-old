@@ -13,7 +13,6 @@ import { useRouter } from 'next/router'
 import { getActiveOrganization } from '../../src/gql/statistic'
 import { getClients } from '../../src/gql/client'
 import Router from 'next/router'
-import * as userActions from '../../redux/actions/user'
 import * as snackbarActions from '../../redux/actions/snackbar'
 import TextField from '@material-ui/core/TextField';
 import Confirmation from '../../components/dialog/Confirmation'
@@ -28,7 +27,6 @@ const Equipment = React.memo((props) => {
     const classes = organizationStyle();
     const { data } = props;
     const { isMobileApp, city } = props.app;
-    const { user } = props.user;
     const { showSnackBar } = props.snackbarActions;
     const initialRender = useRef(true);
     const [clients, setClients] = useState([]);
@@ -38,21 +36,21 @@ const Equipment = React.memo((props) => {
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         (async()=>{
-            if (inputValue.length<3) {
+            if (inputValue.length < 3) {
                 setClients([]);
-                if(open)
+                if (open)
                     setOpen(false)
-                if(loading)
+                if (loading)
                     setLoading(false)
             }
             else {
-                if(!loading)
+                if (!loading)
                     setLoading(true)
-                if(searchTimeOut)
+                if (searchTimeOut)
                     clearTimeout(searchTimeOut)
-                searchTimeOut = setTimeout(async()=>{
+                searchTimeOut = setTimeout(async () => {
                     setClients((await getClients({search: inputValue, sort: '-name', filter: 'all', city})).clients)
-                    if(!open)
+                    if (!open)
                         setOpen(true)
                     setLoading(false)
                 }, 500)
@@ -71,7 +69,7 @@ const Equipment = React.memo((props) => {
     let [number, setNumber] = useState(data.equipment!==null?data.equipment.number:'');
     let [name, setName] = useState(data.equipment!==null?data.equipment.name:'');
     let [organization, setOrganization] = useState(data.equipment!==null?data.equipment.organization:{});
-    let [client, setClient] = useState(data.equipment!==null?data.equipment.client:{});
+    let [client, setClient] = useState(data.equipment?data.equipment.client:undefined);
     let handleOrganization =  (organization) => {
         setOrganization(organization)
     };
@@ -81,6 +79,8 @@ const Equipment = React.memo((props) => {
         (async()=>{
             if(initialRender.current) {
                 initialRender.current = false;
+                if(profile.organization)
+                    setOrganization({_id: profile.organization})
             }
             else {
                 setOrganization(undefined)
@@ -89,7 +89,7 @@ const Equipment = React.memo((props) => {
         })()
     },[city])
     return (
-        <App cityShow pageName={data.equipment?router.query.id==='new'?'Добавить':data.equipment.name:'Ничего не найдено'}>
+        <App cityShow={router.query.id==='new'} pageName={data.equipment?router.query.id==='new'?'Добавить':data.equipment.name:'Ничего не найдено'}>
             <Head>
                 <title>{data.equipment!==null?router.query.id==='new'?'Добавить':data.equipment.name:'Ничего не найдено'}</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -105,28 +105,8 @@ const Equipment = React.memo((props) => {
                 {
                     data.equipment!==null?
                         <>
-                        <TextField
-                            label='Номер'
-                            value={number}
-                            className={classes.input}
-                            onChange={(event)=>{setNumber(event.target.value)}}
-                            inputProps={{
-                                'aria-label': 'description',
-                                readOnly: !['admin', 'суперорганизация', 'организация'].includes(profile.role),
-                            }}
-                        />
-                        <TextField
-                            label='Оборудование'
-                            value={name}
-                            className={classes.input}
-                            onChange={(event)=>{setName(event.target.value)}}
-                            inputProps={{
-                                'aria-label': 'description',
-                                readOnly: !['admin', 'суперорганизация', 'организация'].includes(profile.role),
-                            }}
-                        />
                         {
-                            ['admin'].includes(profile.role)?
+                            !profile.organization&&router.query.id==='new'?
                                 <Autocomplete
                                     className={classes.input}
                                     options={activeOrganization}
@@ -141,10 +121,41 @@ const Equipment = React.memo((props) => {
                                     )}
                                 />
                                 :
-                                null
+                                organization&&!profile.organization?
+                                    <TextField
+                                        label='Организация'
+                                        value={organization.name}
+                                        className={classes.input}
+                                        inputProps={{
+                                            'aria-label': 'description',
+                                            readOnly: true,
+                                        }}
+                                    />
+                                    :
+                                    null
                         }
+                        <TextField
+                            label='Номер'
+                            value={number}
+                            className={classes.input}
+                            onChange={(event)=>{setNumber(event.target.value)}}
+                            inputProps={{
+                                'aria-label': 'description',
+                                readOnly: !['admin', 'суперорганизация', 'организация', 'агент'].includes(profile.role),
+                            }}
+                        />
+                        <TextField
+                            label='Оборудование'
+                            value={name}
+                            className={classes.input}
+                            onChange={(event)=>{setName(event.target.value)}}
+                            inputProps={{
+                                'aria-label': 'description',
+                                readOnly: !['admin', 'суперорганизация', 'организация', 'агент'].includes(profile.role),
+                            }}
+                        />
                         {
-                            ['admin', 'суперорганизация', 'организация'].includes(profile.role)?
+                            ['admin', 'суперорганизация', 'организация', 'агент'].includes(profile.role)?
                                 <Autocomplete
                                     onClose={()=>setOpen(false)}
                                     open={open}
@@ -155,6 +166,7 @@ const Equipment = React.memo((props) => {
                                     onChange={(event, newValue) => {
                                         handleClient(newValue)
                                     }}
+                                    value={client}
                                     noOptionsText='Ничего не найдено'
                                     renderInput={params => (
                                         <TextField {...params} label='Выберите клиента' variant='outlined' fullWidth
@@ -174,7 +186,7 @@ const Equipment = React.memo((props) => {
                                 :
                                 <TextField
                                     label='Клиент'
-                                    value={client.name}
+                                    value={`${client.name}${client.address&&client.address[0]?` (${client.address[0][2]?`${client.address[0][2]}, `:''}${client.address[0][0]})`:''}`}
                                     className={classes.input}
                                     inputProps={{
                                         'aria-label': 'description',
@@ -184,58 +196,59 @@ const Equipment = React.memo((props) => {
                         }
                         <div className={classes.row}>
                             {
-                                router.query.id==='new'?
-                                    <Button onClick={async()=>{
-                                        if (name.length>0&&number.length>0) {
-                                            const action = async() => {
-                                                let equipment = {
-                                                    name: name,
-                                                    number: number
+                                ['admin', 'суперорганизация', 'организация', 'агент'].includes(profile.role)?
+                                    router.query.id==='new'?
+                                        <Button onClick={async()=>{
+                                            if (name.length>0&&number.length>0) {
+                                                const action = async() => {
+                                                    let equipment = {
+                                                        name: name,
+                                                        number: number,
+                                                        organization: organization._id
+                                                    }
+                                                    if(client&&client._id)
+                                                        equipment.client = client._id
+                                                    await addEquipment(equipment)
+                                                    Router.push(`/equipments/${organization._id}`)
                                                 }
-                                                if(client&&client._id)
-                                                    equipment.client = client._id
-                                                if(organization&&organization._id)
-                                                    equipment.organization = organization._id
-                                                await addEquipment(equipment)
-                                                //Router.push('/equipments')
+                                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                                showMiniDialog(true)
+                                            } else {
+                                                showSnackBar('Заполните все поля')
                                             }
-                                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                            showMiniDialog(true)
-                                        } else {
-                                            showSnackBar('Заполните все поля')
-                                        }
-                                    }} size='small' color='primary'>
-                                        Добавить
-                                    </Button>
-                                    :
-                                    <>
-                                    <Button onClick={async()=>{
-                                        let editElement = {_id: data.equipment._id}
-                                        if(name.length>0&&name!==data.equipment.name)editElement.name = name
-                                        if(number.length>0&&number!==data.equipment.number)editElement.number = number
-                                        if(organization._id&&organization._id!==data.equipment.organization._id)editElement.organization = organization._id
-                                        if(client._id&&client._id!==data.equipment.client._id)editElement.client = client._id
-                                        const action = async() => {
-                                            await setEquipment(editElement)
-                                        }
-                                        setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                        showMiniDialog(true)
-                                    }} size='small' color='primary'>
-                                        Сохранить
-                                    </Button>
-                                    <Button onClick={
-                                        async()=>{
+                                        }} size='small' color='primary'>
+                                            Добавить
+                                        </Button>
+                                        :
+                                        <>
+                                        <Button onClick={async()=>{
+                                            let editElement = {_id: data.equipment._id}
+                                            if(name.length>0&&name!==data.equipment.name)editElement.name = name
+                                            if(number.length>0&&number!==data.equipment.number)editElement.number = number
+                                            if(client._id&&client._id!==data.equipment.client._id)editElement.client = client._id
                                             const action = async() => {
-                                                await deleteEquipment([data.equipment._id])
-                                                Router.push('/equipments')
+                                                await setEquipment(editElement)
                                             }
                                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                             showMiniDialog(true)
-                                        }
-                                    } size='small' color='primary'>
-                                        Удалить
-                                    </Button>
-                                    </>
+                                        }} size='small' color='primary'>
+                                            Сохранить
+                                        </Button>
+                                        <Button onClick={
+                                            async()=>{
+                                                const action = async() => {
+                                                    await deleteEquipment([data.equipment._id])
+                                                    Router.push('/equipments')
+                                                }
+                                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                                showMiniDialog(true)
+                                            }
+                                        } size='small' color='primary'>
+                                            Удалить
+                                        </Button>
+                                        </>
+                                    :
+                                    null
                             }
                         </div>
                         </>
@@ -251,7 +264,7 @@ const Equipment = React.memo((props) => {
 Equipment.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.city = 'Бишкек'
-    if(!(ctx.store.getState().user.profile.role))
+    if(!(['admin', 'суперорганизация', 'организация', 'менеджер', 'агент', 'ремонтник'].includes(ctx.store.getState().user.profile.role)))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'
@@ -261,8 +274,8 @@ Equipment.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...ctx.query.id!=='new'?await getEquipment({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{equipment:{name: '',number: '',client: {_id: '',},organization: {_id: ''},}},
-            activeOrganization: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
+            ...ctx.query.id!=='new'?await getEquipment({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{equipment:{name: '',number: '',client: null,organization: null,}},
+            activeOrganization: ctx.store.getState().user.profile.organization?[]:[{name: 'AZYK.STORE', _id: 'super'}, ...(await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
         }
     };
 };
@@ -278,7 +291,6 @@ function mapDispatchToProps(dispatch) {
     return {
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
         snackbarActions: bindActionCreators(snackbarActions, dispatch),
-        userActions: bindActionCreators(userActions, dispatch),
     }
 }
 

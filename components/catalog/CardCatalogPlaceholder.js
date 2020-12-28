@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux'
 import Skeleton from '@material-ui/lab/Skeleton';
 
 const CardCatalogPlaceholder = React.memo(() => {
@@ -11,11 +10,4 @@ const CardCatalogPlaceholder = React.memo(() => {
     );
 })
 
-function mapStateToProps (state) {
-    return {
-        user: state.user,
-        app: state.app
-    }
-}
-
-export default connect(mapStateToProps)(CardCatalogPlaceholder)
+export default CardCatalogPlaceholder

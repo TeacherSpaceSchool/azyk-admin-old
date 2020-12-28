@@ -1,18 +1,14 @@
 import initialApp from '../../../src/initialApp'
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import App from '../../../layouts/App';
 import { connect } from 'react-redux'
 import {getTemplateForm, getAnalysisForms} from '../../../src/gql/form'
 import organizationStyle from '../../../src/styleMUI/form/form'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { bindActionCreators } from 'redux'
-import * as mini_dialogActions from '../../../redux/actions/mini_dialog'
 import { useRouter } from 'next/router'
 import Router from 'next/router'
-import * as userActions from '../../../redux/actions/user'
-import * as snackbarActions from '../../../redux/actions/snackbar'
 import { urlMain } from '../../../redux/constants/other'
 import { getClientGqlSsr } from '../../../src/getClientGQL'
 import Divider from '@material-ui/core/Divider';
@@ -133,12 +129,4 @@ function mapStateToProps (state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
-        userActions: bindActionCreators(userActions, dispatch),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(AnalysisForms);
+export default connect(mapStateToProps)(AnalysisForms);

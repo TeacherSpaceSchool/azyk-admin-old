@@ -1,9 +1,7 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as userActions from '../redux/actions/user'
 import { getAdsOrganizations } from '../src/gql/ads'
 import { getOrganizations } from '../src/gql/organization'
 import pageListStyle from '../src/styleMUI/organization/orgaizationsList'
@@ -15,6 +13,7 @@ import CardOrganizationPlaceholder from '../components/organization/CardOrganiza
 import { getClientGqlSsr } from '../src/getClientGQL'
 import initialApp from '../src/initialApp'
 import Router from 'next/router'
+import { forceCheck } from 'react-lazyload';
 
 const Ads = React.memo((props) => {
     const classes = pageListStyle();
@@ -22,18 +21,27 @@ const Ads = React.memo((props) => {
     const { city } = props.app;
     let [list, setList] = useState(data.organizations);
     let height = 80
+    const initialRender = useRef(true);
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
+                setList(list)
+                setPagination(100);
+                (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                forceCheck();
+
+            }
+        })()
+    },[city])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
             setPagination(pagination+100)
         }
     }
-    useEffect(()=>{
-        (async()=>{
-            list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
-            setList(list)
-        })()
-    },[city])
     return (
         <App cityShow checkPagination={checkPagination} pageName='Акции'>
             <Head>
@@ -53,7 +61,7 @@ const Ads = React.memo((props) => {
             </div>
             <div className={classes.page}>
                 {list?list.map((element, idx)=> {
-                        if(idx<=pagination)
+                        if(idx<pagination)
                             return(
                                 <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOrganizationPlaceholder height={height}/>}>
                                     <Link href='/ads/[id]' as={`/ads/${element._id}`}>
@@ -98,10 +106,4 @@ function mapStateToProps (state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        userActions: bindActionCreators(userActions, dispatch),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Ads);
+export default connect(mapStateToProps)(Ads);

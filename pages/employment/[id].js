@@ -1,6 +1,6 @@
 import initialApp from '../../src/initialApp'
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import {getEmployment, setEmployments, onoffEmployment, addEmployment, deleteEmployment} from '../../src/gql/employment'
@@ -34,8 +34,20 @@ const Client = React.memo((props) => {
     const { profile } = props.user;
     const classes = organizationStyle();
     const { data } = props;
-    const { isMobileApp } = props.app;
+    const { isMobileApp, city } = props.app;
     const { showSnackBar } = props.snackbarActions;
+    const initialRender = useRef(true);
+    let [organizations, setOrganizations] = useState(data.organizations);
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                setOrganizations((await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations)
+                setOrganization({})
+            }
+        })()
+    },[city])
     let [status, setStatus] = useState(data.employment!==null?data.employment.user.status:'');
     let [name, setName] = useState(data.employment!==null&&data.employment.name?data.employment.name:'');
     let [email, setEmail] = useState(data.employment!==null&&data.employment.email?data.employment.email:'');
@@ -72,7 +84,7 @@ const Client = React.memo((props) => {
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const router = useRouter()
     const { logout } = props.userActions;
-    let roles = ['организация', 'менеджер', 'экспедитор', 'агент']
+    let roles = ['организация', 'менеджер', 'экспедитор', 'агент', 'ремонтник']
     if(profile.role==='admin')
         roles.push('суперорганизация')
     let superRoles = ['суперменеджер', 'суперагент', 'суперэкспедитор']
@@ -82,7 +94,7 @@ const Client = React.memo((props) => {
         }
     },[])
     return (
-        <App filters={data.filterSubCategory} sorts={data.sortSubCategory} pageName={data.employment!==null?router.query.id==='new'?'Добавить':data.employment.name:'Ничего не найдено'}>
+        <App cityShow={router.query.id==='new'} filters={data.filterSubCategory} sorts={data.sortSubCategory} pageName={data.employment!==null?router.query.id==='new'?'Добавить':data.employment.name:'Ничего не найдено'}>
             <Head>
                 <title>{data.employment!==null?router.query.id==='new'?'Добавить':data.employment.name:'Ничего не найдено'}</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -176,7 +188,7 @@ const Client = React.memo((props) => {
                                             <FormControl className={classes.input}>
                                                 <InputLabel>Организация</InputLabel>
                                                 <Select value={organization._id}onChange={handleOrganization}>
-                                                    {data.organizations.map((element)=>
+                                                    {organizations.map((element)=>
                                                         <MenuItem key={element._id} value={element._id} ola={element.name}>{element.name}</MenuItem>
                                                     )}
                                                 </Select>
@@ -226,7 +238,7 @@ const Client = React.memo((props) => {
                                                                     role: role,
                                                                     organization: organization._id!=='super'?organization._id:null,
                                                                 })
-                                                                Router.push(`/employments/${data.employment.organization._id}`)
+                                                                Router.push(`/employments/${organization._id}`)
                                                             }
                                                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                             showMiniDialog(true)

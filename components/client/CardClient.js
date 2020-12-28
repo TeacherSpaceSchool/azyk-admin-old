@@ -17,7 +17,6 @@ import Confirmation from '../../components/dialog/Confirmation'
 import * as snackbarActions from '../../redux/actions/snackbar'
 import { addAgentHistoryGeo } from '../../src/gql/agentHistoryGeo'
 import {getGeoDistance} from '../../src/lib'
-import Router from 'next/router'
 
 
 const CardOrganization = React.memo((props) => {
@@ -223,7 +222,7 @@ const CardOrganization = React.memo((props) => {
                             const action = async() => {
                                 await deleteClient([element._id])
                                 let _list = [...list]
-                                _list.splice(_list.indexOf(element), 1)
+                                _list.splice(idx, 1)
                                 setList(_list)
                             }
                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
@@ -240,7 +239,7 @@ const CardOrganization = React.memo((props) => {
                             const action = async() => {
                                 await restoreClient([element._id])
                                 let _list = [...list]
-                                _list.splice(_list.indexOf(element), 1)
+                                _list.splice(idx, 1)
                                 setList(_list)
                             }
                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)

@@ -3,9 +3,6 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import cardCategoryStyle from '../../src/styleMUI/subcategory/cardSubcategory'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as snackbarActions from '../../redux/actions/snackbar'
 import TextField from '@material-ui/core/TextField';
 
 const CardCategory = React.memo((props) => {
@@ -61,16 +58,8 @@ const CardCategory = React.memo((props) => {
 
 function mapStateToProps (state) {
     return {
-        user: state.user,
         app: state.app
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CardCategory)
+export default connect(mapStateToProps)(CardCategory)

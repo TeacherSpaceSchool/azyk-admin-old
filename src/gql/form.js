@@ -1,6 +1,5 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
-import { SingletonStore } from '../singleton/store';
 
 export const getTemplateForms = async({search, organization, skip}, client)=>{
     try{
@@ -16,11 +15,6 @@ export const getTemplateForms = async({search, organization, skip}, client)=>{
                             title
                             organization
                                 {_id name}
-                            editorEmployment
-                            editorClient
-                            edit
-                            questions
-                                {formType question answers obligatory}
                         }
                     }`,
             })
@@ -95,8 +89,6 @@ export const getForms = async({templateForm, search, skip}, client)=>{
                                 {_id name address}
                             agent
                                 {_id name}
-                            organization
-                                {_id name}
                         }
                     }`,
             })
@@ -118,10 +110,6 @@ export const getForm = async({_id}, client)=>{
                             _id
                             createdAt
                             client
-                                {_id name}
-                            agent
-                                {_id name}
-                            organization
                                 {_id name}
                             questions
                                 {formType question answer answers obligatory}

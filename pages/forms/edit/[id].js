@@ -21,7 +21,6 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { getOrganizations } from '../../../src/gql/organization'
 import Router from 'next/router'
-import * as userActions from '../../../redux/actions/user'
 import * as snackbarActions from '../../../redux/actions/snackbar'
 import TextField from '@material-ui/core/TextField';
 import Confirmation from '../../../components/dialog/Confirmation'
@@ -496,7 +495,6 @@ function mapDispatchToProps(dispatch) {
     return {
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
         snackbarActions: bindActionCreators(snackbarActions, dispatch),
-        userActions: bindActionCreators(userActions, dispatch),
     }
 }
 

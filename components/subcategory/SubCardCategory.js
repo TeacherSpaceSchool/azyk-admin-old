@@ -20,7 +20,7 @@ import Confirmation from '../dialog/Confirmation'
 
 const CardCategory = React.memo((props) => {
     const classes = cardCategoryStyle();
-    const { element, setList, category, categorys } = props;
+    const { element, setList, idx, categorys, list } = props;
     const { profile } = props.user;
     const { isMobileApp } = props.app;
     //addCard
@@ -34,6 +34,7 @@ const CardCategory = React.memo((props) => {
     };
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { showSnackBar } = props.snackbarActions;
+    let [status, setStatus] = useState(element?element.status:'');
     return (
         <div>
             {
@@ -74,7 +75,7 @@ const CardCategory = React.memo((props) => {
                                         if(name.length>0&&name!==element.name)editElement.name = name
                                         if(selectCategory._id!==undefined&&selectCategory._id!==element.category._id)editElement.category = selectCategory._id
                                         const action = async() => {
-                                            setList((await setSubCategory(editElement, category)).subCategorys)
+                                            await setSubCategory(editElement)
                                         }
                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                         showMiniDialog(true)
@@ -83,16 +84,20 @@ const CardCategory = React.memo((props) => {
                                     </Button>
                                     <Button onClick={async()=>{
                                         const action = async() => {
-                                            setList((await onoffSubCategory([element._id], category)).subCategorys)
+                                            await onoffSubCategory([element._id])
+                                            setStatus(status==='active'?'deactive':'active')
                                         }
                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                         showMiniDialog(true)
-                                    }} size='small' color='primary'>
-                                        {element.status==='active'?'Отключить':'Включить'}
+                                    }} size='small' color={status==='active'?'primary':'secondary'}>
+                                        {status==='active'?'Отключить':'Включить'}
                                     </Button>
                                     <Button size='small' color='primary' onClick={()=>{
                                         const action = async() => {
-                                            setList((await deleteSubCategory([element._id], category)).subCategorys)
+                                            await deleteSubCategory([element._id])
+                                            let _list = [...list]
+                                            _list.splice(idx, 1)
+                                            setList(_list)
                                         }
                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                         showMiniDialog(true)
@@ -109,8 +114,10 @@ const CardCategory = React.memo((props) => {
                                         if (name.length > 0&&selectCategory._id) {
                                             setName('')
                                             const action = async() => {
-                                                let subCategorys = (await addSubCategory({name: name}, selectCategory._id)).subCategorys
-                                                setList(subCategorys)
+                                                setList([
+                                                    (await addSubCategory({name: name}, selectCategory._id)).addSubCategory,
+                                                    ...list
+                                                ])
                                             }
                                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                             showMiniDialog(true)

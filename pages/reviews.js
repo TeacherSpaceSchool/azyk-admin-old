@@ -1,12 +1,11 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
 import { getBrandOrganizations } from '../src/gql/items'
 import { getReviews } from '../src/gql/review'
 import pageListStyle from '../src/styleMUI/review/reviewList'
 import CardReviews from '../components/review/CardReview'
-import { useRouter } from 'next/router'
 import { urlMain } from '../redux/constants/other'
 import LazyLoad from 'react-lazyload';
 import { forceCheck } from 'react-lazyload';
@@ -21,6 +20,7 @@ const Reviews = React.memo((props) => {
     const { data } = props;
     let [list, setList] = useState(data.reviews);
     const { filter, organization } = props.app;
+    const initialRender = useRef(true);
     let height = 189
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     let [paginationWork, setPaginationWork] = useState(true);
@@ -41,12 +41,16 @@ const Reviews = React.memo((props) => {
         forceCheck()
     }
     useEffect(()=>{
-        if(searchTimeOut)
-            clearTimeout(searchTimeOut)
-        searchTimeOut = setTimeout(async()=>{
-            await getList()
-        }, 500)
-        setSearchTimeOut(searchTimeOut)
+        if(initialRender.current) {
+            initialRender.current = false;
+        } else {
+            if (searchTimeOut)
+                clearTimeout(searchTimeOut)
+            searchTimeOut = setTimeout(async () => {
+                await getList()
+            }, 500)
+            setSearchTimeOut(searchTimeOut)
+        }
     },[filter, organization])
     return (
         <App organizations checkPagination={checkPagination} setList={setList} list={list} searchShow={true} filters={data.filterReview} pageName='Отзывы'>

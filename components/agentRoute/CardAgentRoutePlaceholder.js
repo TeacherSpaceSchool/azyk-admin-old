@@ -14,7 +14,6 @@ const CardAgentRoutePlaceholder = React.memo(() => {
 
 function mapStateToProps (state) {
     return {
-        user: state.user,
         app: state.app
     }
 }

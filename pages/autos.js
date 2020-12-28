@@ -1,9 +1,7 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as userActions from '../redux/actions/user'
 import { getOrganizations } from '../src/gql/organization'
 import pageListStyle from '../src/styleMUI/auto/autoList'
 import CardOrganization from '../components/organization/CardOrganization'
@@ -20,19 +18,23 @@ const Autos = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     const { city } = props.app;
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
-            setList(list)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
+                setList(list)
+                setPagination(100);
+                (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                forceCheck();
+            }
         })()
     },[city])
     let [list, setList] = useState(data.organizations);
     const { profile } = props.user;
     let height = 80
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -66,7 +68,7 @@ const Autos = React.memo((props) => {
                         :null
                 }
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOrganizationPlaceholder height={height}/>}>
                                 <Link href='/autos/[id]' as={`/autos/${element._id}`}>
@@ -108,10 +110,4 @@ function mapStateToProps (state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        userActions: bindActionCreators(userActions, dispatch),
-     }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Autos);
+export default connect(mapStateToProps)(Autos);

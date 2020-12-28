@@ -1,6 +1,5 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
-import { SingletonStore } from '../singleton/store';
 
 export const getDistricts = async({search, sort, organization}, client)=>{
     try{
@@ -18,8 +17,6 @@ export const getDistricts = async({search, sort, organization}, client)=>{
                             client
                                 { 
                                     _id
-                                    name
-                                    address
                                 }
                             name
                             agent
@@ -35,7 +32,6 @@ export const getDistricts = async({search, sort, organization}, client)=>{
                             manager
                                 { 
                                     _id
-                                    createdAt
                                     name
                                 }
                         }
@@ -69,19 +65,15 @@ export const getDistrict = async({_id}, client)=>{
                                     _id
                                     image
                                     createdAt
+                                    lastActive
                                     name
                                     email
                                     address
-                                    lastActive
-                                    device
-                                    notification
                                     info
                                     reiting
                                     city
-                                    phone
                                     category
-                                    organization 
-                                        {_id name}
+                                    phone
                                     user 
                                         {_id role status login}
                                 }
@@ -111,7 +103,7 @@ export const getDistrict = async({_id}, client)=>{
     }
 }
 
-export const deleteDistrict = async(ids, organization)=>{
+export const deleteDistrict = async(ids)=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
@@ -122,7 +114,6 @@ export const deleteDistrict = async(ids, organization)=>{
                              data
                         }
                     }`})
-        return await getDistricts({organization: organization, ...(new SingletonStore().getStore().getState().app)})
     } catch(err){
         console.error(err)
     }

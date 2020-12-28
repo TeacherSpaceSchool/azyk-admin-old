@@ -72,7 +72,6 @@ const CardOfflineOrder = React.memo((props) => {
                                 priority: element.priority,
                                 unite: element.unite,
                                 info: element.coment,
-                                usedBonus: element.useBonus,
                                 paymentMethod: element.paymentMethod,
                                 organization: element.organization,
                                 client: element.client,
@@ -100,8 +99,7 @@ const CardOfflineOrder = React.memo((props) => {
 
 function mapStateToProps (state) {
     return {
-        app: state.app,
-        user: state.user
+        app: state.app
     }
 }
 

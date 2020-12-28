@@ -1,6 +1,5 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
-import { SingletonStore } from '../singleton/store';
 
 export const getAgentRoutes = async({search, organization}, client)=>{
     try{
@@ -46,17 +45,15 @@ export const getDistrictsWithoutAgentRoutes = async({organization}, client)=>{
                                     image
                                     createdAt
                                     name
-                                    email
                                     address
                                     lastActive
+                                    category
                                     device
                                     notification
-                                    info
-                                    reiting
                                     city
                                     phone
                                     user 
-                                        {_id role status login}
+                                        {status}
                                 }
                             name
                         }
@@ -92,17 +89,15 @@ export const getAgentRoute = async({_id}, client)=>{
                                             image
                                             createdAt
                                             name
-                                            email
                                             address
                                             lastActive
+                                            category
                                             device
                                             notification
-                                            info
-                                            reiting
                                             city
                                             phone
                                             user 
-                                                {_id role status login}
+                                                {status}
                                         }
                                 }
                             clients
@@ -115,7 +110,7 @@ export const getAgentRoute = async({_id}, client)=>{
     }
 }
 
-export const deleteAgentRoute = async(ids, organization)=>{
+export const deleteAgentRoute = async(ids)=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
@@ -126,7 +121,6 @@ export const deleteAgentRoute = async(ids, organization)=>{
                              data
                         }
                     }`})
-        return await getAgentRoutes({organization: organization, ...(new SingletonStore().getStore().getState().app)})
     } catch(err){
         console.error(err)
     }

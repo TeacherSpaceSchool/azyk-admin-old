@@ -1,9 +1,8 @@
 import React from 'react';
-import { connect } from 'react-redux'
 import cardStyle from '../../src/styleMUI/route/cardRoute'
 import Skeleton from '@material-ui/lab/Skeleton';
 
-const CardRoutePlaceholder = React.memo((props) => {
+const CardRoutePlaceholder = React.memo(() => {
     const classes = cardStyle();
     return (
         <div className={classes.card} style={{height: 210}}>
@@ -12,11 +11,4 @@ const CardRoutePlaceholder = React.memo((props) => {
     );
 })
 
-function mapStateToProps (state) {
-    return {
-        user: state.user,
-        app: state.app
-    }
-}
-
-export default connect(mapStateToProps)(CardRoutePlaceholder)
+export default CardRoutePlaceholder

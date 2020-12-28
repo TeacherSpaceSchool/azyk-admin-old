@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../src/styleMUI/catalog/catalog'
@@ -13,7 +13,6 @@ import Router from 'next/router'
 import BuyBasket from '../components/dialog/BuyBasket'
 import SetPackage from '../components/dialog/SetPackage'
 import { urlMain } from '../redux/constants/other'
-import { getBonusesClient } from '../src/gql/bonusclient'
 import { getClient, getClients } from '../src/gql/client'
 import TextField from '@material-ui/core/TextField';
 import { getClientGqlSsr } from '../src/getClientGQL'
@@ -34,28 +33,30 @@ const Catalog = React.memo((props) => {
     const { profile } = props.user;
     const { data } = props;
     const [clients, setClients] = useState([]);
-    const { search, filter, sort } = props.app;
+    const { search, filter } = props.app;
     const [inputValue, setInputValue] = React.useState('');
     let [searchTimeOut, setSearchTimeOut] = useState(null);
+    let [searchTimeOut1, setSearchTimeOut1] = useState(null);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
+    const initialRender = useRef(true);
     useEffect(() => {
         (async()=>{
-            if (inputValue.length<3) {
+            if (inputValue.length < 3) {
                 setClients([]);
-                if(open)
+                if (open)
                     setOpen(false)
-                if(loading)
+                if (loading)
                     setLoading(false)
             }
             else {
-                if(!loading)
+                if (!loading)
                     setLoading(true)
-                if(searchTimeOut)
+                if (searchTimeOut)
                     clearTimeout(searchTimeOut)
-                searchTimeOut = setTimeout(async()=>{
+                searchTimeOut = setTimeout(async () => {
                     setClients((await getClients({search: inputValue, sort: '-name', filter: 'all'})).clients)
-                    if(!open)
+                    if (!open)
                         setOpen(true)
                     setLoading(false)
                 }, 500)
@@ -68,14 +69,11 @@ const Catalog = React.memo((props) => {
     };
     const [list, setList] = useState(data.brands);
     const [basket, setBasket] = useState({});
-    //let [bonusesClient, setBonusesClient] = useState(data.bonusesClient);
     let [organization, setOrganization] = useState({});
     let [geo, setGeo] = useState(undefined);
     let handleOrganization = async (organization) => {
         await deleteBasketAll()
         setBasket({})
-        /*bonusesClient = (await getBonusesClient({search: '', sort: '-createdAt'})).bonusesClient
-        setBonusesClient(bonusesClient.filter(bonusClient=>bonusClient.bonus.organization._id===organization._id))*/
         setOrganization(organization)
     };
     useEffect(()=>{
@@ -86,7 +84,6 @@ const Catalog = React.memo((props) => {
                 })
 
             if(profile.organization){
-                //setBonusesClient((await getBonusesClient({search: '', sort: '-createdAt'})).bonusesClient)
                 organization = data.brandOrganizations.filter(elem=>elem._id===profile.organization)[0]
                 setOrganization({...organization})
             }
@@ -97,20 +94,31 @@ const Catalog = React.memo((props) => {
     },[])
     useEffect(()=>{
         (async()=>{
-            if(organization._id){
-                setList((await getBrands({organization: organization._id, search: search, sort: '-name'})).brands)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(organization._id) {
+                    if (searchTimeOut1)
+                        clearTimeout(searchTimeOut1)
+                    searchTimeOut1 = setTimeout(async () => {
+                        setList((await getBrands({
+                            organization: organization._id,
+                            search: search,
+                            sort: '-name'
+                        })).brands)
+                        setPagination(100);
+                        forceCheck();
+                        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
+                    }, 500)
+                    setSearchTimeOut1(searchTimeOut1)
+                }
+
             }
         })()
     },[filter, search, organization])
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
-    //let [bonus, setBonus] = useState({});
     let [client, setClient] = useState(data.client);
     let handleClient =  (client) => {
         setClient(client)
-        //setBonus((data.bonusesClient.filter(bonusClient=>bonusClient.client._id===client._id))[0])
         setOpen(false)
     };
     let [allPrice, setAllPrice] = useState(0);
@@ -185,13 +193,15 @@ const Catalog = React.memo((props) => {
         }
     }
     useEffect(()=>{
-        sessionStorage.catalog = JSON.stringify(basket)
-        let keys = Object.keys(basket)
-        allPrice = 0
-        for(let i=0; i<keys.length; i++){
-            allPrice += basket[keys[i]].allPrice
+        if(!initialRender.current) {
+            sessionStorage.catalog = JSON.stringify(basket)
+            let keys = Object.keys(basket)
+            allPrice = 0
+            for (let i = 0; i < keys.length; i++) {
+                allPrice += basket[keys[i]].allPrice
+            }
+            setAllPrice(checkFloat(allPrice))
         }
-        setAllPrice(checkFloat(allPrice))
     },[basket])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
@@ -282,7 +292,7 @@ const Catalog = React.memo((props) => {
                                 price = row.stock
                             else
                                 price = row.price
-                            if(idx<=pagination)
+                            if(idx<pagination)
                                 return(
                                     <LazyLoad scrollContainer={'.App-body'} key={row._id} offset={[186, 0]} debounce={0} once={true}  placeholder={<CardCatalogPlaceholder/>}>
                                         <div>
@@ -399,7 +409,7 @@ const Catalog = React.memo((props) => {
 
 Catalog.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    if(!['суперорганизация', 'организация', 'менеджер', 'агент', 'суперагент'].includes(ctx.store.getState().user.profile.role))
+    if(!['экспедитор', 'суперорганизация', 'организация', 'менеджер', 'агент', 'суперагент', 'суперэкспедитор'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'
@@ -412,7 +422,6 @@ Catalog.getInitialProps = async function(ctx) {
         data: {
             brands: ctx.store.getState().user.profile.organization?(await getBrands({organization: ctx.store.getState().user.profile.organization, search: '', sort: '-name'}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).brands:[],
             organization: {},
-            bonusesClient: [],
             client: ctx.query.client?(await getClient({_id: ctx.query.client}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).client:undefined,
             ...await getBrandOrganizations({search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }

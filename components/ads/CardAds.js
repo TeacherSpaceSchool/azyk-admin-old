@@ -27,7 +27,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 
 const CardAds = React.memo((props) => {
     const classes = cardAdsStyle();
-    const { element, setList, organization, list, items, edit } = props;
+    const { element, setList, organization, list, items, edit, idx } = props;
     const { profile } = props.user;
     const { isMobileApp } = props.app;
     //addCard
@@ -299,7 +299,7 @@ const CardAds = React.memo((props) => {
                                                 editElement.item = item ? item._id : undefined
                                                 if (image) editElement.image = image
                                                 const action = async () => {
-                                                    setList((await setAds(editElement, organization)).adss)
+                                                    await setAds(editElement, organization)
                                                 }
                                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                 showMiniDialog(true)
@@ -311,7 +311,10 @@ const CardAds = React.memo((props) => {
                                         </Button>
                                         <Button onClick={async()=>{
                                             const action = async() => {
-                                                setList((await deleteAds([element._id], organization)).adss)
+                                                await deleteAds([element._id], organization)
+                                                let _list = [...list]
+                                                _list.splice(idx, 1)
+                                                setList(_list)
                                             }
                                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                             showMiniDialog(true)
@@ -321,17 +324,17 @@ const CardAds = React.memo((props) => {
                                         </>
                                             :
                                         <Button onClick={async()=>{
-                                const action = async() => {
-                                await restoreAds([element._id])
-                                let _list = [...list]
-                                _list.splice(_list.indexOf(element), 1)
-                                setList(_list)
-                            }
-                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                showMiniDialog(true)
-                            }} size='small' color='primary'>
-                                Восстановить
-                                </Button>
+                                            const action = async() => {
+                                                await restoreAds([element._id])
+                                                let _list = [...list]
+                                                _list.splice(_list.indexOf(element), 1)
+                                                setList(_list)
+                                            }
+                                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                            showMiniDialog(true)
+                                        }} size='small' color='primary'>
+                                            Восстановить
+                                        </Button>
                                         :
                                         <Button onClick={async()=> {
                                             if (item && count && image && url.length > 0 && title.length > 0) {
@@ -343,7 +346,10 @@ const CardAds = React.memo((props) => {
                                                 setCount(0)
                                                 setItem(undefined)
                                                 const action = async() => {
-                                                    setList((await addAds({xid: xid, count: count, item: item?item._id:undefined, organization: organization, image: image, url: url, title: title, targetItems: targetItems, targetPrice: targetPrice, multiplier: multiplier, targetType: targetType}, organization)).adss)
+                                                    setList([
+                                                        (await addAds({xid: xid, count: count, item: item?item._id:undefined, organization: organization, image: image, url: url, title: title, targetItems: targetItems, targetPrice: targetPrice, multiplier: multiplier, targetType: targetType})).addAds,
+                                                        ...list
+                                                    ])
                                                 }
                                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                 showMiniDialog(true)

@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import CardLotterys from '../components/lotterys/CardLotterys';
 import pageListStyle from '../src/styleMUI/lotterys/lotterysList'
@@ -24,15 +24,26 @@ const Lotterys = React.memo((props) => {
     let [list, setList] = useState(data.lotterys);
     const { search } = props.app;
     const { profile } = props.user;
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            setList((await getLotterys()).lotterys)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    setList((await getLotterys()).lotterys)
+                    setPagination(100);
+                    forceCheck();
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
-    },[search])
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
+    },[search,])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -68,7 +79,7 @@ const Lotterys = React.memo((props) => {
                     {`Всего лотерей: ${list.length}`}
                 </div>
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardLotterysPlaceholder height={height}/>}>
                                 <CardLotterys color={color} element={element}/>

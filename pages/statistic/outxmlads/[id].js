@@ -59,7 +59,7 @@ const OutXMLAds = React.memo((props) => {
             <div className={classes.page}>
                 {districts.length>0?<CardOutXMLAds organization={router.query.id} districts={districts} list={list} setList={setList}/>:null}
                 {list?list.map((element, idx)=> {
-                        if(idx<=pagination)
+                        if(idx<pagination)
                             return(
                                 <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOutXMLAdsPlaceholder height={height}/>}>
                                     <CardOutXMLAds key={element._id} list={list} setList={setList}  districts={districts} idx={idx} element={element}/>

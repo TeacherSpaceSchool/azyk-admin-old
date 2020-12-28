@@ -200,7 +200,7 @@ ClientStatistic.getInitialProps = async function(ctx) {
     if(ctx.query.id==='super')
         ctx.store.getState().app.city = 'Бишкек'
     ctx.store.getState().app.filter = false
-    if(!['admin'].includes(ctx.store.getState().user.profile.role))
+    if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'

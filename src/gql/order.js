@@ -61,7 +61,6 @@ export const getOrders = async(args, client)=>{
                             sync
                             city
                             dateDelivery
-                            usedBonus
                         }
                         sortInvoice {
                             name
@@ -137,7 +136,6 @@ export const getOrdersFromDistrict = async(args, client)=>{
                             taken
                             sync
                             dateDelivery
-                            usedBonus
                         }
                         sortInvoice {
                             name
@@ -214,7 +212,6 @@ export const getOrdersTrash = async(args, client)=>{
                             taken
                             sync
                             dateDelivery
-                            usedBonus
                         }
                     }`,
             })
@@ -353,7 +350,6 @@ export const getOrdersForRouting = async(arg)=>{
                             taken
                             sync
                             dateDelivery
-                            usedBonus
                         }
                     }`,
             })
@@ -450,7 +446,6 @@ export const getOrder = async({_id})=>{
                             taken
                             sync
                             dateDelivery
-                            usedBonus
                         }
                     }`,
             })
@@ -466,8 +461,8 @@ export const addOrders = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($dateDelivery: Date!, $priority: Int!, $info: String, $inv: Boolean, $unite: Boolean, $usedBonus: Boolean, $paymentMethod: String, $organization: ID!, $client: ID!) {
-                        addOrders(priority: $priority, dateDelivery: $dateDelivery, usedBonus: $usedBonus, inv: $inv, unite: $unite, info: $info, paymentMethod: $paymentMethod, organization: $organization, client: $client) {
+                    mutation ($dateDelivery: Date!, $priority: Int!, $info: String, $inv: Boolean, $unite: Boolean, $paymentMethod: String, $organization: ID!, $client: ID!) {
+                        addOrders(priority: $priority, dateDelivery: $dateDelivery, inv: $inv, unite: $unite, info: $info, paymentMethod: $paymentMethod, organization: $organization, client: $client) {
                              data
                         }
                     }`})
@@ -475,6 +470,21 @@ export const addOrders = async(element)=>{
         console.error(err)
     }
 }
+export const acceptOrders = async()=>{
+    try{
+        const client = new SingletonApolloClient().getClient()
+        await client.mutate({
+            mutation : gql`
+                    mutation {
+                        acceptOrders {
+                             data
+                        }
+                    }`})
+    } catch(err){
+        console.error(err)
+    }
+}
+
 
 export const deleteOrders = async(ids)=>{
     try{
@@ -620,7 +630,6 @@ export const setOrder = async(element)=>{
                                 }
                             sync
                             dateDelivery
-                            usedBonus
                         }
                     }`})
         return res.data.setOrder
@@ -634,50 +643,20 @@ export const subscriptionOrder = gql`
     reloadOrder {
       who
       invoice {
-                             _id
+                            _id
+                            agent 
+                                {_id name}
                             createdAt
                             updatedAt
-                            agent
-                                {_id name}
                             allTonnage
                             allSize
-                            orders 
-                                { 
-                                    _id
-                                    createdAt
-                                    updatedAt
-                                    allTonnage
-                                    allSize
-                                    item
-                                        {
-                                            image
-                                            _id
-                                            name    
-                                            stock 
-                                            apiece
-                                            unit
-                                            priotiry
-                                            packaging
-                                            weight
-                                            size
-                                            price
-                                            costPrice
-                                            organization
-                                                {_id name consignation}
-                                        }
-                                    count
-                                    allPrice
-                                    consignment
-                                    returned
-                                    consignmentPrice
-                                    status
-                                 }
                             client 
                                 { 
                                     _id
                                     name
                                     email
                                     phone
+                                    city
                                     user 
                                         {_id }
                                 }
@@ -696,6 +675,7 @@ export const subscriptionOrder = gql`
                             editor
                             number
                             confirmationForwarder
+                            confirmationClient
                             cancelClient
                             district
                             track
@@ -709,11 +689,10 @@ export const subscriptionOrder = gql`
                                 {_id name}
                             cancelForwarder
                             paymentConsignation
-                            confirmationClient
                             taken
                             sync
+                            city
                             dateDelivery
-                            usedBonus
                         }
       type
     }

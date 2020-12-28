@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getOrganizations } from '../../src/gql/organization'
@@ -40,14 +40,25 @@ const AgentRoute = React.memo((props) => {
     const classes = agentRouteStyle();
     const { data } = props;
     const router = useRouter()
-    const {search, isMobileApp } = props.app;
+    const {search, isMobileApp, city } = props.app;
     let [pagination, setPagination] = useState(100);
+    const initialRender = useRef(true);
+    let [organizations, setOrganizations] = useState(data.organizations);
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                setOrganizations((await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations)
+                setOrganization({})
+            }
+        })()
+    },[city])
     const checkPagination = ()=>{
         if(pagination<filtredClient.length){
             setPagination(pagination+100)
         }
     }
-
     let [name, setName] = useState(data.agentRoute?data.agentRoute.name:'');
     let handleName =  (event) => {
         setName(event.target.value)
@@ -71,19 +82,10 @@ const AgentRoute = React.memo((props) => {
     let [dayWeek, setDayWeek] = useState(0);
     const { setMiniDialog, showMiniDialog, showFullDialog, setFullDialog } = props.mini_dialogActions;
     const { showSnackBar } = props.snackbarActions;
-    /*useEffect(()=>{
-        (async()=>{
-            let clients = clients;
-            for(let i=0; i<7; i++){
-                clients[i] = clients[i].filter(client=>(district.client.filter(client1=>client1._id===client)).length>0)
-            }
-            setClients(clients)
-        })()
-    },[])*/
     useEffect(()=>{
         (async()=>{
             if(router.query.id==='new'&&profile.organization){
-                let organzation = data.organizations.filter(organization=>organization._id===profile.organization)
+                let organzation = organizations.filter(organization=>organization._id===profile.organization)
                 setOrganization(organzation[0])
             }
         })()
@@ -107,7 +109,6 @@ const AgentRoute = React.memo((props) => {
                     allClient=district.client.filter(client=>!clients[dayWeek].includes(client._id))
                 else if (selectType == 'Выбраные') {
                     allClient = clients[dayWeek].map(client=>district.client.find(client1=>client1._id===client))
-                    //allClient = allClient.filter(client=>client._id)
                 }
                 let filtredClient = [...allClient]
                 if(search.length>0)
@@ -138,7 +139,7 @@ const AgentRoute = React.memo((props) => {
         })()
     },[search, district])
     return (
-        <App searchShow={true} checkPagination={checkPagination} pageName={data.agentRoute?router.query.id==='new'?'Добавить':data.agentRoute.name:'Ничего не найдено'}>
+        <App cityShow={router.query.id==='new'} searchShow={true} checkPagination={checkPagination} pageName={data.agentRoute?router.query.id==='new'?'Добавить':data.agentRoute.name:'Ничего не найдено'}>
             <Head>
                 <title>{data.agentRoute?router.query.id==='new'?'Добавить':data.agentRoute.name:'Ничего не найдено'}</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -167,7 +168,7 @@ const AgentRoute = React.memo((props) => {
                             <FormControl className={isMobileApp?classes.inputM:classes.inputDF}>
                                 <InputLabel>Организация</InputLabel>
                                 <Select value={organization._id}onChange={handleOrganization}>
-                                    {data.organizations.map((element)=>
+                                    {organizations.map((element)=>
                                         <MenuItem key={element._id} value={element._id} ola={element.name}>{element.name}</MenuItem>
                                     )}
                                 </Select>

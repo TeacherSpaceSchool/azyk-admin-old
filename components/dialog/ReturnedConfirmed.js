@@ -80,7 +80,6 @@ const ReturnedConfirmed =  React.memo(
 
 function mapStateToProps (state) {
     return {
-        mini_dialog: state.mini_dialog,
         app: state.app
     }
 }

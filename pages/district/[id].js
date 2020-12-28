@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getOrganizations } from '../../src/gql/organization'
@@ -38,7 +38,7 @@ const District = React.memo((props) => {
     const classes = districtStyle();
     const { data } = props;
     const router = useRouter()
-    const {search, isMobileApp } = props.app;
+    const {search, isMobileApp, city } = props.app;
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<allClient.length){
@@ -82,10 +82,22 @@ const District = React.memo((props) => {
         setClient([...client])
         setUnselectedClient([...unselectedClient])
     }
+    const initialRender = useRef(true);
+    let [organizations, setOrganizations] = useState(data.organizations);
+    useEffect(()=>{
+        (async()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                setOrganizations((await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations)
+                setOrganization({})
+            }
+        })()
+    },[city])
     useEffect(()=>{
         (async()=>{
             if(router.query.id==='new'&&profile.organization){
-                let organzation = data.organizations.filter(organization=>organization._id===profile.organization)
+                let organzation = organizations.filter(organization=>organization._id===profile.organization)
                 setOrganization(organzation[0])
             }
         })()
@@ -102,7 +114,7 @@ const District = React.memo((props) => {
                     setAgents((await getAgents({_id: organization._id})).agents)
                     setManagers((await getManagers({_id: organization._id})).managers)
                     setEcspeditors((await getEcspeditors({_id: organization._id})).ecspeditors)
-                    setUnselectedClient((await getClientsWithoutDistrict(organization._id)).clientsWithoutDistrict)
+                    setUnselectedClient((await getClientsWithoutDistrict({organization: organization._id, city})).clientsWithoutDistrict)
                 }
             }
         })()
@@ -147,7 +159,7 @@ const District = React.memo((props) => {
         })()
     },[search])
     return (
-        <App searchShow={true} checkPagination={checkPagination} pageName={data.district?router.query.id==='new'?'Добавить':data.district.name:'Ничего не найдено'}>
+        <App cityShow searchShow={true} checkPagination={checkPagination} pageName={data.district?router.query.id==='new'?'Добавить':data.district.name:'Ничего не найдено'}>
             <Head>
                 <title>{data.district?router.query.id==='new'?'Добавить':data.district.name:'Ничего не найдено'}</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -178,7 +190,7 @@ const District = React.memo((props) => {
                                 <FormControl className={isMobileApp?classes.inputM:classes.inputDF}>
                                     <InputLabel>Организация</InputLabel>
                                     <Select value={organization._id}onChange={handleOrganization}>
-                                        {data.organizations.map((element)=>
+                                        {organizations.map((element)=>
                                             <MenuItem key={element._id} value={element._id} ola={element.name}>{element.name}</MenuItem>
                                         )}
                                     </Select>

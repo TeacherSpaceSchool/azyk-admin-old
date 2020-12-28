@@ -3,9 +3,6 @@ import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import cardPageListStyle from '../../src/styleMUI/lotterys/cardLottery'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as snackbarActions from '../../redux/actions/snackbar'
 import CardContent from '@material-ui/core/CardContent';
 import { countdown } from '../../src/lib'
 import Link from 'next/link';
@@ -25,7 +22,7 @@ const CardLottery = React.memo((props) => {
                     <img
                         className={isMobileApp?classes.mediaM:classes.mediaD}
                         src={element.image}
-                        alt={element.title}
+                        alt={element.text}
                     />
                     <CardContent className={classes.title}>
                         <div className={classes.row}>Розыгрыш: &nbsp;
@@ -55,16 +52,8 @@ const CardLottery = React.memo((props) => {
 
 function mapStateToProps (state) {
     return {
-        user: state.user,
         app: state.app
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CardLottery)
+export default connect(mapStateToProps)(CardLottery)

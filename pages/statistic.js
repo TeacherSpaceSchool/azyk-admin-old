@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../src/styleMUI/statistic/statisticsList'
@@ -273,39 +273,44 @@ const Statistic = React.memo((props) => {
     const { profile } = props.user;
     let [showList, setShowList] = useState(props.showList);
     const [expanded, setExpanded] = React.useState(false);
+    const initialRender = useRef(true);
     const handleChange = (panel) => (event, isExpanded) => {
         setExpanded(isExpanded ? panel : false);
     };
     useEffect(()=>{
         (async()=>{
-            showList = {
-                statistic: [],
-                tools: [],
-                integrate: [],
-                load: [],
-                statisticAzykStore: []
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                showList = {
+                    statistic: [],
+                    tools: [],
+                    integrate: [],
+                    load: [],
+                    statisticAzykStore: []
+                }
+                for (let i = 0; i < list.statisticAzykStore.length; i++) {
+                    if (list.statisticAzykStore[i].name.toLowerCase().includes(search.toLowerCase()) && list.statisticAzykStore[i].role.includes(profile.role))
+                        showList.statisticAzykStore.push(list.statisticAzykStore[i])
+                }
+                for (let i = 0; i < list.statistic.length; i++) {
+                    if (list.statistic[i].name.toLowerCase().includes(search.toLowerCase()) && list.statistic[i].role.includes(profile.role))
+                        showList.statistic.push(list.statistic[i])
+                }
+                for (let i = 0; i < list.tools.length; i++) {
+                    if (list.tools[i].name.toLowerCase().includes(search.toLowerCase()) && list.tools[i].role.includes(profile.role))
+                        showList.tools.push(list.tools[i])
+                }
+                for (let i = 0; i < list.integrate.length; i++) {
+                    if (list.integrate[i].name.toLowerCase().includes(search.toLowerCase()) && list.integrate[i].role.includes(profile.role))
+                        showList.integrate.push(list.integrate[i])
+                }
+                for (let i = 0; i < list.load.length; i++) {
+                    if (list.load[i].name.toLowerCase().includes(search.toLowerCase()) && list.load[i].role.includes(profile.role))
+                        showList.load.push(list.load[i])
+                }
+                setShowList({...showList})
             }
-            for(let i=0; i<list.statisticAzykStore.length; i++){
-                if(list.statisticAzykStore[i].name.toLowerCase().includes(search.toLowerCase())&&list.statisticAzykStore[i].role.includes(profile.role))
-                    showList.statisticAzykStore.push(list.statisticAzykStore[i])
-            }
-            for(let i=0; i<list.statistic.length; i++){
-                if(list.statistic[i].name.toLowerCase().includes(search.toLowerCase())&&list.statistic[i].role.includes(profile.role))
-                    showList.statistic.push(list.statistic[i])
-            }
-            for(let i=0; i<list.tools.length; i++){
-                if(list.tools[i].name.toLowerCase().includes(search.toLowerCase())&&list.tools[i].role.includes(profile.role))
-                    showList.tools.push(list.tools[i])
-            }
-            for(let i=0; i<list.integrate.length; i++){
-                if(list.integrate[i].name.toLowerCase().includes(search.toLowerCase())&&list.integrate[i].role.includes(profile.role))
-                    showList.integrate.push(list.integrate[i])
-            }
-            for(let i=0; i<list.load.length; i++){
-                if(list.load[i].name.toLowerCase().includes(search.toLowerCase())&&list.load[i].role.includes(profile.role))
-                    showList.load.push(list.load[i])
-            }
-            setShowList({...showList})
         })()
     },[search])
     return (

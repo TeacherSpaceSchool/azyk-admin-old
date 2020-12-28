@@ -207,7 +207,7 @@ export const restoreEmployment = async(ids)=>{
     }
 }
 
-export const deleteEmployment = async(ids, organization)=>{
+export const deleteEmployment = async(ids)=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
@@ -218,7 +218,6 @@ export const deleteEmployment = async(ids, organization)=>{
                              data
                         }
                     }`})
-        return await getEmployments({organization: organization, ...(new SingletonStore().getStore().getState().app)})
     } catch(err){
         console.error(err)
     }

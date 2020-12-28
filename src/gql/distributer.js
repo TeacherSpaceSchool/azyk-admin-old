@@ -28,37 +28,6 @@ export const getDistributers = async({search, sort}, client)=>{
     }
 }
 
-export const getOrganizationsWithoutDistributer = async(distributer, client)=>{
-    try{
-        client = client? client : new SingletonApolloClient().getClient()
-        let res = await client
-            .query({
-                variables: {distributer: distributer},
-                query: gql`
-                    query ($distributer: ID!) {
-                        organizationsWithoutDistributer(distributer: $distributer) {
-                            _id
-                            createdAt
-                            name
-                            image
-                            address
-                            email
-                            phone
-                            info
-                            miniInfo
-                            reiting
-                            status
-                            accessToClient
-                            consignation
-                        }
-                    }`,
-            })
-        return res.data
-    } catch(err){
-        console.error(err)
-    }
-}
-
 export const getDistributer = async({_id}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()

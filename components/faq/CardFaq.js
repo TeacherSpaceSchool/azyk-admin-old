@@ -21,7 +21,7 @@ import Select from '@material-ui/core/Select';
 
 const CardFaq = React.memo((props) => {
     const classes = cardFaqStyle();
-    const { element, setList } = props;
+    const { element, setList, list, idx } = props;
     const { profile } = props.user;
     const { isMobileApp } = props.app;
     //addCard
@@ -107,7 +107,7 @@ const CardFaq = React.memo((props) => {
                                       if(file!==undefined)editElement.file = file
                                       if(typex!==element.typex)editElement.typex = typex
                                       const action = async() => {
-                                          setList((await setFaq(editElement)).faqs)
+                                          await setFaq(editElement)
                                       }
                                       setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                       showMiniDialog(true)
@@ -116,7 +116,10 @@ const CardFaq = React.memo((props) => {
                                   </Button>
                                   <Button onClick={async()=>{
                                       const action = async() => {
-                                          setList((await deleteFaq([element._id])).faqs)
+                                          await deleteFaq([element._id])
+                                          let _list = [...list]
+                                          _list.splice(idx, 1)
+                                          setList(_list)
                                       }
                                       setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                       showMiniDialog(true)
@@ -128,7 +131,10 @@ const CardFaq = React.memo((props) => {
                                   <Button onClick={async()=> {
                                       if (title.length > 0) {
                                           const action = async() => {
-                                              setList((await addFaq({typex: typex, video: video, file: file, title: title})).faqs)
+                                              setList([
+                                                  (await addFaq({typex: typex, video: video, file: file, title: title})).addFaq,
+                                                  ...list
+                                              ])
                                           }
                                           setFile(undefined)
                                           setTitle('')

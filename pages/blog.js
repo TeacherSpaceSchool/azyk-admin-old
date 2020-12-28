@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import pageListStyle from '../src/styleMUI/blog/blogList'
 import {getBlogs} from '../src/gql/blog'
@@ -19,15 +19,26 @@ const Blog = React.memo((props) => {
     let [list, setList] = useState(data.blogs);
     const { search, sort } = props.app;
     const { profile } = props.user;
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            setList(await getBlogs({search: search, sort: sort}))
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    setList(await getBlogs({search: search, sort: sort}))
+                    setPagination(100);
+                    forceCheck();
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
     },[sort, search])
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
     let height = profile.role==='admin'?390:360
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
@@ -36,7 +47,7 @@ const Blog = React.memo((props) => {
         }
     }
     return (
-        <App checkPagination={checkPagination} searchShow={true} filters={data.filterBlog} sorts={data.sortBlog} pageName='Блог'>
+        <App checkPagination={checkPagination} searchShow={true} sorts={data.sortBlog} pageName='Блог'>
             <Head>
                 <title>Блог</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -51,12 +62,12 @@ const Blog = React.memo((props) => {
                 {`Всего публикаций: ${list.length}`}
             </div>
             <div className={classes.page}>
-                {profile.role==='admin'?<CardBlog setList={setList}/>:null}
+                {profile.role==='admin'?<CardBlog list={list} setList={setList}/>:null}
                 {list?list.map((element, idx)=> {
-                        if(idx<=pagination)
+                        if(idx<pagination)
                             return(
                                 <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardBlogPlaceholder height={height}/>}>
-                                    <CardBlog key={element._id} setList={setList} element={element}/>
+                                    <CardBlog list={list} idx={idx} key={element._id} setList={setList} element={element}/>
                                 </LazyLoad>
                             )}
                 ):null}

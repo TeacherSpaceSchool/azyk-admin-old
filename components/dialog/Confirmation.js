@@ -42,10 +42,8 @@ const Confirmation =  React.memo(
     }
 )
 
-function mapStateToProps (state) {
-    return {
-        mini_dialog: state.mini_dialog,
-    }
+function mapStateToProps () {
+    return {}
 }
 
 function mapDispatchToProps(dispatch) {

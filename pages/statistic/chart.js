@@ -12,15 +12,12 @@ import { getClientGqlSsr } from '../../src/getClientGQL'
 import { getStatisticOrderChart, getActiveOrganization } from '../../src/gql/statistic'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import { bindActionCreators } from 'redux'
 import * as appActions from '../../redux/actions/app'
 import { Chart } from 'react-charts'
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
 import Select from '@material-ui/core/Select';
 
 const ChartStatistic = React.memo((props) => {

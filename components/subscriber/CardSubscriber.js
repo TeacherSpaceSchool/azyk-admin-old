@@ -4,9 +4,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import cardSubscriberStyle from '../../src/styleMUI/subscriber/cardSubscriber'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import {pdDDMMYYHHMM} from '../../src/lib'
-import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 
 
 const NotificationStatistic = React.memo((props) => {
@@ -35,20 +33,6 @@ const NotificationStatistic = React.memo((props) => {
                                 </div>
                             </CardActionArea>
                         </CardContent>
-                        {/*
-                        <CardActions>
-                            <Button onClick={async()=> {
-                                const action = async() => {
-                                    let res = (await deleteSubscriber([element._id])).subscribers
-                                    setList(res)
-                                }
-                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                showMiniDialog(true)
-                            }} size='small' color='primary'>
-                                Удалить
-                            </Button>
-                        </CardActions>
-                        */}
                     </Card>
     );
 })
@@ -60,10 +44,4 @@ function mapStateToProps (state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(NotificationStatistic)
+export default connect(mapStateToProps)(NotificationStatistic)

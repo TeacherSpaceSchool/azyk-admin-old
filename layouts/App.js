@@ -28,8 +28,8 @@ const App = React.memo(props => {
     const { setProfile, logout } = props.userActions;
     const { setIsMobileApp } = props.appActions;
     const { profile, authenticated } = props.user;
-    const { load, search, showAppBar } = props.app;
-    let { checkPagination, sorts, filters, getList, pageName, dates, searchShow, setList, list, defaultOpenSearch, organizations, cityShow } = props;
+    const { load, search, showAppBar, filter } = props.app;
+    let { checkPagination, sorts, filters, pageName, dates, searchShow, setList, list, defaultOpenSearch, organizations, cityShow } = props;
     const router = useRouter();
     const [unread, setUnread] = useState({});
     const [reloadPage, setReloadPage] = useState(false);
@@ -90,16 +90,16 @@ const App = React.memo(props => {
     let subscriptionOrderRes = useSubscription(subscriptionOrder);
     useEffect( ()=>{
         if (
-                subscriptionOrderRes &&
                 authenticated &&
                 profile.role &&
                 'экспедитор' !== profile.role &&
+                subscriptionOrderRes &&
                 subscriptionOrderRes.data &&
                 subscriptionOrderRes.data.reloadOrder &&
                 profile._id !== subscriptionOrderRes.data.reloadOrder.who
         ) {
                 if (router.pathname === '/orders') {
-                    if (subscriptionOrderRes.data.reloadOrder.type === 'ADD'&&!search.length) {
+                    if (subscriptionOrderRes.data.reloadOrder.type === 'ADD'&&!search.length&&!filter.length) {
                         let have = false
                         let _list = [...list]
                         for (let i = 0; i < _list.length; i++) {
@@ -148,62 +148,6 @@ const App = React.memo(props => {
                 }
             }
     },[subscriptionOrderRes.data])
-        /*let subscriptionReturnedRes = useSubscription(subscriptionReturned);
-        if (
-            subscriptionReturnedRes &&
-            authenticated &&
-            profile.role &&
-            'экспедитор' !== profile.role &&
-            subscriptionReturnedRes.data &&
-            subscriptionReturnedRes.data.reloadReturned &&
-            profile._id !== subscriptionReturnedRes.data.reloadReturned.who
-        ) {
-            if (router.pathname === '/returneds') {
-                if (subscriptionReturnedRes.data.reloadReturned.type === 'ADD') {
-                    let have = false
-                    let _list = [...list]
-                    for (let i = 0; i < _list.length; i++) {
-                        if (_list[i]._id === subscriptionOrderRes.data.reloadReturned.returned._id) {
-                            _list[i] = subscriptionOrderRes.data.reloadReturned.returned
-                            have = true
-                        }
-                    }
-                    if (have)
-                        setList([..._list])
-                    else
-                        setList([subscriptionOrderRes.data.reloadReturned.returned, ...list])
-                }
-                else if (subscriptionReturnedRes.data.reloadReturned.type === 'SET') {
-                    let _list = [...list]
-                    for (let i = 0; i < _list.length; i++) {
-                        if (_list[i]._id === subscriptionReturnedRes.data.reloadReturned.returned._id) {
-                            _list[i] = subscriptionReturnedRes.data.reloadReturned.returned
-                        }
-                    }
-                    setList([..._list])
-                }
-                else if (subscriptionReturnedRes.data.reloadReturned.type === 'DELETE') {
-                    let index = 0
-                    let _list = [...list]
-                    for (let i = 0; i < _list.length; i++) {
-                        if (_list[i]._id === subscriptionReturnedRes.data.reloadReturned.returned._id) {
-                            index = i
-                        }
-                    }
-                    _list.splice(index, 1);
-                    setList([..._list])
-                }
-            }
-            else {
-                if (!unread.returneds) {
-                    unread.returneds = true
-                    setUnread({...unread})
-                }
-                if (navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate)
-                    navigator.vibrate(200);
-            }
-        }*/
-
 
     return(
         <div ref={mainWindow} className='App'>
@@ -237,7 +181,7 @@ const App = React.memo(props => {
 function mapStateToProps (state) {
     return {
         user: state.user,
-        app: state.app,
+        app: state.app
     }
 }
 

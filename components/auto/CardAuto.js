@@ -24,7 +24,7 @@ const CardAuto = React.memo((props) => {
     let [number, setNumber] = useState(element&&element.number?element.number:'');
     let [size, setSize] = useState(element&&element.size?element.size:0);
     let [tonnage, setTonnage] = useState(element&&element.tonnage?element.tonnage:0);
-    let [employment, setEmployment] = useState(element&&element.employment?element.employment:{});
+    let [employment, setEmployment] = useState(element&&element.employment?element.employment:undefined);
     return (
            <Card className={isMobileApp?classes.cardM:classes.cardD}>
                 <CardActionArea>
@@ -86,7 +86,7 @@ const CardAuto = React.memo((props) => {
                                             number: number,
                                             organization: organization
                                         }
-                                        if(employment&&employment._id)
+                                        if(employment)
                                             auto.employment = employment._id;
                                         setList([(await addAuto(auto)).addAuto, ...list])
                                         setSize(0)
@@ -109,7 +109,7 @@ const CardAuto = React.memo((props) => {
                                 if(size.length>0&&size!=element.size)editElement.size = checkFloat(size)
                                 if(tonnage.length>0&&tonnage!=element.tonnage)editElement.tonnage = checkFloat(tonnage)
                                 if(number.length>0&&number!==element.number)editElement.number = number
-                                if(employment._id&&employment._id!==element.employment._id)editElement.employment = employment._id
+                                if(!element.employment||employment&&employment._id!==element.employment._id)editElement.employment = employment._id
                                 const action = async() => {
                                     await setAuto(editElement)
                                 }
@@ -142,7 +142,6 @@ const CardAuto = React.memo((props) => {
 function mapStateToProps (state) {
     return {
         app: state.app,
-        user: state.user
     }
 }
 

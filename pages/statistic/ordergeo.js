@@ -24,7 +24,7 @@ const OrderGeoStatistic = React.memo((props) => {
     const initialRender = useRef(true);
     let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [load, setLoad] = useState(true);
-    let [dateStart, setDateStart] = useState(pdDatePicker(new Date()));
+    let [dateStart, setDateStart] = useState(data.dateStart);
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
@@ -167,9 +167,13 @@ OrderGeoStatistic.getInitialProps = async function(ctx) {
             ctx.res.end()
         } else
             Router.push('/contact')
+    let dateStart = new Date()
+    if (dateStart.getHours()<3)
+        dateStart.setDate(dateStart.getDate() - 1)
     return {
         data: {
             ...await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            dateStart: pdDatePicker(dateStart)
         }
     };
 };

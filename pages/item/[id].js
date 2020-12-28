@@ -26,7 +26,6 @@ import * as snackbarActions from '../../redux/actions/snackbar'
 import TextField from '@material-ui/core/TextField';
 import Confirmation from '../../components/dialog/Confirmation'
 import { urlMain } from '../../redux/constants/other'
-import DeliveryDays from '../../components/dialog/DeliveryDays';
 import Typography from '@material-ui/core/Typography';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from 'next/link';
@@ -43,7 +42,6 @@ const Item = React.memo((props) => {
     let [name, setName] = useState(data.item!==null?data.item.name:'');
     let [info, setInfo] = useState(data.item!==null?data.item.info:'');
     let [price, setPrice] = useState(data.item!==null?data.item.price:'');
-    let [deliveryDays, setDeliveryDays] = useState(data.item!==null?data.item.deliveryDays:[]);
     let [subCategory, setSubCategory] = useState(data.item!==null?data.item.subCategory:{});
     const cities = ['Бишкек', 'Кара-Балта', 'Токмок']
     let [city, setCity] = useState(data.item&&data.item.city?data.item.city:'Бишкек');
@@ -88,28 +86,11 @@ const Item = React.memo((props) => {
                 setOrganization(organzation[0])
             }
         })()
-    },[profile])
-    //BUY
-    let [count, setCount] = useState(data.item.apiece?1:packaging);
-    let increment = ()=>{
-        if(!data.item.apiece)
-            count+=packaging
-        else
-            count+=1
-        setCount(count)
-    }
-    let decrement = ()=>{
-        if(!data.item.apiece&&count>packaging)
-            count-=packaging
-        else if(data.item.apiece&&count>1)
-                count-=1
-        setCount(count)
-    }
+    },[])
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { showSnackBar } = props.snackbarActions;
-    let [favorite, setFavorite] = useState(data.item!==null&&data.item.favorite!==undefined?data.item.favorite:[]);
     return (
-        <App filters={data.filterItem} sorts={data.sortItem} pageName={data.item!==null?router.query.id==='new'?'Добавить':data.item.name:'Ничего не найдено'}>
+        <App pageName={data.item!==null?router.query.id==='new'?'Добавить':data.item.name:'Ничего не найдено'}>
             <Head>
                 <title>{data.item!==null?router.query.id==='new'?'Добавить':data.item.name:'Ничего не найдено'}</title>
                 <meta name='description' content={data.item!==null?data.item.info:'Ничего не найдено'} />
@@ -121,7 +102,7 @@ const Item = React.memo((props) => {
                 <link rel='canonical' href={`${urlMain}/item/${router.query.id}`}/>
             </Head>
             {
-                (router.query.id!=='new'&&['client', 'admin'].includes(profile.role)&&data.item.subCategory)?
+                (router.query.id!=='new'&&['client', 'admin'].includes(profile.role)&&data.item&&data.item.subCategory)?
                     <Breadcrumbs style={{margin: 20}} aria-label='breadcrumb'>
                         <Link href='/category'>
                             <a>
@@ -397,13 +378,6 @@ const Item = React.memo((props) => {
                                             />
                                         }
                                         <br/>
-                                        <Button size='small' color='primary' onClick={()=>{
-                                            setMiniDialog('Дни поставки', <DeliveryDays deliveryDays={deliveryDays} setDeliveryDays={setDeliveryDays} edit={true}/>)
-                                            showMiniDialog(true)
-                                        }}>
-                                            Дни поставки для торговых точек
-                                        </Button>
-                                        <br/>
                                         <br/>
                                         <FormControl className={isMobileApp?classes.inputM:classes.inputD}>
                                             <InputLabel>Подкатегория</InputLabel>
@@ -443,7 +417,6 @@ const Item = React.memo((props) => {
                                                                     hit: hit,
                                                                     latest: latest,
                                                                     organization: organization._id,
-                                                                    deliveryDays: deliveryDays,
                                                                     weight: checkFloat(weight),
                                                                     size: checkFloat(size),
                                                                     apiece: apiece,
@@ -483,10 +456,8 @@ const Item = React.memo((props) => {
                                                             if(organization._id!==data.item.organization._id)editElement.organization = organization._id
                                                             if(subCategory._id!==data.item.subCategory._id)editElement.subCategory = subCategory._id
                                                             if(priotiry!==data.item.priotiry)editElement.priotiry = checkInt(priotiry)
-                                                            if(deliveryDays)editElement.deliveryDays = deliveryDays
                                                             const action = async() => {
                                                                 await setItem(editElement, subCategory._id)
-                                                                //Router.push(`/items/${subCategory._id}`)
                                                             }
                                                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                             showMiniDialog(true)
@@ -503,7 +474,7 @@ const Item = React.memo((props) => {
                                                         }
                                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                         showMiniDialog(true)
-                                                    }} size='small' color='primary'>
+                                                    }} size='small' color={status==='active'?'primary':'secondary'}>
                                                         {status==='active'?'Отключить':'Включить'}
                                                     </Button>
                                                     {
@@ -557,12 +528,6 @@ const Item = React.memo((props) => {
                                                 {data.item.organization.name}
                                             </div>
                                         </Link>
-                                        <div className={classes.deliveryDays} onClick={()=>{
-                                            setMiniDialog('Дни поставки', <DeliveryDays deliveryDays={deliveryDays} setDeliveryDays={setDeliveryDays} edit={false}/>)
-                                            showMiniDialog(true)
-                                        }}>
-                                            Дни поставки для торговых точек
-                                        </div>
                                         <br/>
                                         <div className={classes.row}>
                                             {
@@ -624,8 +589,7 @@ Item.getInitialProps = async function(ctx) {
                         subCategory: {_id: ''},
                         organization: {_id: ''},
                         hit: false,
-                        latest: false,
-                        deliveryDays: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
+                        latest: false
                     }
                 },
             ...await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),

@@ -18,8 +18,9 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Confirmation from '../components/dialog/Confirmation'
-import { deleteOrders, getInvoicesSimpleStatistic } from '../src/gql/order'
+import { deleteOrders, getInvoicesSimpleStatistic, acceptOrders } from '../src/gql/order'
 import * as mini_dialogActions from '../redux/actions/mini_dialog'
+import * as appActions from '../redux/actions/app'
 import { bindActionCreators } from 'redux'
 import Badge from '@material-ui/core/Badge';
 const height = 225
@@ -32,6 +33,7 @@ const Orders = React.memo((props) => {
     let [simpleStatistic, setSimpleStatistic] = useState(['0']);
     let [list, setList] = useState(data.invoices);
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
+    const { setFilter } = props.appActions;
     const { search, filter, sort, date, organization, city } = props.app;
     const { profile } = props.user;
     let [paginationWork, setPaginationWork] = useState(true);
@@ -100,15 +102,12 @@ const Orders = React.memo((props) => {
                             showStat?
                                 <>
                                 <br/>
-                                <br/>
                                 {simpleStatistic[1]&&simpleStatistic[1]!=='0'?`Всего сумма: ${simpleStatistic[1]} сом`:null}
                                 {
                                     simpleStatistic[2]&&simpleStatistic[2]!=='0'?
                                         <>
                                         <br/>
-                                        <br/>
                                         {`Всего консигнаций: ${simpleStatistic[2]} сом`}
-                                        <br/>
                                         <br/>
                                         {`Оплачено консигнаций: ${simpleStatistic[3]} сом`}
                                         </>
@@ -119,7 +118,6 @@ const Orders = React.memo((props) => {
                                     simpleStatistic[4]&&simpleStatistic[4]!=='0'?
                                         <>
                                         <br/>
-                                        <br/>
                                         {`Всего тоннаж: ${simpleStatistic[4]} кг`}
                                         </>
                                         :
@@ -128,7 +126,6 @@ const Orders = React.memo((props) => {
                                 {
                                     simpleStatistic[5]&&simpleStatistic[5]!=='0'?
                                         <>
-                                        <br/>
                                         <br/>
                                         {`Всего кубатура: ${simpleStatistic[5]} см³`}
                                         </>
@@ -164,7 +161,7 @@ const Orders = React.memo((props) => {
                         )}
                 ):null}
             </div>
-            {selected.length?
+            {profile.role==='admin'&&(selected.length||filter==='обработка')?
                 <Fab onClick={open} color='primary' aria-label='add' className={classes.fab}>
                     <Badge color='secondary' badgeContent={selected.length}>
                         <SettingsIcon />
@@ -187,23 +184,40 @@ const Orders = React.memo((props) => {
                     horizontal: 'left',
                 }}
             >
-                <MenuItem onClick={async()=>{
-                    const action = async() => {
-                        let _list = [...list]
-                        for(let i=0; i<_list.length; i++){
-                            if(selected.includes(_list[i].idx)) {
-                                _list.splice(i, 1)
-                                i-=1
-                            }
+                {filter==='обработка' ?
+                    <MenuItem onClick={async () => {
+                        const action = async () => {
+                            await acceptOrders()
                         }
-                        setList(_list)
-                        await deleteOrders(selected)
-                    }
-                    setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                    showMiniDialog(true);
-                    setSelected([])
-                    close()
-                }}>Удалить</MenuItem>
+                        setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                        showMiniDialog(true);
+                        setSelected([])
+                        close()
+                    }}>Принять</MenuItem>
+                    :
+                    null
+                }
+                {selected.length ?
+                    <MenuItem onClick={async () => {
+                        const action = async () => {
+                            let _list = [...list]
+                            for (let i = 0; i < _list.length; i++) {
+                                if (selected.includes(_list[i].idx)) {
+                                    _list.splice(i, 1)
+                                    i -= 1
+                                }
+                            }
+                            setList(_list)
+                            await deleteOrders(selected)
+                        }
+                        setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                        showMiniDialog(true);
+                        setSelected([])
+                        close()
+                    }}>Удалить</MenuItem>
+                    :
+                    null
+                }
                 <MenuItem onClick={async()=>{
                     setSelected([])
                     close()
@@ -216,7 +230,7 @@ const Orders = React.memo((props) => {
 Orders.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.city = 'Бишкек'
-    if(!['admin', 'суперорганизация', 'организация', 'менеджер', 'client', 'агент', 'суперагент'].includes(ctx.store.getState().user.profile.role))
+    if(!['экспедитор', 'admin', 'суперорганизация', 'организация', 'менеджер', 'client', 'агент', 'суперагент', 'суперэкспедитор'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {
                 Location: '/contact'
@@ -248,6 +262,7 @@ function mapStateToProps (state) {
 function mapDispatchToProps(dispatch) {
     return {
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
+        appActions: bindActionCreators(appActions, dispatch),
     }
 }
 

@@ -32,7 +32,6 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { checkInt } from '../../../src/lib'
-import client from '../../../src/styleMUI/client/client';
 
 const LotteryEdit = React.memo((props) => {
     const classes = itemStyle();
@@ -315,7 +314,7 @@ const LotteryEdit = React.memo((props) => {
                                                             null
                                                     }
                                                     {tickets?tickets.map((element, idx)=> {
-                                                        if(idx<=pagination)
+                                                        if(idx<pagination)
                                                             return(
                                                                 <CardLotteryTicket element={element} setList={setTickets} list={tickets} idx={idx} lottery={router.query.id}/>
                                                             )}

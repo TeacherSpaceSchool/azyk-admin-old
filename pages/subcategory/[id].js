@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getSubCategorys } from '../../src/gql/subcategory'
@@ -23,25 +23,29 @@ const Subcategory = React.memo((props) => {
     const { data } = props;
     const router = useRouter()
     let [list, setList] = useState(data.subCategorys);
-    let [categorys, setCategorys] = useState([]);
     const { search, filter, sort } = props.app;
-    const { profile, authenticated } = props.user;
+    const { profile } = props.user;
     let height = profile.role==='admin'?189:38
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            if(profile.role==='admin')
-                setCategorys((await getCategorys({search: '', sort: 'name', filter: ''})).categorys)
-        })()
-    },[profile])
-    useEffect(()=>{
-        (async()=>{
-            setList((await getSubCategorys({category: router.query.id, search: search, sort: sort, filter: filter})).subCategorys)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    setList((await getSubCategorys({category: router.query.id, search: search, sort: sort, filter: filter})).subCategorys)
+                    setPagination(100);
+                    forceCheck();
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
     },[filter, sort, search])
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -82,16 +86,16 @@ const Subcategory = React.memo((props) => {
                 </div>
                 {profile.role==='admin'?
                     <>
-                    <SubCardCategory categorys={categorys} category={router.query.id} setList={setList}/>
+                    <SubCardCategory list={list} categorys={data.categorys} setList={setList}/>
                     </>
                     :null}
                 <SubCardCategory element={{_id: 'all', name: 'Все товары'}}/>
                 {data.subCategorys.length>0||router.query.id==='all'?
                     list?list.map((element, idx)=> {
-                        if(idx<=pagination)
+                        if(idx<pagination)
                             return(
                                 <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<SubCardCategoryPlaceholder height={height}/>}>
-                                    <SubCardCategory category={router.query.id} categorys={categorys} setList={setList} element={element}/>
+                                    <SubCardCategory list={list} idx={idx} categorys={data.categorys} setList={setList} element={element}/>
                                 </LazyLoad>
                             )}
                     ):null
@@ -114,7 +118,10 @@ Subcategory.getInitialProps = async function(ctx) {
             Router.push('/contact')
     ctx.store.getState().app.sort = 'name'
     return {
-        data: await getSubCategorys({category: ctx.query.id, search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+        data: {
+            ...await getSubCategorys({category: ctx.query.id, search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...ctx.store.getState().user.profile.role==='admin'?await getCategorys({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{}
+        }
     };
 };
 

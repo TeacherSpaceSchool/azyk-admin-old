@@ -36,15 +36,7 @@ const CardEquipment = React.memo((props) => {
                                 Оборудование:&nbsp;
                             </div>
                             <div className={classes.value}>
-                                {element.name}&nbsp;сом
-                            </div>
-                        </div>
-                        <div className={classes.row}>
-                            <div className={classes.nameField}>
-                                Организация:&nbsp;
-                            </div>
-                            <div className={classes.value}>
-                                {element.organization.name}
+                                {element.name}
                             </div>
                         </div>
                         {
@@ -54,12 +46,11 @@ const CardEquipment = React.memo((props) => {
                                         Клиент:&nbsp;
                                     </div>
                                     <div className={classes.value}>
-                                        {element.client.name}
+                                        {`${element.client.name}${element.client.address&&element.client.address[0]?` (${element.client.address[0][2]?`${element.client.address[0][2]}, `:''}${element.client.address[0][0]})`:''}`}
                                     </div>
                                 </div>
                                 :null
                         }
-
                     </CardContent>
                 </CardActionArea>
                 </Link>

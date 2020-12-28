@@ -21,46 +21,12 @@ const Sign =  React.memo(
     (props) =>{
         let [loginEnter, setLoginEnter] = useState('');
         let [passEnter, setPassEnter] = useState('');
-        let [errorPass, setErrorPass] = useState(false);
-        let [errorPassRepeat, setErrorPassRepeat] = useState(false);
         let handlePassEnter =  (event) => {
             setPassEnter(event.target.value)
         };
         let handleLoginEnter =  (event) => {
             setLoginEnter(event.target.value)
         };
-        let [loginReg, setLoginReg] = useState('');
-        let [passReg, setPassReg] = useState('');
-        let [passRepeatReg, setPassRepeatReg] = useState('');
-        let handlePassReg =  (event) => {
-            setPassReg(event.target.value)
-            if(event.target.value!==passRepeatReg){
-                setErrorPassRepeat(true)
-            }
-            else {
-                setErrorPassRepeat(false)
-            }
-            if(event.target.value.length<8){
-                setErrorPass(true)
-            }
-            else {
-                setErrorPass(false)
-            }
-        };
-        let handlePassRepeatReg =  (event) => {
-            setPassRepeatReg(event.target.value)
-            if(event.target.value!==passReg){
-                setErrorPassRepeat(true)
-            }
-            else {
-                setErrorPassRepeat(false)
-            }
-        };
-        let handleLoginReg =  (event) => {
-            setLoginReg(event.target.value)
-        };
-
-        let [type, setType] = useState('enter');
         let [hide, setHide] = useState('password');
         let handleHide =  () => {
             setHide(!hide)
@@ -68,13 +34,11 @@ const Sign =  React.memo(
         const { error } = props.user;
         const { isMobileApp } = props.app;
         const { showMiniDialog } = props.mini_dialogActions;
-        const { signin, signup } = props.userActions;
+        const { signin } = props.userActions;
         const { classes } = props;
         const width = isMobileApp? (window.innerWidth-112) : 500
         return (
             <div className={classes.main}>
-            {type==='enter'?
-                <>
                 <TextField
                     style={{width: width}}
                     id='standard-search'
@@ -124,80 +88,6 @@ const Sign =  React.memo(
                         Закрыть
                     </Button>
                 </div>
-                </>
-            :
-                <>
-                <TextField
-                    id='standard-search'
-                    label='Логин'
-                    type='login'
-                    className={classes.textField}
-                    margin='normal'
-                    value={loginReg}
-                    onChange={handleLoginReg}
-                    style={{width: width}}
-                />
-                <br/>
-                <FormControl style={{width: width}} className={classNames(classes.margin, classes.textField)}>
-                    <InputLabel htmlFor="adornment-password">Придумайте пароль</InputLabel>
-                    <Input
-                        id="adornment-password"
-                        type={hide ? 'password' : 'text' }
-                        value={passReg}
-                        onChange={handlePassReg}
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton aria-label="Toggle password visibility" onClick={handleHide}>
-                                    {hide ? <VisibilityOff />:<Visibility />  }
-                                </IconButton>
-                            </InputAdornment>
-                        }
-                    />
-                </FormControl>
-                <br/>
-                <FormControl style={{width: width}} className={classNames(classes.margin, classes.textField)}>
-                    <InputLabel htmlFor="adornment-password">Повторите пароль</InputLabel>
-                    <Input
-                        id="adornment-password"
-                        type={hide ? 'password' : 'text' }
-                        value={passRepeatReg}
-                        onChange={handlePassRepeatReg}
-                        endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton aria-label="Toggle password visibility" onClick={handleHide}>
-                                    {hide ? <VisibilityOff />:<Visibility />  }
-                                </IconButton>
-                            </InputAdornment>
-                        }
-                    />
-                </FormControl>
-                <br/>
-                {error?
-                    <div style={{width: width}} className={classes.error_message}>Неверный логин или пароль</div>
-                    :
-                    null
-                }
-                {errorPass?
-                    <div style={{width: width}} className={classes.error_message}>Недостаточная длина пароля</div>
-                    :
-                    null
-                }
-                {errorPassRepeat?
-                    <div style={{width: width}} className={classes.error_message}>Пароли не совпадают</div>
-                    :
-                    null
-                }
-                <br/>
-                <div>
-                    <Button variant="contained" color="primary" onClick={()=>{if(!errorPass&&!errorPassRepeat)signup({login: loginReg, password: passReg})}} className={classes.button}>
-                        Зарегистрироваться
-                    </Button>
-                    <Button variant="contained" color="secondary" onClick={()=>{showMiniDialog(false);}} className={classes.button}>
-                        Закрыть
-                    </Button>
-                </div>
-                </>
-            }
             </div>
         );
     }
@@ -205,7 +95,6 @@ const Sign =  React.memo(
 
 function mapStateToProps (state) {
     return {
-        mini_dialog: state.mini_dialog,
         user: state.user,
         app: state.app
     }

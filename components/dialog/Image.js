@@ -8,7 +8,7 @@ import dialogContentStyle from '../../src/styleMUI/dialogContent'
 
 const Image =  React.memo(
     (props) =>{
-        const { classes, imgSrc } = props;
+        const { imgSrc } = props;
         const { showFullDialog } = props.mini_dialogActions;
         return (
             <img style={{
@@ -21,9 +21,7 @@ const Image =  React.memo(
 )
 
 function mapStateToProps () {
-    return {
-
-    }
+    return {}
 }
 
 function mapDispatchToProps(dispatch) {

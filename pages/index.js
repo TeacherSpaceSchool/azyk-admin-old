@@ -2,12 +2,9 @@ import Head from 'next/head';
 import React, { useState, useEffect, useRef } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as userActions from '../redux/actions/user'
-import { getBrandOrganizations, getPopularItems } from '../src/gql/items'
+import { getBrandOrganizations/*, getPopularItems */} from '../src/gql/items'
 import pageListStyle from '../src/styleMUI/organization/orgaizationsList'
 import CardBrand from '../components/brand/CardBrand'
-import CardPopularItem from '../components/items/CardPopularItem'
 import { urlMain } from '../redux/constants/other'
 import LazyLoad from 'react-lazyload';
 import { forceCheck } from 'react-lazyload';
@@ -15,15 +12,16 @@ import CardBrandPlaceholder from '../components/brand/CardBrandPlaceholder'
 import { getClientGqlSsr } from '../src/getClientGQL'
 import initialApp from '../src/initialApp'
 import Router from 'next/router'
+//import CardPopularItem from '../components/items/CardPopularItem'
 
 const Organization = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
-    let [list, setList] = useState(data.brandOrganizations);
-    const { search, filter, sort, isMobileApp, city } = props.app;
+     const { search, filter, sort, isMobileApp, city } = props.app;
     const { profile } = props.user;
     const height = 80
-    const popularItemsRef = useRef(null);
+     let [list, setList] = useState(data.brandOrganizations);
+    /*const popularItemsRef = useRef(null);
     const widthPopularItemsRef = useRef(0);
     const searchTimeOutRef = useRef(null);
     let [widthPopularItem, setWidthPopularItem] = useState(0);
@@ -54,17 +52,33 @@ const Organization = React.memo((props) => {
         return ()=>{
             clearInterval(searchTimeOutRef.current)
         }
-    }, []);
+    }, []);*/
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            list = (await getBrandOrganizations({search: search, sort: sort, filter: filter, city: city})).brandOrganizations
-            setList(list)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    list = (await getBrandOrganizations({
+                        search: search,
+                        sort: sort,
+                        filter: filter,
+                        city: city
+                    })).brandOrganizations;
+                    setList(list);
+                    setPagination(100);
+                    forceCheck();
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
     },[filter, sort, search, city])
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -72,7 +86,7 @@ const Organization = React.memo((props) => {
         }
     }
     return (
-        <App cityShow checkPagination={checkPagination} searchShow={true} filters={data.filterOrganization} sorts={data.sortOrganization} pageName='Бренды'>
+        <App cityShow checkPagination={checkPagination} searchShow={true} filters={data.filterOrganization} pageName='Бренды'>
             <Head>
                 <title>Бренды</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -80,19 +94,22 @@ const Organization = React.memo((props) => {
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
-                <meta property="og:url" content={`${urlMain}/brands`} />
+                <meta property='og:url' content={`${urlMain}/brands`} />
                 <link rel='canonical' href={`${urlMain}/brands`}/>
             </Head>
             <div className='count'>
                 {`Всего брендов: ${list.length}`}
             </div>
             {
-                /*profile.role==='client'&&*/isMobileApp?
+                profile.role==='client'&&isMobileApp?
                     <div className={classes.scrollDown} onClick={()=>{
                         let appBody = (document.getElementsByClassName('App-body'))[0]
                         appBody.scroll({top: appBody.offsetHeight+appBody.scrollTop-122, left: 0, behavior: 'smooth' })
                     }}>
-                        ▼ЕЩЕ БРЕНДЫ▼
+                        <div className={classes.scrollDownContainer}>
+                            ▼ЕЩЕ БРЕНДЫ▼
+                            <div className={classes.scrollDownDiv}/>
+                        </div>
                     </div>
                     :
                     null
@@ -105,9 +122,9 @@ const Organization = React.memo((props) => {
                     :
                     null
             */}
-            <div className={classes.page} style={{paddingTop: profile.role==='client'&&data.popularItems&&data.popularItems.length>0&&widthPopularItem?10:10}}>
+            <div className={classes.page}>
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardBrandPlaceholder height={height}/>}>
                                 <CardBrand key={element._id} element={element}/>
@@ -138,7 +155,7 @@ Organization.getInitialProps = async function(ctx) {
     return {
         data: {
             ...await getBrandOrganizations({search: '', sort: ctx.store.getState().app.sort, filter: '', city: ctx.store.getState().app.city}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            ...await getPopularItems(ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            //...await getPopularItems(ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };
 };
@@ -150,10 +167,4 @@ function mapStateToProps (state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        userActions: bindActionCreators(userActions, dispatch),
-     }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Organization);
+export default connect(mapStateToProps)(Organization);

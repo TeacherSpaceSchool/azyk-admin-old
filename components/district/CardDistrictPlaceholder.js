@@ -12,11 +12,4 @@ const CardDistrictPlaceholder = React.memo(() => {
     );
 })
 
-function mapStateToProps (state) {
-    return {
-        user: state.user,
-        app: state.app
-    }
-}
-
-export default connect(mapStateToProps)(CardDistrictPlaceholder)
+export default CardDistrictPlaceholder

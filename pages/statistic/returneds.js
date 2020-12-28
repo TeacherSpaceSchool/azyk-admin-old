@@ -26,7 +26,7 @@ const ReturnedStatistic = React.memo((props) => {
     const { profile } = props.user;
     const initialRender = useRef(true);
     let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
-    let [dateStart, setDateStart] = useState(pdDatePicker(new Date()));
+    let [dateStart, setDateStart] = useState(data.dateStart);
     let [dateType, setDateType] = useState('day');
     let [statisticReturned, setStatisticReturned] = useState(undefined);
     let [showStat, setShowStat] = useState(false);
@@ -165,9 +165,13 @@ ReturnedStatistic.getInitialProps = async function(ctx) {
             ctx.res.end()
         } else
             Router.push('/contact')
+    let dateStart = new Date()
+    if (dateStart.getHours()<3)
+        dateStart.setDate(dateStart.getDate() - 1)
     return {
         data: {
             ...await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            dateStart: pdDatePicker(dateStart)
         }
     };
 };

@@ -1,9 +1,7 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import * as userActions from '../../redux/actions/user'
 import { getAutos } from '../../src/gql/auto'
 import { getEcspeditors } from '../../src/gql/employment'
 import pageListStyle from '../../src/styleMUI/auto/autoList'
@@ -25,15 +23,26 @@ const Autos = React.memo((props) => {
     const { profile } = props.user;
     const router = useRouter()
     let height = ['организация', 'admin'].includes(profile.role)?213:167
+    let [searchTimeOut, setSearchTimeOut] = useState(null);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
-            setList((await getAutos({search: search, sort: sort, organization: router.query.id})).autos)
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                if(searchTimeOut)
+                    clearTimeout(searchTimeOut)
+                searchTimeOut = setTimeout(async()=>{
+                    setList((await getAutos({search: search, sort: sort, organization: router.query.id})).autos)
+                    setPagination(100);
+                    forceCheck();
+                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                }, 500)
+                setSearchTimeOut(searchTimeOut)
+
+            }
         })()
     },[sort, search])
-    useEffect(()=>{
-        setPagination(100)
-        forceCheck()
-    },[list])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -59,7 +68,7 @@ const Autos = React.memo((props) => {
             <div className={classes.page}>
                 <CardAuto organization={router.query.id} list={list} employments={data.ecspeditors} setList={setList}/>
                 {list?list.map((element, idx)=> {
-                    if(idx<=pagination)
+                    if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardAutoPlaceholder height={height}/>}>
                                 <CardAuto organization={router.query.id} list={list} employments={data.ecspeditors} idx={idx} key={element._id} setList={setList} element={element}/>
@@ -96,10 +105,4 @@ function mapStateToProps (state) {
     }
 }
 
-function mapDispatchToProps(dispatch) {
-    return {
-        userActions: bindActionCreators(userActions, dispatch),
-     }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(Autos);
+export default connect(mapStateToProps)(Autos);

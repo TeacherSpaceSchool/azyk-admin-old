@@ -8,7 +8,6 @@ import cardRouteStyle from '../../src/styleMUI/route/cardRoute'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
-import * as snackbarActions from '../../redux/actions/snackbar'
 import { deleteRoute } from '../../src/gql/route'
 import Link from 'next/link';
 import { pdDDMMYYYYWW } from '../../src/lib'
@@ -85,8 +84,7 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
-        snackbarActions: bindActionCreators(snackbarActions, dispatch),
+        mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch)
     }
 }
 

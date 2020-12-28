@@ -1,6 +1,5 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
-import { SingletonStore } from '../singleton/store';
 
 export const getNotificationStatistics = async({search: search}, client)=>{
     try{
@@ -33,15 +32,24 @@ export const getNotificationStatistics = async({search: search}, client)=>{
 export const addNotificationStatistic = async(element)=>{
     try{
         const client = new SingletonApolloClient().getClient()
-        await client.mutate({
+        let res = await client.mutate({
             variables: element,
             mutation : gql`
                     mutation ($text: String!, $title: String!, $tag: String, $url: String, $icon: Upload) {
                         addNotificationStatistic(text: $text, title: $title, tag: $tag, url: $url, icon: $icon) {
-                             data
+                            _id
+                            createdAt
+                            title
+                            text
+                            delivered
+                            failed
+                            tag
+                            url
+                            icon
+                            click
                         }
                     }`})
-        return await getNotificationStatistics(new SingletonStore().getStore().getState().app)
+        return res.data
     } catch(err){
         console.error(err)
     }
