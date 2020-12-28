@@ -296,7 +296,7 @@ const AgentRoute = React.memo((props) => {
                                                           once={true}
                                                           placeholder={<CardClientPlaceholder height={height}/>}>
                                                     <div>
-                                                        <CardClient element={element}/>
+                                                        <CardClient element={element} buy/>
                                                     </div>
                                                 </LazyLoad>
                                             </div>

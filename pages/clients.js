@@ -88,7 +88,7 @@ const Client = React.memo((props) => {
                     return(
                         <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]}
                                   debounce={0} once={true} placeholder={<CardClientPlaceholder height={height}/>}>
-                            <CardClient list={list} idx={idx} key={element._id} setList={setList} element={element}/>
+                            <CardClient buy list={list} idx={idx} key={element._id} setList={setList} element={element}/>
                         </LazyLoad>
                     )}
                 ):null}

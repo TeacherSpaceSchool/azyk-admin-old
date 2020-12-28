@@ -21,7 +21,7 @@ import {getGeoDistance} from '../../src/lib'
 
 const CardOrganization = React.memo((props) => {
     const classes = cardOrganizationStyle();
-    const { element, setList, idx, list } = props;
+    const { element, setList, idx, list, buy } = props;
     const { isMobileApp } = props.app;
     const { profile } = props.user;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
@@ -168,7 +168,7 @@ const CardOrganization = React.memo((props) => {
             </CardActionArea>
             <CardActions>
                 {
-                    ['агент', 'суперагент'].includes(profile.role) ?
+                    ['агент', 'суперагент'].includes(profile.role)&&buy ?
                         <>
                         <Button onClick={async()=>{
                             window.open(`/catalog?client=${element._id}`, '_blank');

@@ -310,7 +310,7 @@ const District = React.memo((props) => {
                                                               height={height} offset={[height, 0]} debounce={0}
                                                               once={true}
                                                               placeholder={<CardClientPlaceholder height={height}/>}>
-                                                        <CardClient element={element}/>
+                                                        <CardClient buy={client.includes(element)} element={element}/>
                                                     </LazyLoad>
                                                 </div>
                                         )

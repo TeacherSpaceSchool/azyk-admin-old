@@ -33,7 +33,7 @@ const Orders = React.memo((props) => {
     let [simpleStatistic, setSimpleStatistic] = useState(['0']);
     let [list, setList] = useState(data.invoices);
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
-    const { setFilter } = props.appActions;
+    const { showLoad } = props.appActions;
     const { search, filter, sort, date, organization, city } = props.app;
     const { profile } = props.user;
     let [paginationWork, setPaginationWork] = useState(true);
@@ -48,9 +48,13 @@ const Orders = React.memo((props) => {
         }
     }
     const getList = async ()=>{
+        setSelected([])
         let orders = (await getOrders({search: search, sort: sort, filter: filter, date: date, skip: 0, organization: organization, city: city})).invoices
         setList(orders)
         setSimpleStatistic((await getInvoicesSimpleStatistic({search: search, filter: filter, date: date, organization: organization, city: city})).invoicesSimpleStatistic)
+        forceCheck()
+        setPaginationWork(true);
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
     }
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     useEffect(()=>{
@@ -62,16 +66,21 @@ const Orders = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    setSelected([])
                     await getList()
-                    forceCheck()
-                    setPaginationWork(true);
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
             }
         })()
-    },[filter, sort, search, date, organization, city])
+    },[search])
+    useEffect(()=>{
+        (async ()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
+            } else {
+                await getList()
+            }
+        })()
+    },[filter, sort, date, organization, city])
     let [showStat, setShowStat] = useState(false);
     let [selected, setSelected] = useState([]);
     let [anchorEl, setAnchorEl] = useState(null);

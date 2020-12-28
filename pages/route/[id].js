@@ -642,7 +642,7 @@ Route.getInitialProps = async function(ctx) {
     return {
         data: {
             route: (await getRoute({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).route,
-            organizations: [...ctx.store.getState().user.profile.role==='admin'?[{name: 'AZYK.STORE', _id: 'super'}]:[], ...(await getActiveOrganization('Бишкек', ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]
+            organizations: ctx.query.id==='new'?[...ctx.store.getState().user.profile.role==='admin'?[{name: 'AZYK.STORE', _id: 'super'}]:[], ...(await getActiveOrganization('Бишкек', ctx.req?await getClientGqlSsr(ctx.req):undefined)).activeOrganization]:[]
         }
     };
 };
