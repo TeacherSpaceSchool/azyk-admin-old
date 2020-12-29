@@ -29,7 +29,7 @@ const height = 225
 const Orders = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
-    const initialRender = useRef(true);
+    const initialRender = useRef([true, true]);
     let [simpleStatistic, setSimpleStatistic] = useState(['0']);
     let [list, setList] = useState(data.invoices);
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
@@ -59,8 +59,8 @@ const Orders = React.memo((props) => {
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     useEffect(()=>{
         (async ()=>{
-            if(initialRender.current) {
-                initialRender.current = false;
+            if(initialRender.current[0]) {
+                initialRender.current[0] = false;
                 setSimpleStatistic((await getInvoicesSimpleStatistic({search: search, filter: filter, date: date, organization: organization, city: city})).invoicesSimpleStatistic)
             } else {
                 if(searchTimeOut)
@@ -74,10 +74,12 @@ const Orders = React.memo((props) => {
     },[search])
     useEffect(()=>{
         (async ()=>{
-            if(initialRender.current) {
-                initialRender.current = false;
+            if(initialRender.current[1]) {
+                initialRender.current[1] = false;
             } else {
+                showLoad(true)
                 await getList()
+                showLoad(false)
             }
         })()
     },[filter, sort, date, organization, city])

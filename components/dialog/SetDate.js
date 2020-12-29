@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
@@ -13,7 +13,13 @@ import { pdDatePicker } from '../../src/lib'
 const SetDate =  React.memo(
     (props) =>{
         const { classes } = props;
-        let [dateChange, setDateChange] = useState(pdDatePicker(new Date()));
+        let [dateChange, setDateChange] = useState();
+        useEffect(()=>{
+            let dateStart = new Date()
+            if (dateStart.getHours()<3)
+                dateStart.setDate(dateStart.getDate() - 1)
+            setDateChange(pdDatePicker(dateStart))
+        }, []);
         const { isMobileApp } = props.app;
         const { showMiniDialog } = props.mini_dialogActions;
         const { setDate } = props.appActions;
