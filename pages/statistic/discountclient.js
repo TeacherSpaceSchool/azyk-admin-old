@@ -29,9 +29,11 @@ import * as snackbarActions from '../../redux/actions/snackbar'
 import dynamic from 'next/dynamic'
 import { getDistributer } from '../../src/gql/distributer'
 import { checkInt } from '../../src/lib'
+import { forceCheck } from 'react-lazyload';
 
 const height = 225
 const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'))
+const SetDiscountClient = dynamic(() => import('../../components/dialog/SetDiscountClient'))
 
 const DiscountClient = React.memo((props) => {
     const classes = pageListStyle();
@@ -132,6 +134,7 @@ const DiscountClient = React.memo((props) => {
                         ((element.address.filter(addres=>addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length>0)
                     )
                 setFiltredClients([...filtredClient])
+                forceCheck()
             }
         })()
     },[search, allClients])
@@ -221,9 +224,9 @@ const DiscountClient = React.memo((props) => {
                 {filtredClients?filtredClients.map((element, idx)=> {
                     if (idx <= pagination) {
                         return (
-                            <div key={idx} style={{alignItems: 'baseline'}} className={classes.column1}>
-                                <div className={classes.row1}>
-                                    <div style={{alignItems: 'center'}} className={classes.column1}>
+                            <div key={element._id} className={classes.column1}>
+                                <div className={classes.row1} style={{...isMobileApp?{justifyContent: 'center'}:{alignItems: 'baseline'}}}>
+                                    <div style={{alignItems: 'center'}} className={isMobileApp?classes.row1:classes.column}>
                                         <Checkbox checked={selectedClients.includes(element._id)}
                                                   onChange={() => {
                                                       if (!selectedClients.includes(element._id)) {
@@ -234,7 +237,7 @@ const DiscountClient = React.memo((props) => {
                                                       setSelectedClients([...selectedClients])
                                                   }}
                                         />
-                                        <h2 style={{color: '#ffb300'}}>{discountClients[element._id]?discountClients[element._id].discount:0}%</h2>
+                                        <b style={{color: '#ffb300'}}>{discountClients[element._id]?discountClients[element._id].discount:0}%</b>
                                     </div>
                                     <LazyLoad scrollContainer={'.App-body'} key={element._id}
                                               height={height} offset={[height, 0]} debounce={0}
@@ -266,6 +269,16 @@ const DiscountClient = React.memo((props) => {
                     horizontal: 'left',
                 }}
             >
+                {
+                    organization&&organization._id?
+                        <MenuItem onClick={async()=>{
+                            setMiniDialog('По клиенту', <SetDiscountClient discountClients={discountClients} setDiscountClients={setDiscountClients} organization={organization}/>);
+                            showMiniDialog(true)
+                            close()
+                        }}>По клиенту</MenuItem>
+                        :
+                        null
+                }
                 <MenuItem onClick={async()=>{
                     if(selectedClients.length>0){
                         const action = async() => {

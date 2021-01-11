@@ -31,6 +31,7 @@ import LazyLoad from 'react-lazyload';
 import VerticalAlignBottom from '@material-ui/icons/VerticalAlignBottom';
 import VerticalAlignTop from '@material-ui/icons/VerticalAlignTop';
 import GeoRouteAgent from '../../components/dialog/GeoRouteAgent'
+import { forceCheck } from 'react-lazyload';
 const height = 140
 
 const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'))
@@ -49,7 +50,7 @@ const AgentRoute = React.memo((props) => {
             if(initialRender.current) {
                 initialRender.current = false;
             } else {
-                setOrganizations((await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations)
+                setOrganizations((await getOrganizations({search: '', filter: '', city: city})).organizations)
                 setOrganization({})
             }
         })()
@@ -129,7 +130,6 @@ const AgentRoute = React.memo((props) => {
                 let filtredClient = [...allClient]
                 if(search.length>0)
                     filtredClient = filtredClient.filter(element=>
-                        ((element.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
                         (element.name.toLowerCase()).includes(search.toLowerCase())||
                         ((element.address.filter(addres=>addres[0]&&addres[0].toLowerCase().includes(search.toLowerCase()))).length>0)||
                         ((element.address.filter(addres=>addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length>0)
@@ -138,6 +138,11 @@ const AgentRoute = React.memo((props) => {
             }
         })()
     },[search, district])
+    useEffect(()=>{
+        (async()=>{
+            forceCheck()
+        })()
+    },[filtredClient])
     return (
         <App cityShow={router.query.id==='new'} searchShow={true} checkPagination={checkPagination} pageName={data.agentRoute?router.query.id==='new'?'Добавить':data.agentRoute.name:'Ничего не найдено'}>
             <Head>
@@ -238,7 +243,7 @@ const AgentRoute = React.memo((props) => {
                                     if (idx <= pagination) {
                                         let selected = clients[dayWeek].includes(element._id)
                                         return (
-                                            <div key={idx} style={isMobileApp ? {alignItems: 'baseline'} : {}}
+                                            <div key={element._id} style={isMobileApp ? {alignItems: 'baseline'} : {}}
                                                  className={isMobileApp ? classes.column : classes.row}>
                                                 <div className={isMobileApp ? classes.row : classes.column}>
                                                     <Checkbox checked={selected}
@@ -387,7 +392,7 @@ AgentRoute.getInitialProps = async function(ctx) {
     return {
         data: {
             ...ctx.query.id!=='new'?await getAgentRoute({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined): {agentRoute: {organization: {}, clients: [[],[],[],[],[],[],[]], name: '', district: {}}},
-            organizations: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations]
+            organizations: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getOrganizations({search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations]
         }
     };
 };

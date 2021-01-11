@@ -29,7 +29,7 @@ let getMuiTheme = () => createMuiTheme({
 const MyTable =  React.memo(
     (props) =>{
         const { columns, row, type } = props;
-        let data = row.map(row=>row.data)
+        let data = row.map((row, idx)=>[idx+1, ...row.data])
         const options = {
             customSort: (data, colIndex, order) => {
                 data = data.sort(function(a, b) {
@@ -58,7 +58,7 @@ const MyTable =  React.memo(
                 <MuiThemeProvider theme={getMuiTheme()}>
                     <MUIDataTable
                         data={data}
-                        columns={columns}
+                        columns={['#', ...columns]}
                         options={options}
                     />
                 </MuiThemeProvider>

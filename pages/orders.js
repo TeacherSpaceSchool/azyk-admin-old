@@ -29,7 +29,7 @@ const height = 225
 const Orders = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
-    const initialRender = useRef([true, true]);
+    const initialRender = useRef(true);
     let [simpleStatistic, setSimpleStatistic] = useState(['0']);
     let [list, setList] = useState(data.invoices);
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
@@ -49,18 +49,26 @@ const Orders = React.memo((props) => {
     }
     const getList = async ()=>{
         setSelected([])
-        let orders = (await getOrders({search: search, sort: sort, filter: filter, date: date, skip: 0, organization: organization, city: city})).invoices
-        setList(orders)
-        setSimpleStatistic((await getInvoicesSimpleStatistic({search: search, filter: filter, date: date, organization: organization, city: city})).invoicesSimpleStatistic)
+        setList((await getOrders({search: search, sort: sort, filter: filter, date: date, skip: 0, organization: organization, city: city})).invoices)
+        setSimpleStatistic((await getInvoicesSimpleStatistic({search: search, filter: filter, date: date, organization: organization, city: city})).invoicesSimpleStatistic);
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         forceCheck()
         setPaginationWork(true);
-        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
-    }
+     }
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     useEffect(()=>{
         (async ()=>{
-            if(initialRender.current[0]) {
-                initialRender.current[0] = false;
+            if(!initialRender.current) {
+                showLoad(true)
+                await getList()
+                showLoad(false)
+            }
+        })()
+    },[filter, sort, date, organization, city])
+    useEffect(()=>{
+        (async ()=>{
+            if(initialRender.current) {
+                initialRender.current = false;
                 setSimpleStatistic((await getInvoicesSimpleStatistic({search: search, filter: filter, date: date, organization: organization, city: city})).invoicesSimpleStatistic)
             } else {
                 if(searchTimeOut)
@@ -72,17 +80,6 @@ const Orders = React.memo((props) => {
             }
         })()
     },[search])
-    useEffect(()=>{
-        (async ()=>{
-            if(initialRender.current[1]) {
-                initialRender.current[1] = false;
-            } else {
-                showLoad(true)
-                await getList()
-                showLoad(false)
-            }
-        })()
-    },[filter, sort, date, organization, city])
     let [showStat, setShowStat] = useState(false);
     let [selected, setSelected] = useState([]);
     let [anchorEl, setAnchorEl] = useState(null);

@@ -88,6 +88,11 @@ const list = {
             role: ['admin', 'суперорганизация']
         },
         {
+            name: 'Статистика девайсов',
+            link: '/statistic/device',
+            role: ['admin']
+        },
+        {
             name: 'Статистика дистрибьюторов',
             link: '/statistic/distributer',
             role: ['admin', 'суперорганизация']
@@ -106,6 +111,11 @@ const list = {
             name: 'Статистика клиентов',
             link: '/statistic/clients',
             role: ['admin', 'суперорганизация']
+        },
+        {
+            name: 'Статистика мерчендайзинга',
+            link: '/statistic/merchandising',
+            role: ['admin', 'суперорганизация', 'организация']
         },
         {
             name: 'Статистика товаров',
@@ -339,7 +349,7 @@ const Statistic = React.memo((props) => {
                             </ExpansionPanelSummary>
                             <ExpansionPanelDetails className={classes.page}>
                                 {showList.load.map((element, idx)=>
-                                    <Link key={idx} href={element.link}>
+                                    <Link key={`unload${idx}`} href={element.link}>
                                         <Card className={isMobileApp?classes.cardM:classes.cardD}>
                                             <CardActionArea>
                                                 <div className={classes.line}>
@@ -369,7 +379,7 @@ const Statistic = React.memo((props) => {
                             </ExpansionPanelSummary>
                             <ExpansionPanelDetails className={classes.page} >
                                 {showList.tools.map((element, idx)=>
-                                    <Link key={idx} href={element.link}>
+                                    <Link key={`tool${idx}`} href={element.link}>
                                         <Card className={isMobileApp?classes.cardM:classes.cardD}>
                                             <CardActionArea>
                                                 <div className={classes.line}>
@@ -399,7 +409,7 @@ const Statistic = React.memo((props) => {
                             </ExpansionPanelSummary>
                             <ExpansionPanelDetails className={classes.page} >
                                 {showList.integrate.map((element, idx)=>
-                                    <Link key={idx} href={element.link}>
+                                    <Link key={`integrate${idx}`} href={element.link}>
                                         <Card className={isMobileApp?classes.cardM:classes.cardD}>
                                             <CardActionArea>
                                                 <div className={classes.line}>
@@ -429,7 +439,7 @@ const Statistic = React.memo((props) => {
                             </ExpansionPanelSummary>
                             <ExpansionPanelDetails className={classes.page} >
                                 {showList.statistic.map((element, idx)=>
-                                    <Link key={idx} href={element.link}>
+                                    <Link key={`stat${idx}`} href={element.link}>
                                         <Card className={isMobileApp?classes.cardM:classes.cardD}>
                                             <CardActionArea>
                                                 <div className={classes.line}>
@@ -459,7 +469,7 @@ const Statistic = React.memo((props) => {
                             </ExpansionPanelSummary>
                             <ExpansionPanelDetails className={classes.page} >
                                 {showList.statisticAzykStore.map((element, idx)=>
-                                    <Link key={idx} href={element.link}>
+                                    <Link key={`statAzykStore${idx}`} href={element.link}>
                                         <Card className={isMobileApp?classes.cardM:classes.cardD}>
                                             <CardActionArea>
                                                 <div className={classes.line}>

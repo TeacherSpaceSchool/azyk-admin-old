@@ -32,9 +32,11 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import { forceCheck } from 'react-lazyload';
 
 const height = 225
 const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'))
+const SetDeliveryDate = dynamic(() => import('../../components/dialog/SetDeliveryDate'))
 const GeoSelectClient = dynamic(() => import('../../components/dialog/GeoSelectClient'))
 
 const LogistiOorder = React.memo((props) => {
@@ -132,6 +134,7 @@ const LogistiOorder = React.memo((props) => {
                         ((element.address.filter(addres=>addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length>0)
                     )
                 setFiltredClients([...filtredClient])
+                forceCheck()
             }
         })()
     },[search, allClients])
@@ -261,7 +264,7 @@ const LogistiOorder = React.memo((props) => {
                         let deliveryDate = search.days;
                         let priority = search.priority;
                         return (
-                            <div key={idx} className={classes.row1} style={{justifyContent: 'center'}}>
+                            <div key={element._id} className={classes.row1} style={{justifyContent: 'center'}}>
                                 <div style={{alignItems: 'center'}} className={isMobileApp?classes.row1:classes.column}>
                                     <Checkbox checked={selectedClients.includes(element._id)}
                                         onChange={() => {
@@ -320,6 +323,16 @@ const LogistiOorder = React.memo((props) => {
                             showFullDialog(true)
                             close()
                         }}>По карте</MenuItem>
+                        :
+                        null
+                }
+                {
+                    organization&&organization._id?
+                        <MenuItem onClick={async()=>{
+                            setMiniDialog('По клиенту', <SetDeliveryDate deliveryDates={deliveryDates} setDeliveryDates={setDeliveryDates} organization={organization}/>);
+                            showMiniDialog(true)
+                            close()
+                        }}>По клиенту</MenuItem>
                         :
                         null
                 }

@@ -27,7 +27,7 @@ const OutXMLAds = React.memo((props) => {
                 initialRender.current = false;
             }
             else {
-                setList((await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations)
+                setList((await getOrganizations({search: '', filter: '', city: city})).organizations)
             }
         })()
     },[city])
@@ -88,7 +88,7 @@ OutXMLAds.getInitialProps = async function(ctx) {
     return {
         data: {
             organizations:
-            (await getOrganizations({city: ctx.store.getState().app.city, search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
+            (await getOrganizations({city: ctx.store.getState().app.city, search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
         }
     };
 };

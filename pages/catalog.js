@@ -33,13 +33,21 @@ const Catalog = React.memo((props) => {
     const { profile } = props.user;
     const { data } = props;
     const [clients, setClients] = useState([]);
-    const { search, filter } = props.app;
+    const { search } = props.app;
     const [inputValue, setInputValue] = React.useState('');
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     let [searchTimeOut1, setSearchTimeOut1] = useState(null);
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const initialRender = useRef(true);
+    const getList = async ()=>{
+        if(organization&&organization._id) {
+            setList((await getBrands({organization: organization._id, search: search, sort: '-priotiry'})).brands);
+            (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
+            setPagination(100);
+            forceCheck();
+        }
+    }
     useEffect(() => {
         (async()=>{
             if (inputValue.length < 3) {
@@ -94,28 +102,27 @@ const Catalog = React.memo((props) => {
     },[])
     useEffect(()=>{
         (async()=>{
+            if(!initialRender.current)
+                await getList()
+        })()
+    },[organization])
+    useEffect(()=>{
+        (async()=>{
             if(initialRender.current) {
                 initialRender.current = false;
             } else {
-                if(organization._id) {
+                if(organization&&organization._id) {
                     if (searchTimeOut1)
                         clearTimeout(searchTimeOut1)
                     searchTimeOut1 = setTimeout(async () => {
-                        setList((await getBrands({
-                            organization: organization._id,
-                            search: search,
-                            sort: '-name'
-                        })).brands)
-                        setPagination(100);
-                        forceCheck();
-                        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
+                        await getList()
                     }, 500)
                     setSearchTimeOut1(searchTimeOut1)
                 }
 
             }
         })()
-    },[filter, search, organization])
+    },[search])
     let [client, setClient] = useState(data.client);
     let handleClient =  (client) => {
         setClient(client)
@@ -420,10 +427,10 @@ Catalog.getInitialProps = async function(ctx) {
     await deleteBasketAll(ctx.req?await getClientGqlSsr(ctx.req):undefined)
     return {
         data: {
-            brands: ctx.store.getState().user.profile.organization?(await getBrands({organization: ctx.store.getState().user.profile.organization, search: '', sort: '-name'}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).brands:[],
+            brands: ctx.store.getState().user.profile.organization?(await getBrands({organization: ctx.store.getState().user.profile.organization, search: '', sort: '-priotiry'}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).brands:[],
             organization: {},
             client: ctx.query.client?(await getClient({_id: ctx.query.client}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).client:undefined,
-            ...await getBrandOrganizations({search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            ...await getBrandOrganizations({search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };
 };

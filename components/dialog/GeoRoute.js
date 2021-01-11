@@ -74,7 +74,7 @@ const Geo =  React.memo(
                                         if(!navigation||idx===unacceptedIdx||(unacceptedIdx===-1&&idx===legs.length-1))
                                             return(
                                                 <Polyline
-                                                    key={idx}
+                                                    key={`leg${idx}`}
                                                     geometry={leg.map(element=>element.split(', '))}
                                                     options={{
                                                         balloonCloseButton: false,
@@ -151,7 +151,7 @@ const Geo =  React.memo(
                                         if(!navigation||idx===unacceptedIdx||(unacceptedIdx===-1&&idx===legs.length-1))
                                             return(
                                                 <Polyline
-                                                    key={idx}
+                                                    key={`leg${idx}`}
                                                     geometry={leg.map(element=>element.split(', '))}
                                                     options={{
                                                         balloonCloseButton: false,

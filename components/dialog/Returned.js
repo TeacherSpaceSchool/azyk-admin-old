@@ -195,7 +195,7 @@ const Returned =  React.memo(
                                 )
                             )
                                 return(
-                                    <div key={idx} className={classes.column}>
+                                    <div key={item._id} className={classes.column}>
                                         <div className={classes.row}>
                                             <div className={classes.nameField}>Товар:&nbsp;</div>
                                             <a href={`/item/${item._id}`} target='_blank'>
@@ -225,7 +225,7 @@ const Returned =  React.memo(
                                 )
                             else
                                 return(
-                                    <div key={idx} className={classes.column}>
+                                    <div key={item._id} className={classes.column}>
                                         <a href={`/item/${item._id}`} target='_blank'>
                                             <div className={classes.row}>
                                                 <div className={classes.nameField}>Товар:&nbsp;</div>

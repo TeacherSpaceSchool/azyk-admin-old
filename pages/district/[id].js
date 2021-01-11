@@ -28,6 +28,7 @@ import { urlMain } from '../../redux/constants/other'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import initialApp from '../../src/initialApp'
 import CardClientPlaceholder from '../../components/client/CardClientPlaceholder'
+import { forceCheck } from 'react-lazyload';
 const height = 140
 
 const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'))
@@ -89,7 +90,7 @@ const District = React.memo((props) => {
             if(initialRender.current) {
                 initialRender.current = false;
             } else {
-                setOrganizations((await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations)
+                setOrganizations((await getOrganizations({search: '', filter: '', city: city})).organizations)
                 setOrganization({})
             }
         })()
@@ -149,7 +150,6 @@ const District = React.memo((props) => {
                 let filtredClient = [...allClient]
                 if(search.length>0)
                     filtredClient = filtredClient.filter(element=>
-                        ((element.phone.filter(phone => phone.toLowerCase().includes(search.toLowerCase()))).length > 0) ||
                         (element.name.toLowerCase()).includes(search.toLowerCase())||
                         ((element.address.filter(addres=>addres[0]&&addres[0].toLowerCase().includes(search.toLowerCase()))).length>0)||
                         ((element.address.filter(addres=>addres[2]&&addres[2].toLowerCase().includes(search.toLowerCase()))).length>0)
@@ -158,6 +158,11 @@ const District = React.memo((props) => {
             }
         })()
     },[search])
+    useEffect(()=>{
+        (async()=>{
+            forceCheck()
+        })()
+    },[filtredClient])
     return (
         <App cityShow searchShow={true} checkPagination={checkPagination} pageName={data.district?router.query.id==='new'?'Добавить':data.district.name:'Ничего не найдено'}>
             <Head>
@@ -288,7 +293,7 @@ const District = React.memo((props) => {
                                 {filtredClient?filtredClient.map((element, idx)=> {
                                     if (idx <= pagination)
                                         return (
-                                            <div key={idx} style={isMobileApp ? {alignItems: 'baseline'} : {}}
+                                            <div key={element._id} style={isMobileApp ? {alignItems: 'baseline'} : {}}
                                                      className={isMobileApp ? classes.column : classes.row}>
                                                 {['admin', 'суперорганизация', 'агент', 'организация', 'менеджер'].includes(profile.role)?
                                                     <Checkbox checked={client.includes(element)}
@@ -414,7 +419,7 @@ District.getInitialProps = async function(ctx) {
     return {
         data: {
             ...ctx.query.id!=='new'?await getDistrict({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined): {district: {organization: {}, client: [], name: '', agent: {}, ecspeditor: {}}},
-            organizations: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations]
+            organizations: [{name: 'AZYK.STORE', _id: 'super'}, ...(await getOrganizations({search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations]
         }
     };
 };

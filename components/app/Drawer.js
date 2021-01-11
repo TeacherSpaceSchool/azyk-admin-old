@@ -29,6 +29,7 @@ import EqualizerIcon from '@material-ui/icons/Build';
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import UnfoldMoreIcon from '@material-ui/icons/UnfoldMore';
 import UnfoldLessIcon from '@material-ui/icons/UnfoldLess';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
 import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
@@ -344,6 +345,19 @@ const MyDrawer = React.memo((props) => {
                         :null
                 }
                 {
+                    ['admin', 'client', 'суперорганизация', 'организация'].includes(profile.role)?
+                        <>
+                        <Link href='/reviews'>
+                            <ListItem style={{background: router.pathname==='/reviews'?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>
+                                <ListItemIcon><RateReview color='inherit'/></ListItemIcon>
+                                <ListItemText primary='Отзывы' />
+                            </ListItem>
+                        </Link>
+                        <Divider/>
+                        </>
+                        :null
+                }
+                {
                     ['admin', 'client', 'суперорганизация', 'организация', 'менеджер', 'агент'].includes(profile.role)?
                         <>
                         <Link href='/forms'>
@@ -357,25 +371,18 @@ const MyDrawer = React.memo((props) => {
                         :null
                 }
                 {
-                    ['admin', 'client', 'суперорганизация', 'организация'].includes(profile.role)?
+                    ['admin', 'суперагент', 'суперорганизация', 'организация', 'менеджер', 'агент'].includes(profile.role)?
                         <>
-                        <Link href='/reviews'>
-                            <ListItem style={{background: router.pathname==='/reviews'?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>
-                                <ListItemIcon><RateReview color='inherit'/></ListItemIcon>
-                                <ListItemText primary='Отзывы' />
+                        <Link href={`/merchandisings${'admin'!==profile.role?'/[id]':''}`} as={`/merchandisings${profile.organization?`/${profile.organization}`:'/super'}`}>
+                            <ListItem style={{background: router.pathname.includes('merchandising')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>
+                                <ListItemIcon><AssignmentIndIcon color='inherit'/></ListItemIcon>
+                                <ListItemText primary='Мерчендайзинг' />
                             </ListItem>
                         </Link>
                         <Divider/>
                         </>
                         :null
                 }
-                <Link href={'/contact'}>
-                    <ListItem style={{background: router.pathname==='/contact'?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>
-                        <ListItemIcon><InfoIcon color='inherit'/></ListItemIcon>
-                        <ListItemText primary='Контакты' />
-                    </ListItem>
-                </Link>
-                <Divider/>
                 {
                     authenticated?
                         <>
@@ -390,6 +397,13 @@ const MyDrawer = React.memo((props) => {
                         :
                         null
                 }
+                <Link href={'/contact'}>
+                    <ListItem style={{background: router.pathname==='/contact'?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>
+                        <ListItemIcon><InfoIcon color='inherit'/></ListItemIcon>
+                        <ListItemText primary='Контакты' />
+                    </ListItem>
+                </Link>
+                <Divider/>
                 {
                     ['admin','суперорганизация', 'организация', 'менеджер', 'агент'].includes(profile.role)?
                         <>

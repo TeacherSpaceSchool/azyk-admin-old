@@ -25,14 +25,14 @@ const OrderAdss =  React.memo(
         const { showFullDialog } = props.mini_dialogActions;
         return (
             <div className={classes.main}>
-                {allAdss?allAdss.map((element, idx)=> {
+                {allAdss?allAdss.map((element)=> {
                     let index=undefined;
                     for(let i=0; i<selectedAdss.length; i++){
                         if(selectedAdss[i]._id===element._id)
                             index = i
                     }
                         if(profile.role!=='client') return (
-                            <div key={idx} style={isMobileApp ? {alignItems: 'baseline'} : {}}
+                            <div key={element._id} style={isMobileApp ? {alignItems: 'baseline'} : {}}
                                  className={isMobileApp ? classes.column : classes.row}>
                                     <div>
                                         <Checkbox checked={index!==undefined}

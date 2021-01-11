@@ -158,7 +158,7 @@ const Contact = React.memo((props) => {
                                                 }}
                                             />
                                         {address.map((element, idx)=>
-                                            <FormControl  key={idx} className={classes.input}>
+                                            <FormControl  key={`address${idx}`} className={classes.input}>
                                                 <InputLabel>Адрес</InputLabel>
                                                 <Input
                                                     placeholder='Адрес'
@@ -190,7 +190,7 @@ const Contact = React.memo((props) => {
                                         <br/>
                                         <br/>
                                         {email.map((element, idx)=>
-                                            <FormControl  key={idx} className={classes.input}>
+                                            <FormControl  key={`email${idx}`} className={classes.input}>
                                                 <InputLabel>Email</InputLabel>
                                                 <Input
                                                     value={element}
@@ -221,7 +221,7 @@ const Contact = React.memo((props) => {
                                         <br/>
                                         <br/>
                                         {phone.map((element, idx)=>
-                                            <FormControl key={idx} className={classes.input}>
+                                            <FormControl key={`phone${idx}`} className={classes.input}>
                                                 <InputLabel>Телефон</InputLabel>
                                                 <Input
                                                     value={element}
@@ -347,7 +347,7 @@ const Contact = React.memo((props) => {
                                                     </div>
                                                     <div className={classes.column}>
                                                         {address.map((element, idx)=>
-                                                            <div key={idx} className={classes.value}>
+                                                            <div key={`address${idx}`} className={classes.value}>
                                                                 {element}
                                                             </div>
                                                         )}
@@ -366,13 +366,13 @@ const Contact = React.memo((props) => {
                                                             }
                                                             if(tel.length>11)
                                                                 return (
-                                                                    <a href={`tel:${tel}`} key={idx} className={classes.value}>
+                                                                    <a href={`tel:${tel}`} key={`phone${idx}`} className={classes.value}>
                                                                         {element}
                                                                     </a>
                                                                 )
                                                             else
                                                                 return (
-                                                                    <div key={idx} className={classes.value}>
+                                                                    <div key={`phone${idx}`} className={classes.value}>
                                                                         {element}
                                                                     </div>
                                                                 )
@@ -385,7 +385,7 @@ const Contact = React.memo((props) => {
                                                     </div>
                                                     <div className={classes.column}>
                                                         {email.map((element, idx)=>
-                                                            <a href={`mailto:${element}`} key={idx} className={classes.value}>
+                                                            <a href={`mailto:${element}`} key={`email${idx}`} className={classes.value}>
                                                                 {element}
                                                             </a>
                                                         )}

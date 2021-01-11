@@ -224,7 +224,7 @@ const CardAds = React.memo((props) => {
                                             <br/>
                                             <br/>
                                             <div className={classes.row}>
-                                                <FormControl  key={idx} className={classes.inputHalf}>
+                                                <FormControl className={classes.inputHalf}>
                                                     <InputLabel>Целевое количество</InputLabel>
                                                     <Input
                                                         placeholder='Целевое количество'

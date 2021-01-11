@@ -18,6 +18,48 @@ export const getStatisticGeoOrder = async({organization, dateStart, city}, clien
     }
 }
 
+export const getStatisticMerchandising = async({organization}, client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                variables: {organization,},
+                query: gql`
+                    query ($organization: ID) {
+                        statisticMerchandising(organization: $organization)  {
+                            columns
+                            row 
+                                {_id data}
+                        }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
+export const getStatisticDevice = async(filter, client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                variables: {filter,},
+                query: gql`
+                    query ($filter: String!) {
+                        statisticDevice(filter: $filter) {
+                            columns
+                            row 
+                                {_id data}
+                        }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const getStatisticOrder = async({company, dateStart, dateType, online, city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()

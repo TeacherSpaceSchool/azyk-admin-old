@@ -47,11 +47,21 @@ const Returneds = React.memo((props) => {
         }
     }
     const getList = async ()=>{
+        setSelected([])
         setList((await getReturneds({search: search, sort: sort, date: date, skip: 0, city})).returneds)
-        setSimpleStatistic((await getReturnedsSimpleStatistic({search: search, date: date, city})).returnedsSimpleStatistic)
+        setSimpleStatistic((await getReturnedsSimpleStatistic({search: search, date: date, city})).returnedsSimpleStatistic);
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
+        forceCheck()
+        setPaginationWork(true);
     }
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
+    useEffect(()=>{
+        (async()=>{
+            if(!initialRender.current) {
+                await getList()
+            }})()
+    },[sort, date, city])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -61,16 +71,11 @@ const Returneds = React.memo((props) => {
                 if (searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async () => {
-                    setSelected([])
                     await getList()
-                    forceCheck()
-                    setPaginationWork(true);
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
         }})()
-    },[sort, search, date, city])
-
+    },[search])
     let [showStat, setShowStat] = useState(false);
     let [selected, setSelected] = useState([]);
     let [anchorEl, setAnchorEl] = useState(null);

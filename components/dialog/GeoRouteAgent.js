@@ -60,7 +60,7 @@ const Geo =  React.memo(
                                                             showFullDialog(false)
                                                         }
                                                     }}
-                                                    key={idx}
+                                                    key={`client${idx}`}
                                                     options={{
                                                         draggable: false,
                                                         iconColor: '#ffb300'
@@ -91,7 +91,7 @@ const Geo =  React.memo(
                                                     showFullDialog(false)
                                                 }
                                             }}
-                                            key={idx}
+                                            key={`client${idx}`}
                                             options={{
                                                 draggable: false,
                                                 iconColor: '#ffb300'

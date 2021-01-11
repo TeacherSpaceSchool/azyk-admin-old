@@ -18,7 +18,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 const CardLotteryTicket = React.memo((props) => {
     const classes = cardCategoryStyle();
-    const { element, setList, list, idx, lottery } = props;
+    const { element, setList, list, idx } = props;
     const { isMobileApp, city } = props.app;
     const { showSnackBar } = props.snackbarActions;
     const { profile } = props.user;

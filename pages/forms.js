@@ -2,7 +2,6 @@ import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
-import { getBrandOrganizations } from '../src/gql/items'
 import { getTemplateForms } from '../src/gql/form'
 import pageListStyle from '../src/styleMUI/form/formList'
 import CardForms from '../components/form/CardForms'
@@ -36,12 +35,17 @@ const Forms = React.memo((props) => {
                 setPaginationWork(false)
         }
     }
-    const getList = async()=>{
-        setList((await getTemplateForms({organization: organization, search: search, skip: 0})).templateForms)
-        setPaginationWork(true);
+    const getList = async ()=>{
+        setList((await getTemplateForms({organization: organization, search: search, skip: 0})).templateForms);
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         forceCheck()
+        setPaginationWork(true);
     }
+    useEffect(()=>{
+        (async()=> {
+            await getList()
+        })()
+    },[organization])
     useEffect(()=>{
         if(searchTimeOut)
             clearTimeout(searchTimeOut)
@@ -49,7 +53,7 @@ const Forms = React.memo((props) => {
             await getList()
         }, 500)
         setSearchTimeOut(searchTimeOut)
-    },[search, organization])
+    },[search])
     return (
         <App organizations checkPagination={checkPagination} setList={setList} list={list} searchShow={true} pageName='Анкеты/Опросники'>
             <Head>

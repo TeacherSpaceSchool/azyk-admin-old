@@ -51,12 +51,12 @@ const NotificationStatistic = React.memo((props) => {
                 {`Всего пуш-уведомлений: ${list.length}`}
             </div>
             <div className={classes.page}>
-                <CardNotificationStatistic list={list} setList={setList}/>
+                <CardNotificationStatistic setList={setList}/>
                 {list?list.map((element, idx)=> {
-                        if(idx<pagination)
+                        if(idx<=pagination)
                             return(
                                 <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardNotificationStatisticPlaceholder height={height}/>}>
-                                    <CardNotificationStatistic key={element._id} element={element}/>
+                                    <CardNotificationStatistic key={element._id} setList={setList} element={element}/>
                                 </LazyLoad>
                             )}
                 ):null}

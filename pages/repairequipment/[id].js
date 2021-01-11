@@ -38,7 +38,6 @@ const RepairEquipment = React.memo((props) => {
     const classes = organizationStyle();
     const { data } = props;
     const { isMobileApp, city } = props.app;
-    const { user } = props.user;
     const { showSnackBar } = props.snackbarActions;
     const initialRender = useRef(true);
     let [accept, setAccept] = useState(data.repairEquipment?data.repairEquipment.accept:false);
@@ -199,7 +198,7 @@ const RepairEquipment = React.memo((props) => {
                             </ExpansionPanelSummary>
                             <ExpansionPanelDetails className={classes.column}>
                                 {defect?defect.map((element, idx)=>
-                                    <div className={classes.input} key={idx}>
+                                    <div className={classes.input} key={`defect${idx}`}>
                                         <FormControl className={classes.input}>
                                             <InputLabel>{`Неисправность ${idx+1}`}</InputLabel>
                                             <Input
@@ -256,7 +255,7 @@ const RepairEquipment = React.memo((props) => {
                                     </ExpansionPanelSummary>
                                     <ExpansionPanelDetails className={classes.column}>
                                         {repair?repair.map((element, idx)=>
-                                            <div className={classes.input} key={idx}>
+                                            <div className={classes.input} key={`repair${idx}`}>
                                                 <FormControl className={classes.input}>
                                                     <InputLabel>{`Ремонт ${idx+1}`}</InputLabel>
                                                     <Input

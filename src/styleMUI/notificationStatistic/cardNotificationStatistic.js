@@ -39,13 +39,13 @@ export default makeStyles({
     },
     mediaM: {
         objectFit: 'cover',
-        height: 'calc((100vw - 40px) / 3)',
-        width: 'calc(100vw - 40px)'
+        height: 'calc((100vw - 20px) / 3)',
+        width: 'calc(100vw - 20px)'
     },
     mediaD: {
         objectFit: 'cover',
         height: 200,
-        width: 600,
+        width: 400,
         cursor: 'pointer'
     },
 })

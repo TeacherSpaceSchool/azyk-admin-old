@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getForms, getTemplateForm } from '../../src/gql/form'
@@ -24,6 +24,7 @@ const Forms = React.memo((props) => {
     const { data } = props;
     let [list, setList] = useState(data.forms);
     const { search } = props.app;
+    const initialRender = useRef(true);
     let height = 70
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     let [paginationWork, setPaginationWork] = useState(true);
@@ -44,12 +45,16 @@ const Forms = React.memo((props) => {
         forceCheck()
     }
     useEffect(()=>{
-        if(searchTimeOut)
-            clearTimeout(searchTimeOut)
-        searchTimeOut = setTimeout(async()=>{
-            await getList()
-        }, 500)
-        setSearchTimeOut(searchTimeOut)
+        if(initialRender.current) {
+            initialRender.current = false;
+        } else {
+            if (searchTimeOut)
+                clearTimeout(searchTimeOut)
+            searchTimeOut = setTimeout(async () => {
+                await getList()
+            }, 500)
+            setSearchTimeOut(searchTimeOut)
+        }
     },[search])
     return (
         <App checkPagination={checkPagination} setList={setList} list={list} searchShow={true} pageName={data.templateForm.title}>

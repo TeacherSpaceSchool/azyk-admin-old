@@ -13,6 +13,9 @@ const theme = createMuiTheme({
       disable: {
           main: '#e1e1e1',
       },
+      green: {
+          main: 'green',
+      },
     error: {
       main: red.A400,
     },

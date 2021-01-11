@@ -316,7 +316,7 @@ const LotteryEdit = React.memo((props) => {
                                                     {tickets?tickets.map((element, idx)=> {
                                                         if(idx<pagination)
                                                             return(
-                                                                <CardLotteryTicket element={element} setList={setTickets} list={tickets} idx={idx} lottery={router.query.id}/>
+                                                                <CardLotteryTicket key={`ticket${idx}`} element={element} setList={setTickets} list={tickets} idx={idx} lottery={router.query.id}/>
                                                             )}
                                                     ):null}
                                                 </div>
@@ -428,7 +428,7 @@ LotteryEdit.getInitialProps = async function(ctx) {
     return {
         data: {
             lottery: lottery,
-            ...await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getOrganizations({search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };
 };

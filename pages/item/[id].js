@@ -68,9 +68,9 @@ const Item = React.memo((props) => {
     let [hit, setHit] = useState(data.item!==null?data.item.hit:false);
     let [latest, setLatest] = useState(data.item!==null?data.item.latest:false);
     let [apiece, setApiece] = useState(data.item!==null?data.item.apiece:false);
+    let [packaging, setPackaging] = useState(data.item&&data.item.packaging?data.item.packaging:1);
     let [preview, setPreview] = useState(data.item!==null?data.item.image:'');
     let [image, setImage] = useState(undefined);
-    let [packaging, setPackaging] = useState(data.item&&data.item.packaging?data.item.packaging:1);
     let handleChangeImage = ((event) => {
         if(event.target.files[0].size/1024/1024<50){
             setImage(event.target.files[0])
@@ -592,7 +592,7 @@ Item.getInitialProps = async function(ctx) {
                         latest: false
                     }
                 },
-            ...await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getOrganizations({search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             ...await getSubCategorys({category: 'all', search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };

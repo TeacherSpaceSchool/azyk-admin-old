@@ -1,6 +1,6 @@
 import initialApp from '../../../src/initialApp'
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import App from '../../../layouts/App';
 import { connect } from 'react-redux'
 import {getTemplateForm, addTemplateForm, setTemplateForm, deleteTemplateForm} from '../../../src/gql/form'
@@ -147,7 +147,7 @@ const NewForms = React.memo((props) => {
                             <br/>
                             {
                                 questions.map((element, idx)=>
-                                    <div key={idx} className={classes.question}>
+                                    <div key={`question${idx}`} className={classes.question}>
                                         {
                                             isMobileApp?
                                                 <>
@@ -334,7 +334,7 @@ const NewForms = React.memo((props) => {
                                         {
                                             ['один из списка', 'несколько из списка'].includes(element.formType)?
                                                 <>
-                                                <ExpansionPanel key={idx}>
+                                                <ExpansionPanel key={`answer${idx}`}>
                                                     <ExpansionPanelSummary
                                                         expandIcon={<ExpandMoreIcon />}
                                                     >
@@ -477,7 +477,7 @@ NewForms.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-           ...(await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)),
+           ...(await getOrganizations({search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)),
             ...ctx.query.id!=='new'?await getTemplateForm({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{templateForm: {title: '', organization: undefined, editorEmployment: true, editorClient: false, edit: false, questions: []}},
 
         }

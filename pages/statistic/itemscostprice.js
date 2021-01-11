@@ -65,7 +65,7 @@ const ItemsCostPrice = React.memo((props) => {
         (async()=>{
             if(organization){
                 await showLoad(true)
-                setList((await getBrands({organization: organization._id, search: search, sort: '-name'})).brands)
+                setList((await getBrands({organization: organization._id, search: search, sort: '-priotiry'})).brands)
                 await showLoad(false)
             }
             else

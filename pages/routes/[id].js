@@ -38,10 +38,19 @@ const Routes = React.memo((props) => {
         }
     }
     const getList = async ()=>{
-        let routes = (await getRoutes({organization: router.query.id, search: search, sort: sort, filter: filter, date: date, skip: 0})).routes
-        setList(routes)
+        setList((await getRoutes({organization: router.query.id, search: search, sort: sort, filter: filter, date: date, skip: 0})).routes)
+        forceCheck()
+        setPaginationWork(true);
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
     }
     let [searchTimeOut, setSearchTimeOut] = useState(null);
+    useEffect(()=>{
+        (async ()=>{
+            if(!initialRender.current) {
+                await getList()
+            }
+        })()
+    },[filter, sort, date])
     useEffect(()=>{
         (async ()=>{
             if(initialRender.current) {
@@ -51,14 +60,11 @@ const Routes = React.memo((props) => {
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
                     await getList()
-                    forceCheck()
-                    setPaginationWork(true);
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
             }
         })()
-    },[filter, sort, search, date])
+    },[search])
     return (
         <App checkPagination={checkPagination} getList={getList} searchShow={true} dates={true} filters={data.filterRoute} sorts={data.sortRoute} pageName='Маршруты экспедитора'>
             <Head>

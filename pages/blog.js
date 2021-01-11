@@ -17,7 +17,7 @@ const Blog = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     let [list, setList] = useState(data.blogs);
-    const { search, sort } = props.app;
+    const { search } = props.app;
     const { profile } = props.user;
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
@@ -29,7 +29,7 @@ const Blog = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    setList(await getBlogs({search: search, sort: sort}))
+                    setList(await getBlogs({search: search}))
                     setPagination(100);
                     forceCheck();
                     (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
@@ -38,7 +38,7 @@ const Blog = React.memo((props) => {
 
             }
         })()
-    },[sort, search])
+    },[search])
     let height = profile.role==='admin'?390:360
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
@@ -47,7 +47,7 @@ const Blog = React.memo((props) => {
         }
     }
     return (
-        <App checkPagination={checkPagination} searchShow={true} sorts={data.sortBlog} pageName='Блог'>
+        <App checkPagination={checkPagination} searchShow={true} pageName='Блог'>
             <Head>
                 <title>Блог</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -87,7 +87,7 @@ Blog.getInitialProps = async function(ctx) {
         } else
             Router.push('/contact')
     return {
-        data: {blogs: await getBlogs({search: '', sort: '-createdAt'}, ctx.req?await getClientGqlSsr(ctx.req):undefined)}
+        data: {blogs: await getBlogs({search: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)}
     };
 };
 

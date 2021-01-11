@@ -23,7 +23,7 @@ const ListOrder =  React.memo(
             <div className={classes.column}>
                 {
                     _list.map((element, idx)=>
-                        <div className={classes.row}>
+                        <div key={element._id} className={classes.row}>
                             {idx+1})&nbsp;
                             <div style={{color: element.confirmationForwarder?'#ffb300':'#ff0000', cursor: 'pointer'}} className={classes.value}
                                  onClick={async() => {

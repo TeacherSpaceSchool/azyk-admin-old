@@ -32,7 +32,7 @@ const Catalog = React.memo((props) => {
     const { profile } = props.user;
     const { data } = props;
     const [clients, setClients] = useState([]);
-    const { search, filter, sort } = props.app;
+    const { search, filter } = props.app;
     const [inputValue, setInputValue] = React.useState('');
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const [open, setOpen] = useState(false);
@@ -87,10 +87,10 @@ const Catalog = React.memo((props) => {
     useEffect(()=>{
         (async()=>{
             if(organization._id){
-                setList((await getBrands({organization: organization._id, search: search, sort: sort})).brands)
+                setList((await getBrands({organization: organization._id, search: search, sort: '-priotiry'})).brands)
             }
         })()
-    },[filter, sort, search, organization])
+    },[filter, search, organization])
     useEffect(()=>{
         setPagination(100)
         forceCheck()
@@ -314,7 +314,7 @@ Catalog.getInitialProps = async function(ctx) {
         data: {
             brands: [],
             organization: {},
-            ...await getBrandOrganizations({search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+            ...await getBrandOrganizations({search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };
 };

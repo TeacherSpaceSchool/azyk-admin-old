@@ -29,6 +29,19 @@ const Equipments = React.memo((props) => {
     let height = ['суперорганизация', 'организация', 'admin'].includes(profile.role)?186:140
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
+    const getList = async ()=> {
+        setList((await getEquipments({organization: router.query.id, search: search, sort: sort})).equipments)
+        setPagination(100);
+        forceCheck();
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+    }
+    useEffect(()=>{
+        (async()=>{
+            if(!initialRender.current) {
+                await getList()
+            }
+        })()
+    },[sort])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -37,16 +50,13 @@ const Equipments = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    setList((await getEquipments({organization: router.query.id, search: search, sort: sort})).equipments)
-                    setPagination(100);
-                    forceCheck();
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                    await getList()
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
 
             }
         })()
-    },[sort, search])
+    },[search])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){

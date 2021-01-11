@@ -27,6 +27,19 @@ const Districts = React.memo((props) => {
     const { search, sort } = props.app;
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
+    const getList = async ()=> {
+        setList((await getDistricts({organization: router.query.id, search: search, sort: sort})).districts)
+        setPagination(100);
+        forceCheck();
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+    }
+    useEffect(()=>{
+        (async()=>{
+            if(!initialRender.current) {
+                await getList()
+            }
+        })()
+    },[sort])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -35,16 +48,13 @@ const Districts = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    setList((await getDistricts({organization: router.query.id, search: search, sort: sort})).districts)
-                    setPagination(100);
-                    forceCheck();
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                    await getList()
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
 
             }
         })()
-    },[sort, search])
+    },[search])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){

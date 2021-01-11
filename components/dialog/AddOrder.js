@@ -156,7 +156,7 @@ const AddOrder =  React.memo(
                             {orders?orders.map((element, idx)=> {
                                 if(idx<pagination)
                                     return(
-                                        <div key={idx} style={isMobileApp ? {alignItems: 'baseline'} : {}}
+                                        <div key={element._id} style={isMobileApp ? {alignItems: 'baseline'} : {}}
                                              className={isMobileApp ? classes.column1 : classes.row1}>
                                             <Checkbox checked={selectedOrders.findIndex(element1=>element1._id===element._id)!==-1}
                                                       onChange={() => {

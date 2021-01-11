@@ -24,7 +24,7 @@ const RepairEquipments = React.memo((props) => {
             if(initialRender.current) {
                 initialRender.current = false;
             } else {
-                setList((await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations)
+                setList((await getOrganizations({search: '', filter: '', city: city})).organizations)
                 setPagination(100);
                 (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
                 forceCheck();
@@ -95,7 +95,7 @@ RepairEquipments.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            organizations: (await getOrganizations({city: ctx.store.getState().app.city, search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
+            organizations: (await getOrganizations({city: ctx.store.getState().app.city, search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
         }
     };
 };

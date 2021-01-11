@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
 import { getBrandOrganizations } from '../src/gql/items'
@@ -20,9 +20,7 @@ const Reviews = React.memo((props) => {
     const { data } = props;
     let [list, setList] = useState(data.reviews);
     const { filter, organization } = props.app;
-    const initialRender = useRef(true);
     let height = 189
-    let [searchTimeOut, setSearchTimeOut] = useState(null);
     let [paginationWork, setPaginationWork] = useState(true);
     const checkPagination = async()=>{
         if(paginationWork){
@@ -41,19 +39,12 @@ const Reviews = React.memo((props) => {
         forceCheck()
     }
     useEffect(()=>{
-        if(initialRender.current) {
-            initialRender.current = false;
-        } else {
-            if (searchTimeOut)
-                clearTimeout(searchTimeOut)
-            searchTimeOut = setTimeout(async () => {
-                await getList()
-            }, 500)
-            setSearchTimeOut(searchTimeOut)
-        }
+        (async () => {
+            await getList()
+        })()
     },[filter, organization])
     return (
-        <App organizations checkPagination={checkPagination} setList={setList} list={list} searchShow={true} filters={data.filterReview} pageName='Отзывы'>
+        <App organizations checkPagination={checkPagination} setList={setList} list={list} filters={data.filterReview} pageName='Отзывы'>
             <Head>
                 <title>Отзывы</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />

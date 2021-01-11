@@ -24,7 +24,7 @@ const AgentRoutes = React.memo((props) => {
             if(initialRender.current) {
                 initialRender.current = false;
             } else {
-                list = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
+                list = (await getOrganizations({search: '', filter: '', city: city})).organizations
                 setList(list)
                 setPagination(100);
                 (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
@@ -97,7 +97,7 @@ AgentRoutes.getInitialProps = async function(ctx) {
     return {
         data: {
             organizations:
-                (await getOrganizations({city: ctx.store.getState().app.city, search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
+                (await getOrganizations({city: ctx.store.getState().app.city, search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
         }
     };
 };

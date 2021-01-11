@@ -381,7 +381,7 @@ const Order =  React.memo(
                                 )
                             )
                                 return(
-                                    <div key={idx} className={classes.column}>
+                                    <div key={order.item._id} className={classes.column}>
                                         <div className={classes.row}>
                                             <div className={classes.nameField}>Товар:&nbsp;</div>
                                             <a href={`/item/${order.item._id}`} target='_blank'>
@@ -480,7 +480,7 @@ const Order =  React.memo(
                                 ['admin', 'суперагент', 'суперэкспедитор'].includes(profile.role)
                             )
                                 return(
-                                    <div key={idx} className={classes.column}>
+                                    <div key={order.item._id} className={classes.column}>
                                         <a href={`/item/${order.item._id}`} target='_blank'>
                                             <div className={classes.row}>
                                                 <div className={classes.nameField}>Товар:&nbsp;</div>
@@ -590,7 +590,7 @@ const Order =  React.memo(
                                 )
                             else
                                 return(
-                                    <div key={idx} className={classes.column}>
+                                    <div key={order.item._id} className={classes.column}>
                                         <a href={`/item/${order.item._id}`} target='_blank'>
                                             <div className={classes.row}>
                                                 <div className={classes.nameField}>Товар:&nbsp;</div>

@@ -37,6 +37,12 @@ const Catalog = React.memo((props) => {
     const [basket, setBasket] = useState({});
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
+    const getList = async ()=>{
+        setList((await getBrands({organization: router.query.id, search: search, sort: sort})).brands)
+        setPagination(100);
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+        forceCheck();
+    }
     useEffect(()=>{
         (async()=>{
             if(sessionStorage.catalog&&sessionStorage.catalog!=='{}'){
@@ -46,22 +52,26 @@ const Catalog = React.memo((props) => {
     },[])
     useEffect(()=>{
         (async()=>{
+            if(!initialRender.current) {
+                await getList()
+            }
+        })()
+    },[filter, sort])
+    useEffect(()=>{
+        (async()=>{
             if(initialRender.current) {
                 initialRender.current = false;
             } else {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    setList((await getBrands({organization: router.query.id, search: search, sort: sort})).brands)
-                    setPagination(100);
-                    forceCheck();
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                    await getList()
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
 
             }
         })()
-    },[filter, sort, search])
+    },[search])
     let [allPrice, setAllPrice] = useState(0);
     const { isMobileApp } = props.app;
     let increment = async (idx)=>{
@@ -152,6 +162,7 @@ const Catalog = React.memo((props) => {
             setPagination(pagination+100)
         }
     }
+    console.log(sort)
     return (
         <App defaultOpenSearch={router.query.search} checkPagination={checkPagination} sorts={data?data.sortItem:undefined} searchShow={true} pageName={data.organization.name}>
             <Head>
@@ -301,7 +312,7 @@ const Catalog = React.memo((props) => {
 
 Catalog.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    ctx.store.getState().app.sort = 'name'
+    ctx.store.getState().app.sort = '-priotiry'
     if('client'!==ctx.store.getState().user.profile.role)
         if(ctx.res) {
             ctx.res.writeHead(302, {
@@ -318,7 +329,7 @@ Catalog.getInitialProps = async function(ctx) {
         data: {
             ...(ctx.store.getState().user.profile._id?await getClient({_id: ctx.store.getState().user.profile._id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{}),
             ...await getOrganization({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            ...await getBrands({organization: ctx.query.id, search: ctx.query.search?ctx.query.search:'', sort: '-name'}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getBrands({organization: ctx.query.id, search: ctx.query.search?ctx.query.search:'', sort: ctx.store.getState().app.sort}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             ...await getAdss({search: '', organization: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
         }
     };

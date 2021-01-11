@@ -34,10 +34,24 @@ const Client = React.memo((props) => {
                 setPaginationWork(false)
         }
     }
+    const getList = async ()=>{
+        setList((await getClients({search: search, sort: sort, filter: filter, date: date, skip: 0, city: city})).clients);
+        setSimpleStatistic((await getClientsSimpleStatistic({search: search, filter: filter, date: date, city: city})).clientsSimpleStatistic[0]);
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
+        forceCheck();
+        setPaginationWork(true);
+    }
     const { search, filter, sort, date, city } = props.app;
     const { profile } = props.user;
     const initialRender = useRef(true);
     let [searchTimeOut, setSearchTimeOut] = useState(null);
+    useEffect(()=>{
+        (async()=>{
+            if(!initialRender.current) {
+                await getList()
+            }
+        })()
+    },[filter, sort, date, city])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -46,28 +60,12 @@ const Client = React.memo((props) => {
                 if (searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async () => {
-                    setList((await getClients({
-                        search: search,
-                        sort: sort,
-                        filter: filter,
-                        date: date,
-                        skip: 0,
-                        city: city
-                    })).clients)
-                    setSimpleStatistic((await getClientsSimpleStatistic({
-                        search: search,
-                        filter: filter,
-                        date: date,
-                        city: city
-                    })).clientsSimpleStatistic[0])
-                    forceCheck()
-                    setPaginationWork(true);
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
+                    await getList()
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
             }
         })()
-    },[filter, sort, search, date, city])
+    },[search])
     return (
         <App cityShow checkPagination={checkPagination} searchShow={true} dates={true} filters={data.filterClient} sorts={data.sortClient} pageName='Клиенты'>
             <Head>

@@ -17,7 +17,7 @@ const ItemList =  React.memo(
                 {
                     items.map((item, idx) => {
                         return(
-                                <div key={idx} className={classes.column}>
+                                <div key={`item${idx}`} className={classes.column}>
                                     {
                                         !idx||item[2]!==organization?
                                             <>

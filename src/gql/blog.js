@@ -1,24 +1,20 @@
 import { gql } from 'apollo-boost';
 import { SingletonApolloClient } from '../singleton/client';
 
-export const getBlogs = async({search: search, sort: sort}, client)=>{
+export const getBlogs = async({search: search}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {search: search, sort: sort},
+                variables: {search: search},
                 query: gql`
-                    query ($search: String!, $sort: String!) {
-                        blogs(search: $search, sort: $sort) {
+                    query ($search: String!) {
+                        blogs(search: $search) {
                             _id
                             image
                             text
                             title
                             createdAt
-                          }
-                          sortBlog {
-                           name
-                            field
                           }
                     }`,
             })

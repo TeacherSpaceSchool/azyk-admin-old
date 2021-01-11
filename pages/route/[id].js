@@ -322,7 +322,7 @@ const Route = React.memo((props) => {
                                     <br/>
                                     {
                                         deliverys?deliverys.map((element, idx)=>
-                                            <ExpansionPanel key={idx}>
+                                            <ExpansionPanel key={`рейс${idx}`}>
                                                 <ExpansionPanelSummary
                                                     expandIcon={<ExpandMoreIcon />}
                                                 >
@@ -415,7 +415,7 @@ const Route = React.memo((props) => {
                                         {orders?orders.map((element, idx)=> {
                                             if(idx<pagination)
                                                 return(
-                                                    <div key={idx} style={isMobileApp ? {alignItems: 'baseline'} : {}}
+                                                    <div key={element._id} style={isMobileApp ? {alignItems: 'baseline'} : {}}
                                                          className={isMobileApp ? classes.column1 : classes.row1}>
                                                         {
                                                             router.query.id==='new'?

@@ -74,7 +74,10 @@ const CardIntegrate = React.memo((props) => {
         setAgent({})
         setEcspeditor({})
         setItem({})
-        setItemsByCity([])
+        if(event.target.value!=='товар')
+            setItemsByCity([])
+        else
+            handleCity({target: {value: 'Бишкек'}})
     };
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     return (

@@ -28,6 +28,19 @@ const Subcategory = React.memo((props) => {
     let height = profile.role==='admin'?189:38
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
+    const getList = async ()=>{
+        setList((await getSubCategorys({category: router.query.id, search: search, sort: sort, filter: filter})).subCategorys)
+        setPagination(100);
+        forceCheck();
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+    }
+    useEffect(()=>{
+        (async()=>{
+            if(!initialRender.current) {
+               await getList()
+            }
+        })()
+    },[filter, sort])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -36,16 +49,13 @@ const Subcategory = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    setList((await getSubCategorys({category: router.query.id, search: search, sort: sort, filter: filter})).subCategorys)
-                    setPagination(100);
-                    forceCheck();
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                    await getList()
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
 
             }
         })()
-    },[filter, sort, search])
+    },[search])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){

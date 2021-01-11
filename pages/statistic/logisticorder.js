@@ -237,7 +237,7 @@ const LogistiOorder = React.memo((props) => {
                         {orders?orders.map((element, idx)=> {
                             if (idx <= pagination)
                                 return (
-                                    <div key={idx} style={isMobileApp ? {alignItems: 'baseline'} : {}}
+                                    <div key={element._id} style={isMobileApp ? {alignItems: 'baseline'} : {}}
                                          className={isMobileApp ? classes.column1 : classes.row1}>
                                         <Checkbox checked={selectedOrders.includes(element._id)}
                                                   onChange={() => {

@@ -318,7 +318,7 @@ const Organization = React.memo((props) => {
                                         }}
                                     />
                                     {address.map((element, idx)=>
-                                        <FormControl  key={idx} className={isMobileApp?classes.inputM:classes.inputD}>
+                                        <FormControl  key={`address${idx}`} className={isMobileApp?classes.inputM:classes.inputD}>
                                             <InputLabel>Адрес{idx+1}</InputLabel>
                                             <Input
                                                 placeholder='Адрес'
@@ -350,7 +350,7 @@ const Organization = React.memo((props) => {
                                     <br/>
                                     <br/>
                                     {email.map((element, idx)=>
-                                        <FormControl  key={idx} className={isMobileApp?classes.inputM:classes.inputD}>
+                                        <FormControl  key={`email${idx}`} className={isMobileApp?classes.inputM:classes.inputD}>
                                             <InputLabel>Email{idx+1}</InputLabel>
                                             <Input
                                                 value={element}
@@ -381,7 +381,7 @@ const Organization = React.memo((props) => {
                                     <br/>
                                     <br/>
                                     {phone.map((element, idx)=>
-                                        <FormControl  key={idx} className={isMobileApp?classes.inputM:classes.inputD}>
+                                        <FormControl  key={`phone${idx}`} className={isMobileApp?classes.inputM:classes.inputD}>
                                             <InputLabel>Телефон{idx+1}</InputLabel>
                                             <Input
                                                 value={element}
@@ -522,7 +522,7 @@ const Organization = React.memo((props) => {
                                             </div>
                                             <div className={classes.column}>
                                                 {address.map((element, idx)=>
-                                                    <div key={idx} className={classes.value}>
+                                                    <div key={`address${idx}`} className={classes.value}>
                                                         {element}
                                                     </div>
                                                 )}
@@ -534,7 +534,7 @@ const Organization = React.memo((props) => {
                                             </div>
                                             <div className={classes.column}>
                                                 {phone.map((element, idx)=>
-                                                    <a href={`tel:${element}`} key={idx} className={classes.value}>
+                                                    <a href={`tel:${element}`} key={`phone${idx}`} className={classes.value}>
                                                         {element}
                                                     </a>
                                                 )}
@@ -546,7 +546,7 @@ const Organization = React.memo((props) => {
                                             </div>
                                             <div className={classes.column}>
                                                 {email.map((element, idx)=>
-                                                    <a href={`mailto:${element}`} key={idx} className={classes.value}>
+                                                    <a href={`mailto:${element}`} key={`email${idx}`} className={classes.value}>
                                                         {element}
                                                     </a>
                                                 )}

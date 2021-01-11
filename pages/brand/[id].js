@@ -27,6 +27,19 @@ const Brand = React.memo((props) => {
     const { profile } = props.user;
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
+    const getList = async ()=>{
+        setList((await getBrands({city: city, organization: router.query.id, search: search, sort: sort})).brands)
+        setPagination(100);
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+        forceCheck();
+    }
+    useEffect(()=>{
+        (async()=>{
+            if(!initialRender.current) {
+                getList()
+            }
+        })()
+    },[filter, sort, city])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -35,16 +48,13 @@ const Brand = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    setList((await getBrands({city: city, organization: router.query.id, search: search, sort: sort})).brands)
-                    setPagination(100);
-                    forceCheck();
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                    getList()
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
 
             }
         })()
-    },[filter, sort, search, city])
+    },[search])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -52,7 +62,7 @@ const Brand = React.memo((props) => {
         }
     }
     return (
-        <App cityShow checkPagination={checkPagination} searchShow={true} sorts={data.sortItem} pageName={data.brands[0]?data.brands[0].organization.name:'Ничего не найдено'}>
+        <App cityShow sorts={data.sortItem} checkPagination={checkPagination} searchShow={true} pageName={data.brands[0]?data.brands[0].organization.name:'Ничего не найдено'}>
             <Head>
                 <title>{data.brands[0]?data.brands[0].organization.name:'Ничего не найдено'}</title>
                 <meta name='description' content={data.brands[0]?data.brands[0].organization.info:'Ничего не найдено'} />
@@ -102,7 +112,7 @@ Brand.getInitialProps = async function(ctx) {
         } else
             Router.push('/contact')
     ctx.store.getState().app.city = 'Бишкек'
-    ctx.store.getState().app.sort = 'name'
+    ctx.store.getState().app.sort = '-priotiry'
     return {
         data: await getBrands({city: ctx.store.getState().app.city, organization: ctx.query.id, search: '', sort: ctx.store.getState().app.sort}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
     };

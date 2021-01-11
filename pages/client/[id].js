@@ -220,7 +220,7 @@ const Client = React.memo((props) => {
                                         </Select>
                                     </FormControl>
                                     {address?address.map((element, idx)=>
-                                            <div key={idx}>
+                                            <div key={`address${idx}`}>
                                                 <FormControl className={classes.input}>
                                                     <InputLabel>Название магазина</InputLabel>
                                                     <Input
@@ -260,7 +260,7 @@ const Client = React.memo((props) => {
                                         ):
                                         <br/>}
                                     {phone?phone.map((element, idx)=>
-                                        <div key={idx}>
+                                        <div key={`phone${idx}`}>
                                             <FormControl className={classes.input}>
                                                 <InputLabel color={validPhone(element)?'primary':'secondary'}>Телефон. Формат: +996555780861</InputLabel>
                                                 <Input
@@ -432,8 +432,8 @@ const Client = React.memo((props) => {
                                         </div>
                                         <div className={classes.column}>
                                             {address?address.map((element, idx)=>
-                                                <>
-                                                <div className={classes.value} key={idx}>
+                                                <div key={`address${idx}`}>
+                                                <div className={classes.value}>
                                                     {`${element[2]?`${element[2]}, `:''}${element[0]}`}
                                                 </div>
                                                 <div className={classes.geo} style={{color: element[1]?'#ffb300':'red'}} onClick={()=>{
@@ -449,7 +449,7 @@ const Client = React.memo((props) => {
                                                             'Геолокация не задана'
                                                     }
                                                 </div>
-                                                </>
+                                                </div>
                                             ):null}
                                         </div>
                                     </div>
@@ -468,11 +468,9 @@ const Client = React.memo((props) => {
                                         <div className={classes.value}>
                                             <div className={classes.column}>
                                                 {phone?phone.map((element, idx)=>
-                                                    <>
-                                                    <div className={classes.value} key={idx}>
+                                                    <div className={classes.value} key={`phone${idx}`}>
                                                         {element}
                                                     </div>
-                                                    </>
                                                 ):null}
                                             </div>
                                         </div>

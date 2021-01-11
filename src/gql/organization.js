@@ -44,23 +44,19 @@ export const getOrganization = async({_id: _id}, client)=>{
     }
 }
 
-export const getOrganizations = async({search, sort, filter, city}, client)=>{
+export const getOrganizations = async({search, filter, city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {search, sort, filter, city},
+                variables: {search, filter, city},
                 query: gql`
-                    query ($search: String!, $sort: String!, $filter: String!, $city: String) {
-                        organizations(search: $search, sort: $sort, filter: $filter, city: $city) {
+                    query ($search: String!, $filter: String!, $city: String) {
+                        organizations(search: $search, filter: $filter, city: $city) {
                             name
                             _id
                             image
                             miniInfo
-                          }
-                          sortOrganization {
-                           name
-                            field
                           }
                           filterOrganization {
                            name
@@ -107,8 +103,6 @@ export const deleteOrganization = async(ids)=>{
                              data
                         }
                     }`})
-        let list = await getOrganizations(new SingletonStore().getStore().getState().app)
-        return list
     } catch(err){
         console.error(err)
     }

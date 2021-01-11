@@ -22,6 +22,7 @@ import { getClientGqlSsr } from '../../src/getClientGQL'
 import initialApp from '../../src/initialApp'
 import CardOrganizationPlaceholder from '../../components/organization/CardOrganizationPlaceholder'
 import LazyLoad from 'react-lazyload';
+import { forceCheck } from 'react-lazyload';
 const height = 140
 
 const Confirmation = dynamic(() => import('../../components/dialog/Confirmation'))
@@ -41,27 +42,20 @@ const Distributer = React.memo((props) => {
     const organization = router.query.id==='super'?{name: 'AZYK.STORE', _id: 'super'}:data.organization
     let [sales, setSales] = useState(data.distributer?data.distributer.sales:[]);
     let [provider, setProvider] = useState(data.distributer?data.distributer.provider:[]);
-    let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
                 initialRender.current = false;
             } else {
-                if(searchTimeOut)
-                    clearTimeout(searchTimeOut)
-                searchTimeOut = setTimeout(async()=>{
-                    allOrganizations = (await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations
-                    setAllOrganizations(allOrganizations)
-                    setPagination(100);
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
-                }, 500)
-                setSearchTimeOut(searchTimeOut)
-
+                allOrganizations = (await getOrganizations({search: '', filter: '', city: city})).organizations
+                setAllOrganizations(allOrganizations)
+                setPagination(100);
+                (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                forceCheck();
             }
         })()
     },[city])
-
     let [filtredOrganizations, setFiltredOrganizations] = useState([]);
     let [selectType, setSelectType] = useState('Все');
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
@@ -127,7 +121,7 @@ const Distributer = React.memo((props) => {
                                 {filtredOrganizations?filtredOrganizations.map((element, idx)=> {
                                     if (idx <= pagination)
                                         return (
-                                            <div key={idx} style={isMobileApp ? {alignItems: 'baseline'} : {}}
+                                            <div key={element._id} style={isMobileApp ? {alignItems: 'baseline'} : {}}
                                                      className={isMobileApp ? classes.column : classes.row}>
                                                     <LazyLoad scrollContainer={'.App-body'} key={element._id}
                                                               height={height} offset={[height, 0]} debounce={0}
@@ -218,7 +212,7 @@ Distributer.getInitialProps = async function(ctx) {
     return {
         data: {
             distributer: distributer,
-            ...await getOrganizations({search: '', sort: 'name', filter: '', city: ctx.store.getState().app.city}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getOrganizations({search: '', filter: '', city: ctx.store.getState().app.city}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             organization: organization
         }
     };

@@ -43,7 +43,7 @@ const Client = React.memo((props) => {
             if(initialRender.current) {
                 initialRender.current = false;
             } else {
-                setOrganizations((await getOrganizations({search: '', sort: 'name', filter: '', city: city})).organizations)
+                setOrganizations((await getOrganizations({search: '', filter: '', city: city})).organizations)
                 setOrganization({})
             }
         })()
@@ -144,7 +144,7 @@ const Client = React.memo((props) => {
                                                 }}
                                             />
                                         {phone?phone.map((element, idx)=>
-                                                <FormControl key={idx} className={classes.input}>
+                                                <FormControl key={`phone${idx}`} className={classes.input}>
                                                     <InputLabel>Телефон. Формат: +996555780861</InputLabel>
                                                     <Input
                                                         placeholder='Телефон. Формат: +996555780861'
@@ -338,7 +338,7 @@ Client.getInitialProps = async function(ctx) {
             ...ctx.query.id!=='new'?await getEmployment({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined):{employment:{name: '',email: '',phone: [], user: {login: '',status: '',role: '',},organization: {_id: ''},}},
             organizations: [
                 {name: 'AZYK.STORE', _id: 'super'},
-                ...(await getOrganizations({search: '', sort: 'name', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
+                ...(await getOrganizations({search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)).organizations
             ]
 
         }

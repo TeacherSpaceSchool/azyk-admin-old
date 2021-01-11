@@ -83,7 +83,7 @@ const OrderGeoStatistic = React.memo((props) => {
                                     >
                                     {statisticOrderGeo.map((address, idx)=> {
                                             if(address[1]) return <Placemark
-                                                key={idx}
+                                                key={`address${idx}`}
                                                 options={{
                                                     draggable: false,
                                                     iconColor: '#ffb300'

@@ -29,6 +29,19 @@ const Items = React.memo((props) => {
     const { profile } = props.user;
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
+    const getList = async ()=>{
+        setList((await getItems({subCategory: router.query.id, search: search, sort: sort})).items)
+        setPagination(100);
+        forceCheck();
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+    }
+    useEffect(()=>{
+        (async()=>{
+            if(!initialRender.current) {
+                await getList()
+            }
+        })()
+    },[sort])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -37,16 +50,13 @@ const Items = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    setList((await getItems({subCategory: router.query.id, search: search, sort: sort})).items)
-                    setPagination(100);
-                    forceCheck();
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                    await getList()
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
 
             }
         })()
-    },[sort, search])
+    },[search])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -136,7 +146,7 @@ Items.getInitialProps = async function(ctx) {
             ctx.res.end()
         } else
             Router.push('/contact')
-    ctx.store.getState().app.sort = 'name'
+    ctx.store.getState().app.sort = '-priotiry'
     return {
         data: await getItems({subCategory: ctx.query.id, search: '', sort: ctx.store.getState().app.sort}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
     };

@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import App from '../layouts/App';
 import CardLotterys from '../components/lotterys/CardLotterys';
 import pageListStyle from '../src/styleMUI/lotterys/lotterysList'
@@ -7,7 +7,6 @@ import {getLotterys} from '../src/gql/lottery'
 import { connect } from 'react-redux'
 import { urlMain } from '../redux/constants/other'
 import LazyLoad from 'react-lazyload';
-import { forceCheck } from 'react-lazyload';
 import CardLotterysPlaceholder from '../components/lotterys/CardLotterysPlaceholder'
 import { getClientGqlSsr } from '../src/getClientGQL'
 import initialApp from '../src/initialApp'
@@ -21,32 +20,10 @@ const height = 350
 const Lotterys = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
-    let [list, setList] = useState(data.lotterys);
-    const { search } = props.app;
     const { profile } = props.user;
-    let [searchTimeOut, setSearchTimeOut] = useState(null);
-    const initialRender = useRef(true);
-    useEffect(()=>{
-        (async()=>{
-            if(initialRender.current) {
-                initialRender.current = false;
-            } else {
-                if(searchTimeOut)
-                    clearTimeout(searchTimeOut)
-                searchTimeOut = setTimeout(async()=>{
-                    setList((await getLotterys()).lotterys)
-                    setPagination(100);
-                    forceCheck();
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
-                }, 500)
-                setSearchTimeOut(searchTimeOut)
-
-            }
-        })()
-    },[search,])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
-        if(pagination<list.length){
+        if(pagination<data.lotterys.length){
             setPagination(pagination+100)
         }
     }
@@ -63,7 +40,7 @@ const Lotterys = React.memo((props) => {
         }
     }, []);
     return (
-        <App checkPagination={checkPagination} searchShow={true} pageName={'Лотереи'}>
+        <App checkPagination={checkPagination} pageName={'Лотереи'}>
             <Head>
                 <title>Лотереи</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -76,9 +53,9 @@ const Lotterys = React.memo((props) => {
             </Head>
             <div className={classes.page}>
                 <div className='count'>
-                    {`Всего лотерей: ${list.length}`}
+                    {`Всего лотерей: ${data.lotterys.length}`}
                 </div>
-                {list?list.map((element, idx)=> {
+                {data.lotterys?data.lotterys.map((element, idx)=> {
                     if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardLotterysPlaceholder height={height}/>}>

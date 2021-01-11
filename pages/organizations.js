@@ -20,11 +20,24 @@ const Organization = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     let [list, setList] = useState(data.organizations);
-    const { search, filter, sort, city } = props.app;
+    const { search, filter, city } = props.app;
     const { profile } = props.user;
     let height = 80
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
+    const getList = async ()=>{
+        setList((await getOrganizations({search: search, filter: filter, city: city})).organizations);
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+        setPagination(100);
+        forceCheck();
+    }
+    useEffect(()=>{
+        (async()=>{
+            if(!initialRender.current) {
+                await getList()
+            }
+        })()
+    },[filter, city])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -33,16 +46,12 @@ const Organization = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    setList((await getOrganizations({search: search, sort: sort, filter: filter, city: city})).organizations)
-                    setPagination(100);
-                    forceCheck();
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                    await getList()
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
-
             }
         })()
-    },[filter, sort, search, city])
+    },[ search])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
@@ -50,7 +59,7 @@ const Organization = React.memo((props) => {
         }
     }
     return (
-        <App cityShow checkPagination={checkPagination} searchShow={true} filters={data.filterOrganization} sorts={data.sortOrganization} pageName='Организации'>
+        <App cityShow checkPagination={checkPagination} searchShow={true} filters={data.filterOrganization} pageName='Организации'>
             <Head>
                 <title>Организации</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -102,9 +111,8 @@ Organization.getInitialProps = async function(ctx) {
             ctx.res.end()
         } else
             Router.push('/contact')
-    ctx.store.getState().app.sort = 'name'
     return {
-        data: await getOrganizations({city: ctx.store.getState().app.city, search: '', sort: ctx.store.getState().app.sort, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
+        data: await getOrganizations({city: ctx.store.getState().app.city, search: '', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
     };
 };
 

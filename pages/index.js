@@ -55,6 +55,19 @@ const Organization = React.memo((props) => {
     }, []);*/
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
+    const getList = async ()=>{
+        setList((await getBrandOrganizations({search: search, sort: sort, filter: filter, city: city})).brandOrganizations);
+        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+        setPagination(100);
+        forceCheck();
+    }
+    useEffect(()=>{
+        (async()=>{
+            if(!initialRender.current) {
+                await getList()
+            }
+        })()
+    },[filter, sort, city])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -63,22 +76,13 @@ const Organization = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    list = (await getBrandOrganizations({
-                        search: search,
-                        sort: sort,
-                        filter: filter,
-                        city: city
-                    })).brandOrganizations;
-                    setList(list);
-                    setPagination(100);
-                    forceCheck();
-                    (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
+                    await getList()
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
 
             }
         })()
-    },[filter, sort, search, city])
+    },[search])
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
         if(pagination<list.length){
