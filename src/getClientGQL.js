@@ -16,10 +16,11 @@ export const getClientGqlSsr = (req) => {
         credentials: 'include'
     });
     const authLink = setContext((_, { headers }) => {
+        let jwt = getJWT(req.headers.cookie)
         return {
             headers: {
                 ...headers,
-                authorization: getJWT(req.headers.cookie) ? `Bearer ${getJWT(req.headers.cookie)}` : '',
+                authorization: jwt ? `Bearer ${jwt}` : '',
             }
         }
     });

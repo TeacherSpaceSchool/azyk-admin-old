@@ -3,13 +3,28 @@ const regexpUA = /(Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|iOS|M
 export const checkMobile = (ua)=>{
     return regexpUA.exec(ua)!==null
 }
-const regexpAuth = /(\s)?jwt=(\S)+(;)?/
-export const checkAuth = (auth)=>{
-    return regexpAuth.exec(auth)!==null
-}
-export const getJWT = (auth)=>{
-    let res = regexpAuth.exec(auth)
-    return res!==null?res[0].trim().replace('jwt=', ''):undefined
+export const getJWT = (cookie)=>{
+    //console.time('perfomance')
+    let name = 'jwt=';
+    let decodedCookie = decodeURIComponent(cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) === 0) {
+            let jwt = c.substring(name.length, c.length)
+            /*if(process.browser&&!localStorage.extended) {
+                localStorage.extended = true
+                document.cookie = `jwt=${jwt};expires=Sun, 31 May 2048 12:35:23 GMT;path=/`;
+            }*/
+            //console.timeEnd('perfomance')
+            return jwt;
+        }
+    }
+    //console.timeEnd('perfomance')
+    return undefined;
 }
 export const countdown = (date) => {
     date = new Date(date).getTime()

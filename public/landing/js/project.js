@@ -1371,7 +1371,7 @@ function t262_handleGoogleApiReady(recid){
 
 
 function t262_appendYandexMap(recid,key) {
-    var yarecid = recid;
+    /*var yarecid = recid;
     if (typeof ymaps === 'object' && typeof ymaps.Map === 'function') {
         t262_handleYandexApiReady(recid);
     } else {
@@ -1392,11 +1392,11 @@ function t262_appendYandexMap(recid,key) {
                 t262_appendYandexMap(yarecid,key);
             },200);
         }
-    }
+    }*/
 }
 
 function t262_handleYandexApiReady(recid){
-    $('#rec'+recid).find('.t262__map').each(function(index,Element) {
+    /*$('#rec'+recid).find('.t262__map').each(function(index,Element) {
         var el=$(Element);
         var arMarkers = window['arMapMarkers'+recid];
 
@@ -1446,7 +1446,7 @@ function t262_handleYandexApiReady(recid){
             });
         }
 
-    });
+    });*/
 }
 window.t266showvideo = function(recid){
     $(document).ready(function(){
@@ -2883,24 +2883,24 @@ function t354_createCookie(name,value,days) {
     /*if (days == '' || parseInt(days) <= 0) {
     return;
   }*/
-    if (days) {
+    /*if (days) {
         var date = new Date();
         date.setTime(date.getTime()+(days*24*60*60*1000));
         var expires = "; expires="+date.toGMTString();
     }
     else var expires = "";
-    document.cookie = name+"="+value+expires+"; path=/";
+    document.cookie = name+"="+value+expires+"; path=/";*/
 }
 
 function t354_readCookie(name) {
-    var nameEQ = name + "=";
+    /*var nameEQ = name + "=";
     var ca = document.cookie.split(';');
     for(var i=0;i < ca.length;i++) {
         var c = ca[i];
         while (c.charAt(0)==' ') c = c.substring(1,c.length);
         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
     }
-    return null;
+    return null;*/
 }
 
 function t354_checkPosition(recid){
@@ -3948,13 +3948,13 @@ function t364_sendPopupEventToStatistics(popupname) {
 }
 
 function t364_createCookie(name,value,days) {
-    if (days) {
+    /*if (days) {
         var date = new Date();
         date.setTime(date.getTime()+(days*24*60*60*1000));
         var expires = "; expires="+date.toGMTString();
     }
     else { var expires = ""; }
-    document.cookie = name+"="+value+expires+"; path=/";
+    document.cookie = name+"="+value+expires+"; path=/";*/
 }
 
 function t364_readCookie(name) {
@@ -4081,13 +4081,13 @@ function t365_sendPopupEventToStatistics(popupname) {
 }
 
 function t365_createCookie(name,value,days) {
-    if (days) {
+    /*if (days) {
         var date = new Date();
         date.setTime(date.getTime()+(days*24*60*60*1000));
         var expires = "; expires="+date.toGMTString();
     }
     else { var expires = ""; }
-    document.cookie = name+"="+value+expires+"; path=/";
+    document.cookie = name+"="+value+expires+"; path=/";*/
 }
 
 function t365_readCookie(name) {
@@ -4262,13 +4262,13 @@ function t367_createCookie(name,value,days) {
     /*if (days == '' || parseInt(days) <= 0) {
     return;
   }*/
-    if (days) {
+    /*if (days) {
         var date = new Date();
         date.setTime(date.getTime()+(days*24*60*60*1000));
         var expires = "; expires="+date.toGMTString();
     }
     else var expires = "";
-    document.cookie = name+"="+value+expires+"; path=/";
+    document.cookie = name+"="+value+expires+"; path=/";*/
 }
 
 function t367_readCookie(name) {

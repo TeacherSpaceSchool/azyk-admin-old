@@ -19,7 +19,6 @@ import { useSubscription } from '@apollo/react-hooks';
 import { useBottomScrollListener } from 'react-bottom-scroll-listener';
 import * as snackbarActions from '../redux/actions/snackbar'
 import { start } from '../src/service/idb'
-
 export const mainWindow = React.createRef();
 export const alert = React.createRef();
 export let containerRef;
@@ -53,32 +52,39 @@ const App = React.memo(props => {
         }
     },[process.browser])
 
-    Router.events.on('routeChangeStart', async (url, err)=>{
-        if(router.asPath!==url&&(router.asPath.includes('items')||router.asPath.includes('brand'))) {
-            if(!sessionStorage.scrollPostionStore)
-                sessionStorage.scrollPostionStore = JSON.stringify({})
-            let scrollPostionStore = JSON.parse(sessionStorage.scrollPostionStore)
-            let appBody = (document.getElementsByClassName('App-body'))[0]
-            scrollPostionStore[router.asPath] = appBody.scrollTop
-            sessionStorage.scrollPostionStore = JSON.stringify(scrollPostionStore)
+    useEffect( ()=>{
+        const routeChangeStart = (url, err)=>{
+            if(router.asPath!==url&&(router.asPath.includes('items')||router.asPath.includes('brand'))) {
+                if(!sessionStorage.scrollPostionStore)
+                    sessionStorage.scrollPostionStore = JSON.stringify({})
+                let scrollPostionStore = JSON.parse(sessionStorage.scrollPostionStore)
+                let appBody = (document.getElementsByClassName('App-body'))[0]
+                scrollPostionStore[router.asPath] = appBody.scrollTop
+                sessionStorage.scrollPostionStore = JSON.stringify(scrollPostionStore)
+            }
+            if (!router.pathname.includes(url)&&!router.asPath.includes(url)&&!reloadPage)
+                setReloadPage(true)
+            if (err&&err.cancelled&&reloadPage)
+                setReloadPage(false)
         }
-        if (!router.pathname.includes(url)&&!router.asPath.includes(url)&&!reloadPage)
-            setReloadPage(true)
-        if (err&&err.cancelled&&reloadPage)
-            setReloadPage(false)
-    })
-
-    Router.events.on('routeChangeComplete', (url) => {
-        if(sessionStorage.scrollPostionStore) {
-            let appBody = (document.getElementsByClassName('App-body'))[0]
-            appBody.scroll({
-                top: (JSON.parse(sessionStorage.scrollPostionStore))[url],
-                left: 0,
-                behavior: 'instant'
-            });
+        const routeChangeComplete = (url) => {
+            if(sessionStorage.scrollPostionStore) {
+                let appBody = (document.getElementsByClassName('App-body'))[0]
+                appBody.scroll({
+                    top: (JSON.parse(sessionStorage.scrollPostionStore))[url],
+                    left: 0,
+                    behavior: 'instant'
+                });
+            }
         }
 
-    });
+        Router.events.on('routeChangeStart', routeChangeStart)
+        Router.events.on('routeChangeComplete', routeChangeComplete);
+        return () => {
+            Router.events.off('routeChangeStart', routeChangeStart)
+            Router.events.off('routeChangeComplete', routeChangeComplete)
+        }
+    },[])
 
     containerRef = useBottomScrollListener(async()=>{
         if(checkPagination) {
