@@ -17,6 +17,7 @@ import Router from 'next/router'
 import * as snackbarActions from '../../redux/actions/snackbar'
 import TextField from '@material-ui/core/TextField';
 import Confirmation from '../../components/dialog/Confirmation'
+import Geos from '../../components/dialog/Geos'
 import { urlMain } from '../../redux/constants/other'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -39,6 +40,7 @@ import IconButton from '@material-ui/core/IconButton';
 import RemoveIcon from '@material-ui/icons/Remove';
 import Lightbox from 'react-image-lightbox';
 import * as appActions from '../../redux/actions/app'
+
 const marks = [
     {
         value: 0,
@@ -71,7 +73,7 @@ const Merchandising = React.memo((props) => {
     const { showSnackBar } = props.snackbarActions;
     let [client, setClient] = useState(data.merchandising?data.merchandising.client:undefined);
     let [organization, setOrganization] = useState(data.merchandising?data.merchandising.organization:undefined);
-
+    let [geo, setGeo] = useState(data.merchandising?data.merchandising.geo:undefined);
     let [productAvailability, setProductAvailability] = useState(data.merchandising?data.merchandising.productAvailability:[]);
     let [productInventory, setProductInventory] = useState(data.merchandising?data.merchandising.productInventory:false);
     let [productConditions, setProductConditions] = useState(data.merchandising?data.merchandising.productConditions:undefined);
@@ -101,6 +103,10 @@ const Merchandising = React.memo((props) => {
         }
     })
     useEffect(()=>{
+        if (router.query.id==='new'&&navigator.geolocation)
+            navigator.geolocation.getCurrentPosition((position)=>{
+                setGeo(position.coords.latitude+', '+position.coords.longitude)
+            })
         if(profile.organization)
             setOrganization({_id: profile.organization})
     },[])
@@ -118,7 +124,7 @@ const Merchandising = React.memo((props) => {
     let [needFho, setNeedFho] = useState(data.merchandising?data.merchandising.needFho:false);
    let [comment, setComment] = useState(data.merchandising?data.merchandising.comment:'');
     let [stateProduct, setStateProduct] = useState(data.merchandising?data.merchandising.stateProduct:0);
-    const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
+    const { setMiniDialog, showMiniDialog, setFullDialog, showFullDialog } = props.mini_dialogActions;
     const router = useRouter()
     const [clients, setClients] = useState([]);
     const [inputValue, setInputValue] = React.useState('');
@@ -576,7 +582,8 @@ const Merchandising = React.memo((props) => {
                                                         fhos: fhos.map((fho)=>{delete fho.previews; return fho}),
                                                         needFho,
                                                         stateProduct,
-                                                        comment
+                                                        comment,
+                                                        geo
                                                     })
                                                     Router.push(`/merchandisings/${organization._id}`)
                                                 }
@@ -595,6 +602,17 @@ const Merchandising = React.memo((props) => {
                                     router.query.id!=='new'?
                                         <>
                                         {
+                                            geo ?
+                                                <Button onClick={async () => {
+                                                    setFullDialog('Карта', <Geos geos={[{geo: geo, name: 'Мерчендайзер'}, {geo: client.address[0][1], name: client.name}]}/>)
+                                                    showFullDialog(true)
+                                                }} size='small' color='primary'>
+                                                    Карта
+                                                </Button>
+                                                :
+                                                null
+                                        }
+                                        {
                                             !data.merchandising.check&&['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role) ?
                                                 <Button onClick={async () => {
                                                     const action = async () => {
@@ -609,16 +627,21 @@ const Merchandising = React.memo((props) => {
                                                 :
                                                 null
                                         }
-                                        <Button onClick={async()=>{
-                                            const action = async() => {
-                                                await deleteMerchandising([router.query.id])
-                                                Router.push(`/merchandisings/${organization?organization._id:'super'}`)
-                                            }
-                                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                            showMiniDialog(true)
-                                        }} size='small' color='secondary'>
-                                            Удалить
-                                        </Button>
+                                        {
+                                            !data.merchandising.check?
+                                                <Button onClick={async()=>{
+                                                    const action = async() => {
+                                                        await deleteMerchandising([router.query.id])
+                                                        Router.push(`/merchandisings/${organization?organization._id:'super'}`)
+                                                    }
+                                                    setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                                    showMiniDialog(true)
+                                                }} size='small' color='secondary'>
+                                                    Удалить
+                                                </Button>
+                                                :
+                                                null
+                                        }
                                         </>
                                         :
                                         null
@@ -672,7 +695,7 @@ Merchandising.getInitialProps = async function(ctx) {
             ...ctx.query.id!=='new' ?
                 await getMerchandising({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):undefined)
                 :
-                {merchandising: {organization: undefined, client: undefined, productAvailability: [], productInventory: false, productConditions: 0, productLocation: 0, images: [], fhos: [], needFho: false, check: false, stateProduct: 0, comment:''}}
+                {merchandising: {organization: undefined, client: undefined, productAvailability: [], geo:undefined, productInventory: false, productConditions: 0, productLocation: 0, images: [], fhos: [], needFho: false, check: false, stateProduct: 0, comment:''}}
         }
     };
 };

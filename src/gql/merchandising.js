@@ -59,6 +59,7 @@ export const getMerchandising = async(args, client)=>{
                             productConditions
                             productLocation
                             images
+                            geo
                             fhos
                                 {type images layout state foreignProducts filling}
                             needFho
@@ -112,8 +113,8 @@ export const addMerchandising = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($organization: ID!, $client: ID!, $productAvailability: [String]!, $productInventory: Boolean!, $productConditions: Int!, $productLocation: Int!, $images: [Upload]!, $fhos: [InputFho]!, $needFho: Boolean!, $stateProduct: Int!, $comment: String!) {
-                        addMerchandising(organization: $organization, client: $client, productAvailability: $productAvailability, productInventory: $productInventory, productConditions: $productConditions, productLocation: $productLocation, images: $images, fhos: $fhos, needFho: $needFho, stateProduct: $stateProduct, comment: $comment) {
+                    mutation ($organization: ID!, $client: ID!, $geo: String, $productAvailability: [String]!, $productInventory: Boolean!, $productConditions: Int!, $productLocation: Int!, $images: [Upload]!, $fhos: [InputFho]!, $needFho: Boolean!, $stateProduct: Int!, $comment: String!) {
+                        addMerchandising(organization: $organization, geo: $geo, client: $client, productAvailability: $productAvailability, productInventory: $productInventory, productConditions: $productConditions, productLocation: $productLocation, images: $images, fhos: $fhos, needFho: $needFho, stateProduct: $stateProduct, comment: $comment) {
                             data
                         }
                     }`})

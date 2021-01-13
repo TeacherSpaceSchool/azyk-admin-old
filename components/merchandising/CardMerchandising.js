@@ -19,6 +19,7 @@ const CardMerchandising = React.memo((props) => {
         <Card className={isMobileApp?classes.cardM:classes.cardD}>
             <div className={classes.status} style={{background: element.check?'green':'orange'}}>{element.check?'принят':'обработка'}</div>
             <Link href='/merchandising/[id]' as={`/merchandising/${element._id}`}>
+                <a>
                 <CardContent>
                     <div className={classes.row} style={{color: differenceDate<7?'green':differenceDate<31?'orange':'red'}}>
                         <div className={classes.nameField}>Дата проверки:&nbsp;</div>
@@ -26,17 +27,17 @@ const CardMerchandising = React.memo((props) => {
                     </div>
                     <div className={classes.row}>
                         <div className={classes.nameField}>Клиент:&nbsp;</div>
-                        <div className={classes.value}>{`${element.client.name}${element.client.address&&element.client.address[0]?` (${element.client.address[0][2]?`${element.client.address[0][2]}, `:''}${element.client.address[0][0]})`:''}`}</div>
+                        <div className={classes.value} style={{color: 'black'}}>{`${element.client.name}${element.client.address&&element.client.address[0]?` (${element.client.address[0][2]?`${element.client.address[0][2]}, `:''}${element.client.address[0][0]})`:''}`}</div>
                     </div>
                     <div className={classes.row}>
                         <div className={classes.nameField}>Оценка:&nbsp;</div>
-                        <div className={classes.value}>{element.stateProduct}</div>
+                        <div className={classes.value} style={{color: 'black'}}>{element.stateProduct}</div>
                     </div>
                     {
                         element.fhos.length?
                             <div className={classes.row}>
                                 <div className={classes.nameField}>Оценка ФХО:&nbsp;</div>
-                                <div>
+                                <div style={{color: 'black'}}>
                                     {
                                         element.fhos.map((fho, idx)=><div key={`fho${idx}${element._id}`} className={classes.value}>{fho.state}</div>)
                                     }
@@ -49,12 +50,13 @@ const CardMerchandising = React.memo((props) => {
                         element.agent?
                             <div className={classes.row}>
                                 <div className={classes.nameField}>Агент:&nbsp;</div>
-                                <div className={classes.value}>{element.agent.name}</div>
+                                <div className={classes.value} style={{color: 'black'}}>{element.agent.name}</div>
                             </div>
                             :
                             null
                     }
                 </CardContent>
+                </a>
             </Link>
         </Card>
     );

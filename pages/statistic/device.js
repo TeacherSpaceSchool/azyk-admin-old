@@ -32,7 +32,7 @@ const DeviceStatistic = React.memo((props) => {
             appBody[0].style.paddingBottom = '0px'
         }
     },[process.browser])
-    const filters = [{name: 'Девайс', value: 'device'}, {name: 'OC', value: 'os'}, {name: 'Версия OC', value: 'os-version'}, {name: 'Браузер', value: 'browser'}, {name: 'Версия браузера', value: 'browser-version'}, {name: 'Производитель', value: 'company'}]
+    const filters = [{name: 'Девайс', value: 'device'}, {name: 'Производитель', value: 'company'}, {name: 'OC', value: 'os'}, {name: 'Версия OC', value: 'os-version'}, {name: 'Браузер', value: 'browser'}, {name: 'Версия браузера', value: 'browser-version'}]
     return (
         <App filters={filters} pageName='Статистика девайсов'>
             <Head>
