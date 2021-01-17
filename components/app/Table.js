@@ -38,6 +38,10 @@ const MyTable =  React.memo(
                         :
                         parseInt(a.data[colIndex]) - parseInt(b.data[colIndex])
                 });
+                data = data.map((row, idx)=>{
+                    row.data[0]=idx+1;
+                    return row
+                })
                 return data
             },
             selectableRows: 'none',

@@ -23,14 +23,14 @@ const Merchandisings = React.memo((props) => {
     const { profile } = props.user;
     const { data } = props;
     let [list, setList] = useState(data.merchandisings);
-    const { search, filter, sort } = props.app;
+    const { search, filter, sort, date } = props.app;
     const initialRender = useRef(true);
     let height = 70
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     let [paginationWork, setPaginationWork] = useState(true);
     const checkPagination = async()=>{
         if(paginationWork){
-            let addedList = (await getMerchandisings({organization: router.query.id, sort: sort, filter: filter, search: search, skip: list.length})).merchandisings
+            let addedList = (await getMerchandisings({...router.query.client?{client: router.query.client}:{}, date: date, organization: router.query.id, sort: sort, filter: filter, search: search, skip: list.length})).merchandisings
             if(addedList.length>0){
                 setList([...list, ...addedList])
             }
@@ -39,7 +39,7 @@ const Merchandisings = React.memo((props) => {
         }
     }
     const getList = async()=>{
-        setList((await getMerchandisings({organization: router.query.id, sort: sort, filter: filter, search: search, skip: 0})).merchandisings)
+        setList((await getMerchandisings({...router.query.client?{client: router.query.client}:{}, date: date, organization: router.query.id, sort: sort, filter: filter, search: search, skip: 0})).merchandisings)
         setPaginationWork(true);
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         forceCheck()
@@ -50,7 +50,7 @@ const Merchandisings = React.memo((props) => {
                 await getList()
             }
         })()
-    },[filter, sort])
+    },[filter, sort, date])
     useEffect(()=>{
         if(initialRender.current) {
             initialRender.current = false;
@@ -64,7 +64,7 @@ const Merchandisings = React.memo((props) => {
         }
     },[search])
     return (
-        <App filters={data.filterMerchandising} sorts={data.sortMerchandising} checkPagination={checkPagination} setList={setList} list={list} searchShow={true} pageName='Мерчендайзинг'>
+        <App dates filters={data.filterMerchandising} sorts={data.sortMerchandising} checkPagination={checkPagination} setList={setList} list={list} searchShow={true} pageName='Мерчендайзинг'>
             <Head>
                 <title>Мерчендайзинг</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -112,7 +112,7 @@ Merchandisings.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...await getMerchandisings({organization: ctx.query.id, sort: ctx.store.getState().app.sort, filter: ctx.store.getState().app.filter, skip: 0, search: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getMerchandisings({...ctx.query.client?{client: ctx.query.client}:{}, organization: ctx.query.id, sort: ctx.store.getState().app.sort, filter: ctx.store.getState().app.filter, skip: 0, search: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };
 };

@@ -601,6 +601,11 @@ const Merchandising = React.memo((props) => {
                                 {
                                     router.query.id!=='new'?
                                         <>
+                                        <Button onClick={async () => {
+                                            Router.push(`/merchandisings/${organization?organization._id:'super'}?client=${client._id}`)
+                                        }} size='small' color='primary'>
+                                            История
+                                        </Button>
                                         {
                                             geo ?
                                                 <Button onClick={async () => {
@@ -657,6 +662,7 @@ const Merchandising = React.memo((props) => {
                 </Card>
             <input
                 accept='image/*'
+                capture
                 style={{ display: 'none' }}
                 ref={imageRef}
                 type='file'

@@ -15,7 +15,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import Confirmation from '../dialog/Confirmation';
-import { pdDDMMYYYY } from '../../src/lib'
+import { pdDDMMYYHHMM } from '../../src/lib'
 
 const CardReview = React.memo((props) => {
     const { profile } = props.user;
@@ -46,7 +46,7 @@ const CardReview = React.memo((props) => {
                             <CardContent>
                                 <div className={classes.row}>
                                     <div className={classes.nameField}>Время отзыва:&nbsp;</div>
-                                    <div className={classes.value}>{pdDDMMYYYY(element.createdAt)}</div>
+                                    <div className={classes.value}>{pdDDMMYYHHMM(element.createdAt)}</div>
                                     <div className={classes.status} style={{background: element.taken?'green':'orange'}}>{element.taken?'принят':'обработка'}</div>
                                 </div>
                                 <a href={`/client/${element.client._id}`} target='_blank'>
