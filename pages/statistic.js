@@ -121,7 +121,12 @@ const list = {
             name: 'Статистика товаров',
             link: '/statistic/item',
             role: ['admin']
-        }
+        },
+        {
+            name: 'Статистика часов',
+            link: '/statistic/hours',
+            role: ['admin']
+        },
     ],
     tools: [
         {

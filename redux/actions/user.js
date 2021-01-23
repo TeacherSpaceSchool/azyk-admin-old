@@ -239,7 +239,7 @@ export async function getProfile(client) {
                            employment
                            addedClient
                           _id
-                         }
+                       }
                    }`
             })
         return result.data.getStatus

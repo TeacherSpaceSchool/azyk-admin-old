@@ -16,6 +16,7 @@ import WhatshotIcon from '@material-ui/icons/Whatshot';
 import CopyrightIcon from '@material-ui/icons/Loyalty';
 import LiveHelp from '@material-ui/icons/LiveHelp';
 import InfoIcon from '@material-ui/icons/Info';
+import SmsIcon from '@material-ui/icons/Sms';
 import GroupIcon from '@material-ui/icons/Group';
 import ReceiptIcon from '@material-ui/icons/Receipt';
 import LocalActivityIcon from '@material-ui/icons/LocalActivity';
@@ -396,6 +397,19 @@ const MyDrawer = React.memo((props) => {
                         </>
                         :
                         null
+                }
+                {
+                    'admin'===profile.role||!profile.role?
+                        <>
+                        <Link href='/connectionapplications'>
+                            <ListItem style={{background: router.pathname==='/connectionapplications'?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>
+                                <ListItemIcon><SmsIcon color='inherit'/></ListItemIcon>
+                                <ListItemText primary='Заявка на подключение' />
+                            </ListItem>
+                        </Link>
+                        <Divider/>
+                        </>
+                        :null
                 }
                 <Link href={'/contact'}>
                     <ListItem style={{background: router.pathname==='/contact'?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>

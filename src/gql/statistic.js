@@ -60,6 +60,27 @@ export const getStatisticDevice = async(filter, client)=>{
     }
 }
 
+export const getStatisticHours = async({organization, dateStart, dateType, city, type}, client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                variables: {organization, dateStart, dateType, city, type},
+                query: gql`
+                    query ($organization: ID!, $dateStart: Date, $dateType: String, $city: String, $type: String!) {
+                        statisticHours(organization: $organization, dateStart: $dateStart, dateType: $dateType, city: $city, type: $type) {
+                            columns
+                            row 
+                                {_id data}
+                        }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const getStatisticOrder = async({company, dateStart, dateType, online, city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
