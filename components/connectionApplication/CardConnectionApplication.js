@@ -108,7 +108,6 @@ const CardConnectionApplication = React.memo((props) => {
                                 <br/>
                                 <br/>
                                 <TextField
-                                    multiline={true}
                                     style={{width: '100%'}}
                                     label='Откуда узнали'
                                     value={whereKnow}
