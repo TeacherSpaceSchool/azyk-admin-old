@@ -66,6 +66,8 @@ export const getMerchandising = async(args, client)=>{
                             check
                             stateProduct
                             comment
+                              reviewerScore
+                              reviewerComment
                           }
                     }`,
             })
@@ -91,14 +93,14 @@ export const deleteMerchandising = async(ids)=>{
     }
 }
 
-export const checkMerchandising = async(ids)=>{
+export const checkMerchandising = async({ids, reviewerScore, reviewerComment })=>{
     try{
         const client = new SingletonApolloClient().getClient()
         await client.mutate({
-            variables: {_id: ids},
+            variables: {_id: ids, reviewerScore, reviewerComment},
             mutation : gql`
-                    mutation ($_id: ID!) {
-                        checkMerchandising(_id: $_id) {
+                    mutation ($_id: ID!, $reviewerScore: Int, $reviewerComment: String) {
+                        checkMerchandising(_id: $_id, reviewerScore: $reviewerScore, reviewerComment: $reviewerComment) {
                              data
                         }
                     }`})

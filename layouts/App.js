@@ -54,7 +54,7 @@ const App = React.memo(props => {
 
     useEffect( ()=>{
         const routeChangeStart = (url, err)=>{
-            if(router.asPath!==url&&(router.asPath.includes('items')||router.asPath.includes('brand'))) {
+            if(router.asPath!==url&&(router.asPath.includes('items')||router.asPath.includes('brand')||router.asPath.includes('merchandisings'))) {
                 if(!sessionStorage.scrollPostionStore)
                     sessionStorage.scrollPostionStore = JSON.stringify({})
                 let scrollPostionStore = JSON.parse(sessionStorage.scrollPostionStore)

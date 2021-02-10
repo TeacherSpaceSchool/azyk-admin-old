@@ -54,7 +54,7 @@ const CardAds = React.memo((props) => {
         setCount(checkInt(event.target.value))
     };
     let [item, setItem] = useState(element?element.item:undefined);
-    let [targetItems, setTargetItems ] = useState(element?element.targetItems.map(targetItem=>{return {_id: targetItem._id, count: targetItem.count, sum: targetItem.sum}}):undefined);
+    let [targetItems, setTargetItems ] = useState(element?element.targetItems.map(targetItem=>{return {_id: targetItem._id, count: targetItem.count, sum: targetItem.sum, type: targetItem.type, targetPrice: targetItem.targetPrice}}):undefined);
     let [targetPrice, setTargetPrice ] = useState(element?element.targetPrice:0);
     let handleTargetPrice =  (event) => {
         setTargetPrice(checkInt(event.target.value))
@@ -66,6 +66,7 @@ const CardAds = React.memo((props) => {
         setTargetType(event.target.value)
     };
     const targetTypes = ['Цена', 'Товар']
+    const targetItemsTypes = ['Количество', 'Цена']
     let [url, setUrl] = useState(element?element.url:'');
     let handleUrl =  (event) => {
         setUrl(event.target.value)
@@ -223,14 +224,46 @@ const CardAds = React.memo((props) => {
                                             </FormControl>
                                             <br/>
                                             <br/>
+                                            <FormControl className={classes.input} variant='outlined'>
+                                                <InputLabel>Цель</InputLabel>
+                                                <Select
+                                                    value={targetItems[idx].type}
+                                                    onChange={(event) => {
+                                                        targetItems[idx].type = event.target.value
+                                                        targetItems[idx].count = 0
+                                                        targetItems[idx].targetPrice = 0
+                                                        setTargetItems([...targetItems])
+                                                    }}
+                                                    input={<Input/>}
+                                                    MenuProps={{
+                                                        PaperProps: {
+                                                            style: {
+                                                                maxHeight: 226,
+                                                                width: 250,
+                                                            },
+                                                        }
+                                                    }}
+                                                >
+                                                    {targetItemsTypes.map((targetItemsType) => (
+                                                        <MenuItem key={targetItemsType} value={targetItemsType}>
+                                                            {targetItemsType}
+                                                        </MenuItem>
+                                                    ))}
+                                                </Select>
+                                            </FormControl>
+                                            <br/>
+                                            <br/>
                                             <div className={classes.row}>
                                                 <FormControl className={classes.inputHalf}>
-                                                    <InputLabel>Целевое количество</InputLabel>
+                                                    <InputLabel>{targetItems[idx].type==='Количество'?'Целевое количество':'Целевая цена'}</InputLabel>
                                                     <Input
-                                                        placeholder='Целевое количество'
-                                                        value={element.count}
+                                                        placeholder={targetItems[idx].type==='Количество'?'Целевое количество':'Целевая цена'}
+                                                        value={targetItems[idx].type==='Количество'?element.count:element.targetPrice}
                                                         onChange={(event)=>{
-                                                            targetItems[idx].count = checkInt(event.target.value)
+                                                            if(targetItems[idx].type==='Количество')
+                                                                targetItems[idx].count = checkInt(event.target.value)
+                                                            else
+                                                                targetItems[idx].targetPrice = checkInt(event.target.value)
                                                             setTargetItems([...targetItems])
                                                         }}
                                                         inputProps={{
@@ -273,7 +306,7 @@ const CardAds = React.memo((props) => {
                                         }
                                     ):null}
                                     <Button onClick={async()=>{
-                                        setTargetItems([...targetItems, {_id: [], count: 0, sum: false}])
+                                        setTargetItems([...targetItems, {_id: [], count: 0, sum: false, type: 'Количество', targetPrice: 0}])
                                     }} size='small' color='primary'>
                                         Добавить товар
                                     </Button>

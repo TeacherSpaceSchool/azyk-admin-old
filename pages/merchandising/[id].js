@@ -11,6 +11,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
+import {resizeImg} from '../../src/resizeImg'
 import { useRouter } from 'next/router'
 import FormControl from '@material-ui/core/FormControl';
 import Router from 'next/router'
@@ -87,15 +88,17 @@ const Merchandising = React.memo((props) => {
     let [items, setItems] = useState([]);
     let [typeImage, setTypeImage] = useState('product');
     let [indexImage, setIndexImage] = useState(0);
-    let handleChangeImage = ((event) => {
+    let handleChangeImage = (async (event) => {
         if(event.target.files[0].size/1024/1024<50){
+            let image = await resizeImg(event.target.files[0])
+            console.log(image)
             if(typeImage==='products') {
-                setImages([event.target.files[0], ...images])
-                setPreviews([URL.createObjectURL(event.target.files[0]), ...previews])
+                setImages([image, ...images])
+                setPreviews([image, ...previews])
             }
             else if(typeImage==='fhos') {
-                fhos[indexImage].images = [event.target.files[0], ...fhos[indexImage].images]
-                fhos[indexImage].previews = [URL.createObjectURL(event.target.files[0]), ...fhos[indexImage].previews]
+                fhos[indexImage].images = [image, ...fhos[indexImage].images]
+                fhos[indexImage].previews = [image, ...fhos[indexImage].previews]
                 setFhos([...fhos])
             }
         } else {
@@ -122,8 +125,10 @@ const Merchandising = React.memo((props) => {
     },[organization])
     let [fhos, setFhos] = useState(data.merchandising?data.merchandising.fhos:[]);
     let [needFho, setNeedFho] = useState(data.merchandising?data.merchandising.needFho:false);
-   let [comment, setComment] = useState(data.merchandising?data.merchandising.comment:'');
+    let [comment, setComment] = useState(data.merchandising?data.merchandising.comment:'');
     let [stateProduct, setStateProduct] = useState(data.merchandising?data.merchandising.stateProduct:0);
+    let [reviewerComment, setReviewerComment] = useState(data.merchandising&&data.merchandising.reviewerComment?data.merchandising.reviewerComment:'');
+    let [reviewerScore, setReviewerScore] = useState(data.merchandising&&data.merchandising.reviewerScore?data.merchandising.reviewerScore:0);
     const { setMiniDialog, showMiniDialog, setFullDialog, showFullDialog } = props.mini_dialogActions;
     const router = useRouter()
     const [clients, setClients] = useState([]);
@@ -565,6 +570,34 @@ const Merchandising = React.memo((props) => {
                                 :
                                 null
                             }
+                            {
+                                router.query.id!=='new'?
+                                    <>
+                                    <div className={classes.box}>
+                                        <Typography component='legend'>Оценка проверяющего</Typography>
+                                        <Rating
+                                            value={reviewerScore}
+                                            onChange={(event, newValue) => {
+                                                if(!data.merchandising.check&&['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role))setReviewerScore(newValue);
+                                            }}
+                                        />
+                                    </div>
+                                    <div className={classes.box}>
+                                        <TextField
+                                            multiline={true}
+                                            label='Комментарий проверяющего'
+                                            value={reviewerComment}
+                                            className={classes.input}
+                                            onChange={(event)=>{if(!data.merchandising.check&&['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role))setReviewerComment(event.target.value)}}
+                                            inputProps={{
+                                                'aria-label': 'description',
+                                            }}
+                                        />
+                                    </div>
+                                    </>
+                                    :
+                                    null
+                            }
                             <div className={isMobileApp?classes.bottomRouteM:classes.bottomRouteD}>
                                 {
                                     router.query.id==='new'?
@@ -621,7 +654,7 @@ const Merchandising = React.memo((props) => {
                                             !data.merchandising.check&&['admin', 'суперорганизация', 'организация', 'менеджер'].includes(profile.role) ?
                                                 <Button onClick={async () => {
                                                     const action = async () => {
-                                                        await checkMerchandising(router.query.id)
+                                                        await checkMerchandising({ids: router.query.id, reviewerScore, reviewerComment})
                                                         Router.push(`/merchandisings/${organization?organization._id:'super'}`)
                                                     }
                                                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
