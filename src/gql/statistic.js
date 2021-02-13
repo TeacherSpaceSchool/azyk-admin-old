@@ -18,6 +18,23 @@ export const getStatisticGeoOrder = async({organization, dateStart, city}, clien
     }
 }
 
+export const getAgentMapGeos = async({agent, date}, client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                variables: {agent, date},
+                query: gql`
+                    query ($agent: ID!, $date: String) {
+                        agentMapGeos(agent: $agent, date: $date) 
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const getStatisticMerchandising = async({organization}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()

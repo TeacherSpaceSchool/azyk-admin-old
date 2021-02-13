@@ -53,8 +53,12 @@ const CardAds = React.memo((props) => {
     let handleCount=  (event) => {
         setCount(checkInt(event.target.value))
     };
+    let [xidNumber, setXidNumber] = useState(element?element.xidNumber:0);
+    let handleXidNumber=  (event) => {
+        setXidNumber(checkInt(event.target.value))
+    };
     let [item, setItem] = useState(element?element.item:undefined);
-    let [targetItems, setTargetItems ] = useState(element?element.targetItems.map(targetItem=>{return {_id: targetItem._id, count: targetItem.count, sum: targetItem.sum, type: targetItem.type, targetPrice: targetItem.targetPrice}}):undefined);
+    let [targetItems, setTargetItems ] = useState(element?element.targetItems.map(targetItem=>{return {xids: targetItem.xids, count: targetItem.count, sum: targetItem.sum, type: targetItem.type, targetPrice: targetItem.targetPrice}}):undefined);
     let [targetPrice, setTargetPrice ] = useState(element?element.targetPrice:0);
     let handleTargetPrice =  (event) => {
         setTargetPrice(checkInt(event.target.value))
@@ -144,6 +148,28 @@ const CardAds = React.memo((props) => {
                             />
                             <br/>
                             <br/>
+                            <div className={classes.row}>
+                                <TextField
+                                    label='ID'
+                                    value={xid}
+                                    className={classes.inputHalf}
+                                    onChange={handleXid}
+                                    inputProps={{
+                                        'aria-label': 'description',
+                                    }}
+                                />
+                                <TextField
+                                    label='Номер ID'
+                                    value={xidNumber}
+                                    className={classes.inputHalf}
+                                    onChange={handleXidNumber}
+                                    inputProps={{
+                                        'aria-label': 'description',
+                                    }}
+                                />
+                            </div>
+                            <br/>
+                            <br/>
                             <FormControl className={classes.input} variant='outlined'>
                                 <InputLabel>Цель</InputLabel>
                                 <Select
@@ -172,17 +198,6 @@ const CardAds = React.memo((props) => {
                                 targetType==='Цена'?
                                     <>
                                     <TextField
-                                        label='ID'
-                                        value={xid}
-                                        className={classes.input}
-                                        onChange={handleXid}
-                                        inputProps={{
-                                            'aria-label': 'description',
-                                        }}
-                                    />
-                                    <br/>
-                                    <br/>
-                                    <TextField
                                         label='Целевая цена'
                                         value={targetPrice}
                                         className={classes.input}
@@ -200,9 +215,9 @@ const CardAds = React.memo((props) => {
                                                 <InputLabel>Целевой товар</InputLabel>
                                                 <Select
                                                     multiple
-                                                    value={element._id}
+                                                    value={element.xids}
                                                     onChange={(event) => {
-                                                        targetItems[idx]._id = event.target.value
+                                                        targetItems[idx].xids = event.target.value
                                                         setTargetItems([...targetItems])
                                                     }}
                                                     input={<Input />}
@@ -306,7 +321,7 @@ const CardAds = React.memo((props) => {
                                         }
                                     ):null}
                                     <Button onClick={async()=>{
-                                        setTargetItems([...targetItems, {_id: [], count: 0, sum: false, type: 'Количество', targetPrice: 0}])
+                                        setTargetItems([...targetItems, {xids: [], count: 0, sum: false, type: 'Количество', targetPrice: 0}])
                                     }} size='small' color='primary'>
                                         Добавить товар
                                     </Button>
@@ -319,26 +334,23 @@ const CardAds = React.memo((props) => {
                                         element.del!=='deleted'?
                                         <>
                                         <Button onClick={async()=>{
-                                            if(!(targetItems.find(element=>!element._id))) {
-                                                let editElement = {_id: element._id}
-                                                if (title.length > 0 && title !== element.title) editElement.title = title
-                                                if (xid.length > 0 && xid !== element.xid) editElement.xid = xid
-                                                if (url.length > 0 && url !== element.url) editElement.url = url
-                                                if (count !== element.count) editElement.count = count
-                                                editElement.targetItems = targetItems
-                                                if (targetPrice !== element.targetPrice) editElement.targetPrice = targetPrice
-                                                if (multiplier !== element.multiplier) editElement.multiplier = multiplier
-                                                if (targetType !== element.targetType) editElement.targetType = targetType
-                                                editElement.item = item ? item._id : undefined
-                                                if (image) editElement.image = image
-                                                const action = async () => {
-                                                    await setAds(editElement, organization)
-                                                }
-                                                setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
-                                                showMiniDialog(true)
-                                            } else {
-                                                showSnackBar('Заполните все поля')
+                                            let editElement = {_id: element._id}
+                                            if (title.length > 0 && title !== element.title) editElement.title = title
+                                            if (xid.length > 0 && xid !== element.xid) editElement.xid = xid
+                                            if (url.length > 0 && url !== element.url) editElement.url = url
+                                            if (count !== element.count) editElement.count = count
+                                            if (xidNumber !== element.xidNumber) editElement.xidNumber = xidNumber
+                                            editElement.targetItems = targetItems
+                                            if (targetPrice !== element.targetPrice) editElement.targetPrice = targetPrice
+                                            if (multiplier !== element.multiplier) editElement.multiplier = multiplier
+                                            if (targetType !== element.targetType) editElement.targetType = targetType
+                                            editElement.item = item ? item._id : undefined
+                                            if (image) editElement.image = image
+                                            const action = async () => {
+                                                await setAds(editElement, organization)
                                             }
+                                            setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                            showMiniDialog(true)
                                         }} size='small' color='primary'>
                                             Сохранить
                                         </Button>
@@ -380,7 +392,7 @@ const CardAds = React.memo((props) => {
                                                 setItem(undefined)
                                                 const action = async() => {
                                                     setList([
-                                                        (await addAds({xid: xid, count: count, item: item?item._id:undefined, organization: organization, image: image, url: url, title: title, targetItems: targetItems, targetPrice: targetPrice, multiplier: multiplier, targetType: targetType})).addAds,
+                                                        (await addAds({xidNumber: xidNumber, xid: xid, count: count, item: item?item._id:undefined, organization: organization, image: image, url: url, title: title, targetItems: targetItems, targetPrice: targetPrice, multiplier: multiplier, targetType: targetType})).addAds,
                                                         ...list
                                                     ])
                                                 }

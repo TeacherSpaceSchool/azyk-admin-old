@@ -68,6 +68,11 @@ const list = {
             role: ['admin', 'суперорганизация']
         },
         {
+            name: 'Карта посещений',
+            link: '/statistic/agentmapgeo',
+            role: ['admin', 'суперорганизация']
+        },
+        {
             name: 'Рабочие часы',
             link: '/statistic/agentsworktime',
             role: ['admin', 'суперорганизация']

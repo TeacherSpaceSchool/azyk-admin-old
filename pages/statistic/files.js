@@ -22,7 +22,6 @@ import {checkFloat} from '../../src/lib'
 const Files = React.memo((props) => {
     const { data } = props;
     const classes = pageListStyle();
-    const { isMobileApp } = props.app;
     const { filter } = props.app;
     const { showLoad } = props.appActions;
     const height = 80

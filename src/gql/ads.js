@@ -31,6 +31,7 @@ export const getAds = async()=>{
                         ads {
                             _id
                             xid
+                            xidNumber
                             image
                             count
                             item
@@ -42,7 +43,7 @@ export const getAds = async()=>{
                             title
                             targetItems
                                 {
-                                    _id
+                                    xids
                                     count  
                                     sum 
                                     type
@@ -73,6 +74,7 @@ export const getAdss = async(args, client)=>{
                             image
                             url
                             xid
+                            xidNumber
                             title
                             count
                             item
@@ -82,7 +84,7 @@ export const getAdss = async(args, client)=>{
                                 }
                             targetItems
                                 {
-                                    _id
+                                    xids
                                     count   
                                     sum
                                     type
@@ -113,6 +115,7 @@ export const getAdssTrash = async({search: search, organization: organization}, 
                             image
                             url
                             xid
+                            xidNumber
                             title
                             del
                             count
@@ -123,7 +126,7 @@ export const getAdssTrash = async({search: search, organization: organization}, 
                                 }
                             targetItems
                                 {
-                                    _id
+                                    xids
                                     count 
                                     sum  
                                     type
@@ -179,12 +182,13 @@ export const addAds = async(element)=>{
         let res = await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($image: Upload!, $url: String!, $xid: String, $title: String!, $organization: ID!, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
-                        addAds(image: $image, url: $url, xid: $xid, title: $title, organization: $organization, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
+                    mutation ($image: Upload!, $url: String!, $xid: String, $xidNumber: Int, $title: String!, $organization: ID!, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
+                        addAds(image: $image, url: $url, xid: $xid, xidNumber: $xidNumber, title: $title, organization: $organization, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
                             _id
                             image
                             url
                             xid
+                            xidNumber
                             title
                             count
                             item
@@ -194,7 +198,7 @@ export const addAds = async(element)=>{
                                 }
                             targetItems
                                 {
-                                    _id
+                                    xids
                                     count   
                                     sum
                                     type
@@ -232,8 +236,8 @@ export const setAds = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($xid: String, $_id: ID!, $image: Upload, $url: String, $title: String, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
-                        setAds(xid: $xid, _id: $_id, image: $image, url: $url, title: $title, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
+                    mutation ($xid: String, $xidNumber: Int, $_id: ID!, $image: Upload, $url: String, $title: String, $item: ID, $count: Int, $targetItems: [TargetItemInput], $targetPrice: Int, $multiplier: Boolean, $targetType: String) {
+                        setAds(xid: $xid, xidNumber: $xidNumber, _id: $_id, image: $image, url: $url, title: $title, item: $item, count: $count, targetItems: $targetItems, targetPrice: $targetPrice, multiplier: $multiplier, targetType: $targetType) {
                              data
                         }
                     }`})
