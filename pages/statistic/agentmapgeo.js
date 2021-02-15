@@ -53,6 +53,7 @@ const AgentMapGeoStatistic = React.memo((props) => {
         (async()=>{
             if(agent&&agent._id) {
                 await showLoad(true)
+                setIndex(undefined)
                 setAgentMapGeos((await getAgentMapGeos({agent: agent._id, date: date})).agentMapGeos)
                 await showLoad(false)
             }

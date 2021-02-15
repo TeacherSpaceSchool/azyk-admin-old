@@ -70,7 +70,7 @@ const list = {
         {
             name: 'Карта посещений',
             link: '/statistic/agentmapgeo',
-            role: ['admin']
+            role: ['admin', 'суперорганизация']
         },
         {
             name: 'Рабочие часы',

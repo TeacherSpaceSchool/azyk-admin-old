@@ -43,7 +43,7 @@ const Item = React.memo((props) => {
     let [info, setInfo] = useState(data.item!==null?data.item.info:'');
     let [price, setPrice] = useState(data.item!==null?data.item.price:'');
     let [subCategory, setSubCategory] = useState(data.item!==null?data.item.subCategory:{});
-    const cities = ['Бишкек', 'Кара-Балта', 'Токмок']
+    const cities = ['Бишкек', 'Кара-Балта', 'Токмок', 'Кочкор', 'Нарын', 'Боконбаева', 'Каракол', 'Чолпон-Ата', 'Балыкчы', 'Казарман', 'Талас', 'Жалал-Абад', 'Ош']
     let [city, setCity] = useState(data.item&&data.item.city?data.item.city:'Бишкек');
     let handleCity =  (event) => {
         setCity(event.target.value)
