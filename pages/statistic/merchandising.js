@@ -16,6 +16,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import { bindActionCreators } from 'redux'
 import * as appActions from '../../redux/actions/app'
+import Button from '@material-ui/core/Button';
 
 const MerchandisingStatistic = React.memo((props) => {
     const classes = pageListStyle();
@@ -27,16 +28,20 @@ const MerchandisingStatistic = React.memo((props) => {
     let [statisticMerchandising, setStatisticMerchandising] = useState(undefined);
     let [showStat, setShowStat] = useState(false);
     let [organization, setOrganization] = useState(data.organization);
+    let [dateStart, setDateStart] = useState(data.dateStart);
+    let [dateType, setDateType] = useState('day');
     const { showLoad } = props.appActions;
     useEffect(()=>{
         (async()=>{
             await showLoad(true)
             setStatisticMerchandising((await getStatisticMerchandising({
-                organization: organization ? organization._id : undefined
+                organization: organization ? organization._id : undefined,
+                dateStart: dateStart ? dateStart : null,
+                dateType: dateType,
             })).statisticMerchandising)
             await showLoad(false)
         })()
-    },[organization, activeOrganization])
+    },[organization, dateStart, dateType, activeOrganization])
     useEffect(()=>{
         if(process.browser){
             let appBody = document.getElementsByClassName('App-body')
@@ -71,6 +76,20 @@ const MerchandisingStatistic = React.memo((props) => {
             <Card className={classes.page}>
                 <CardContent className={classes.column} style={isMobileApp?{}:{justifyContent: 'start', alignItems: 'flex-start'}}>
                     <div className={classes.row}>
+                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>setDateType('day')} size='small' color={dateType==='day'?'primary':''}>
+                            День
+                        </Button>
+                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>setDateType('week')} size='small' color={dateType==='week'?'primary':''}>
+                            Неделя
+                        </Button>
+                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>setDateType('month')} size='small' color={dateType==='month'?'primary':''}>
+                            Месяц
+                        </Button>
+                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>setDateType('year')} size='small' color={dateType==='year'?'primary':''}>
+                            Год
+                        </Button>
+                    </div>
+                    <div className={classes.row}>
                         {
                             profile.role === 'admin' ?
                                 <Autocomplete
@@ -89,6 +108,19 @@ const MerchandisingStatistic = React.memo((props) => {
                                 :
                                 null
                         }
+                        <TextField
+                            className={classes.input}
+                            label='Дата начала'
+                            type='date'
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            value={dateStart}
+                            inputProps={{
+                                'aria-label': 'description',
+                            }}
+                            onChange={ event => setDateStart(event.target.value) }
+                        />
                     </div>
                     {
                         statisticMerchandising?
@@ -136,11 +168,15 @@ MerchandisingStatistic.getInitialProps = async function(ctx) {
     let organization
     if(ctx.store.getState().user.profile.role==='admin')
         organization = {name: 'AZYK.STORE', _id: undefined}
+    let dateStart = new Date()
+    if (dateStart.getHours()<3)
+        dateStart.setDate(dateStart.getDate() - 1)
     return {
         data: {
             ...await getActiveOrganization(ctx.store.getState().app.city, ctx.req?await getClientGqlSsr(ctx.req):undefined),
-            organization
-        }
+            organization,
+            dateStart: pdDatePicker(dateStart)
+}
     };
 };
 

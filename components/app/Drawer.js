@@ -375,7 +375,7 @@ const MyDrawer = React.memo((props) => {
                     ['admin', 'суперагент', 'суперорганизация', 'организация', 'менеджер', 'агент'].includes(profile.role)?
                         <>
                         <Link href={`/merchandisings${'admin'!==profile.role?'/[id]':''}`} as={`/merchandisings${profile.organization?`/${profile.organization}`:'/super'}`}>
-                            <ListItem style={{background: router.pathname.includes('merchandising')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>
+                            <ListItem style={{background: router.pathname.includes('merchandising')&&!router.pathname.includes('statistic')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>
                                 <ListItemIcon><AssignmentIndIcon color='inherit'/></ListItemIcon>
                                 <ListItemText primary='Мерчендайзинг' />
                             </ListItem>

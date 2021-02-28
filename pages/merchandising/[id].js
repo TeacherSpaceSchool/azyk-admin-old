@@ -39,7 +39,7 @@ import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import IconButton from '@material-ui/core/IconButton';
 import RemoveIcon from '@material-ui/icons/Remove';
-import Lightbox from 'react-image-lightbox';
+import Lightbox from 'react-awesome-lightbox';
 import * as appActions from '../../redux/actions/app'
 
 const marks = [
@@ -91,7 +91,6 @@ const Merchandising = React.memo((props) => {
     let handleChangeImage = (async (event) => {
         if(event.target.files[0].size/1024/1024<50){
             let image = await resizeImg(event.target.files[0])
-            console.log(image)
             if(typeImage==='products') {
                 setImages([image, ...images])
                 setPreviews([image, ...previews])
@@ -347,7 +346,7 @@ const Merchandising = React.memo((props) => {
                                                 setTypeImage('products')
                                                 imageRef.current.click()
                                             }}>
-                                            <img src={'/static/add.png'}/>
+                                            <img style={{cursor: 'pointer'}} src={'/static/add.png'}/>
                                             <GridListTileBar
                                                 title={'Добавить'}
                                                 classes={{
@@ -361,7 +360,7 @@ const Merchandising = React.memo((props) => {
                                     }
                                     {previews.map((preview, idx) => (
                                         <GridListTile key={preview}>
-                                            <img src={preview} onClick={()=>{
+                                            <img style={{cursor: 'pointer'}} src={preview} onClick={()=>{
                                                 showAppBar(false)
                                                 setShowLightbox(true)
                                                 setLightboxImages([...previews])
@@ -500,10 +499,9 @@ const Merchandising = React.memo((props) => {
                                             <GridListTile
                                                 onClick={() => {
                                                     setTypeImage('fhos')
-                                                    setIndexImage(idx)
                                                     imageRef.current.click()
                                                 }}>
-                                                <img src={'/static/add.png'}/>
+                                                <img style={{cursor: 'pointer'}} src={'/static/add.png'}/>
                                                 <GridListTileBar
                                                     title={'Добавить'}
                                                     classes={{
@@ -517,10 +515,10 @@ const Merchandising = React.memo((props) => {
                                         }
                                         {(router.query.id === 'new'?fho.previews:fho.images).map((preview, idx1) => (
                                             <GridListTile key={preview}>
-                                                <img src={preview} onClick={()=>{
+                                                <img src={preview} style={{cursor: 'pointer'}} onClick={()=>{
                                                     showAppBar(false)
                                                     setShowLightbox(true)
-                                                    setLightboxImages([...fho.previews])
+                                                    setLightboxImages([...(router.query.id === 'new'?fho.previews:fho.images)])
                                                     setLightboxIndex(idx1)
                                                 }}/>
                                                 {router.query.id === 'new' ?
@@ -704,12 +702,9 @@ const Merchandising = React.memo((props) => {
             {
                 showLightbox?
                     <Lightbox
-                        mainSrc={lightboxImages[lightboxIndex]}
-                        nextSrc={lightboxImages[(lightboxIndex + 1) % lightboxImages.length]}
-                        prevSrc={lightboxImages[(lightboxIndex + lightboxImages.length - 1) % lightboxImages.length]}
-                        onCloseRequest={() => {showAppBar(true); setShowLightbox(false)}}
-                        onMovePrevRequest={() => setLightboxIndex((lightboxIndex + lightboxImages.length - 1) % lightboxImages.length)}
-                        onMoveNextRequest={() => setLightboxIndex((lightboxIndex + 1) % lightboxImages.length)}
+                        images={lightboxImages}
+                        startIndex={lightboxIndex}
+                        onClose={() => {showAppBar(true); setShowLightbox(false)}}
                      />
                     :
                     null
