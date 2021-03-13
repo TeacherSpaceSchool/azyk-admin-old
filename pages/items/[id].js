@@ -25,12 +25,12 @@ const Items = React.memo((props) => {
     const { data } = props;
     const router = useRouter()
     let [list, setList] = useState(data.items);
-    const { search, sort } = props.app;
+    const { search, sort, organization } = props.app;
     const { profile } = props.user;
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     const initialRender = useRef(true);
     const getList = async ()=>{
-        setList((await getItems({subCategory: router.query.id, search: search, sort: sort})).items)
+        setList((await getItems({organization: organization, subCategory: router.query.id, search: search, sort: sort})).items)
         setPagination(100);
         forceCheck();
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
@@ -41,7 +41,7 @@ const Items = React.memo((props) => {
                 await getList()
             }
         })()
-    },[sort])
+    },[sort, organization])
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -64,7 +64,7 @@ const Items = React.memo((props) => {
         }
     }
     return (
-        <App checkPagination={checkPagination} searchShow={true} sorts={data.sortItem} pageName={router.query.id==='all'?'Все':data.subCategory!==null?data.subCategory.name:'Ничего не найдено'}>
+        <App organizations checkPagination={checkPagination} searchShow={true} sorts={data.sortItem} pageName={router.query.id==='all'?'Все':data.subCategory!==null?data.subCategory.name:'Ничего не найдено'}>
             <Head>
                 <title>{router.query.id==='all'?'Все':data.subCategory!==null?data.subCategory.name:'Ничего не найдено'}</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />

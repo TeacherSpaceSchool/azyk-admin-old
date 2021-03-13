@@ -162,7 +162,6 @@ const Catalog = React.memo((props) => {
             setPagination(pagination+100)
         }
     }
-    console.log(sort)
     return (
         <App defaultOpenSearch={router.query.search} checkPagination={checkPagination} sorts={data?data.sortItem:undefined} searchShow={true} pageName={data.organization.name}>
             <Head>

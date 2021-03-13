@@ -38,6 +38,12 @@ export default makeStyles({
         fontSize: '16px',
         fontFamily: 'Roboto'
     },
+    input: {
+        marginBottom: 15,
+        width: 368,
+        fontSize: '16px',
+        fontFamily: 'Roboto'
+    },
     line: {
         display: 'flex',
         alignItems: 'center',

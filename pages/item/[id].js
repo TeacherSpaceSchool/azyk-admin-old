@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getSubCategorys } from '../../src/gql/subcategory'
+import { getSubBrands } from '../../src/gql/subBrand'
 import { getOrganizations } from '../../src/gql/organization'
 import { getItem, addItem, setItem, onoffItem, deleteItem } from '../../src/gql/items'
 import { checkInt, checkFloat } from '../../src/lib'
@@ -37,20 +38,25 @@ const Item = React.memo((props) => {
     const router = useRouter()
     const { isMobileApp } = props.app;
     const { profile } = props.user;
-    let [stock, setStock] = useState(data.item!==null?data.item.stock:'');
+    let [stock, setStock] = useState(data.item?data.item.stock:'');
     let [unit, setUnit] = useState(data.item?data.item.unit:'');
-    let [name, setName] = useState(data.item!==null?data.item.name:'');
-    let [info, setInfo] = useState(data.item!==null?data.item.info:'');
-    let [price, setPrice] = useState(data.item!==null?data.item.price:'');
-    let [subCategory, setSubCategory] = useState(data.item!==null?data.item.subCategory:{});
+    let [name, setName] = useState(data.item?data.item.name:'');
+    let [info, setInfo] = useState(data.item?data.item.info:'');
+    let [price, setPrice] = useState(data.item?data.item.price:'');
+    let [subCategory, setSubCategory] = useState(data.item?data.item.subCategory:{});
+    let [subBrand, setSubBrand] = useState(data.item&&data.item.subBrand?data.item.subBrand:{});
+    let [subBrands, setSubBrands] = useState([]);
     const cities = ['Бишкек', 'Кара-Балта', 'Токмок', 'Кочкор', 'Нарын', 'Боконбаева', 'Каракол', 'Чолпон-Ата', 'Балыкчы', 'Казарман', 'Талас', 'Жалал-Абад', 'Ош']
     let [city, setCity] = useState(data.item&&data.item.city?data.item.city:'Бишкек');
     let handleCity =  (event) => {
         setCity(event.target.value)
     };
-    let [status, setStatus] = useState(data.item!==null?data.item.status:'');
+    let [status, setStatus] = useState(data.item?data.item.status:'');
     let handleSubCategory =  (event) => {
         setSubCategory({_id: event.target.value, name: event.target.name})
+    };
+    let handleSubBrand =  (event) => {
+        setSubBrand({_id: event.target.value, name: event.target.name})
     };
     const _categorys = ['A','B','C','D','Horeca']
     let [categorys, setCategorys] = useState(data.item?data.item.categorys:['A','B','C','D','Horeca']);
@@ -87,6 +93,13 @@ const Item = React.memo((props) => {
             }
         })()
     },[])
+    useEffect(()=>{
+        (async()=>{
+            if(organization&&organization._id){
+                setSubBrands([{name: 'Без подбренда', _id: undefined}, ...(await getSubBrands({search: '', organization: organization._id})).subBrands])
+            }
+        })()
+    },[organization])
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const { showSnackBar } = props.snackbarActions;
     return (
@@ -381,8 +394,16 @@ const Item = React.memo((props) => {
                                         <br/>
                                         <FormControl className={isMobileApp?classes.inputM:classes.inputD}>
                                             <InputLabel>Подкатегория</InputLabel>
-                                            <Select value={subCategory._id}onChange={handleSubCategory}>
+                                            <Select value={subCategory._id} onChange={handleSubCategory}>
                                                 {data.subCategorys.map((element)=>
+                                                    <MenuItem key={element._id} value={element._id} ola={element.name}>{element.name}</MenuItem>
+                                                )}
+                                            </Select>
+                                        </FormControl>
+                                        <FormControl className={isMobileApp?classes.inputM:classes.inputD}>
+                                            <InputLabel>Подбренд</InputLabel>
+                                            <Select value={subBrand._id} onChange={handleSubBrand}>
+                                                {subBrands.map((element)=>
                                                     <MenuItem key={element._id} value={element._id} ola={element.name}>{element.name}</MenuItem>
                                                 )}
                                             </Select>
@@ -414,6 +435,7 @@ const Item = React.memo((props) => {
                                                                     info: info,
                                                                     price: checkFloat(price),
                                                                     subCategory: subCategory._id,
+                                                                    subBrand: subBrand._id,
                                                                     hit: hit,
                                                                     latest: latest,
                                                                     organization: organization._id,
@@ -455,6 +477,7 @@ const Item = React.memo((props) => {
                                                             if(latest!==data.item.latest)editElement.latest = latest
                                                             if(organization._id!==data.item.organization._id)editElement.organization = organization._id
                                                             if(subCategory._id!==data.item.subCategory._id)editElement.subCategory = subCategory._id
+                                                            if(!data.item.subBrand||subBrand._id!==data.item.subBrand._id)editElement.subBrand = subBrand._id
                                                             if(priotiry!==data.item.priotiry)editElement.priotiry = checkInt(priotiry)
                                                             const action = async() => {
                                                                 await setItem(editElement, subCategory._id)
@@ -587,6 +610,7 @@ Item.getInitialProps = async function(ctx) {
                         categorys: ['A','B','C','D','Horeca'],
                         price: 0,
                         subCategory: {_id: ''},
+                        subBrand: {_id: ''},
                         organization: {_id: ''},
                         hit: false,
                         latest: false

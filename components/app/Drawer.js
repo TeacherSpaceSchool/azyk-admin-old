@@ -72,9 +72,22 @@ const MyDrawer = React.memo((props) => {
                     ['admin', 'client'].includes(profile.role)?
                         <>
                         <Link href='/'>
-                            <ListItem style={{background: router.pathname===('/')||router.pathname.includes('brand')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>
+                            <ListItem style={{background: (router.pathname===('/')||router.pathname.includes('brand'))&&!router.pathname.includes('subbrands')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>
                                 <ListItemIcon><CopyrightIcon color='inherit'/></ListItemIcon>
                                 <ListItemText primary='Бренды' />
+                            </ListItem>
+                        </Link>
+                        <Divider/>
+                        </>
+                        :null
+                }
+                {
+                    'admin'===profile.role?
+                        <>
+                        <Link href='/subbrands'>
+                            <ListItem style={{background: router.pathname.includes('subbrands')?'#f5f5f5':'#ffffff'}} button onClick={()=>{setUncover(false);showDrawer(false)}}>
+                                <ListItemIcon><CopyrightIcon color='inherit'/></ListItemIcon>
+                                <ListItemText primary='Подбренды' />
                             </ListItem>
                         </Link>
                         <Divider/>
