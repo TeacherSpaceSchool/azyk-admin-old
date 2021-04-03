@@ -118,6 +118,11 @@ const list = {
             role: ['admin', 'суперорганизация']
         },
         {
+            name: 'Статистика клиентов в городах',
+            link: '/statistic/clientcity',
+            role: ['admin']
+        },
+        {
             name: 'Статистика мерчендайзинга',
             link: '/statistic/merchandising',
             role: ['admin', 'суперорганизация', 'организация']
@@ -234,6 +239,11 @@ const list = {
         {
             name: 'Загрузка районов 1C',
             link: '/statistic/uploadingdistricts',
+            role: ['admin']
+        },
+        {
+            name: 'Загрузка товаров 1С',
+            link: '/statistic/uploadingitems',
             role: ['admin']
         },
         {

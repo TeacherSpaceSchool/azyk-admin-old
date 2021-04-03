@@ -12,14 +12,14 @@ import initialApp from '../../src/initialApp'
 import Router from 'next/router'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import { uploadingClients, getActiveOrganization } from '../../src/gql/statistic'
+import { uploadingItems, getActiveOrganization } from '../../src/gql/statistic'
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
 import Confirmation from '../../components/dialog/Confirmation'
 
-const UploadingClients = React.memo((props) => {
+const UploadingItems = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
@@ -50,21 +50,21 @@ const UploadingClients = React.memo((props) => {
         }
     })
     return (
-        <App cityShow pageName='Загрузка клиентов 1C'>
+        <App cityShow pageName='Загрузка товаров 1C'>
             <Head>
-                <title>Загрузка клиентов 1C</title>
+                <title>Загрузка товаров 1C</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
-                <meta property='og:title' content='Загрузка клиентов 1C' />
+                <meta property='og:title' content='Загрузка товаров 1C' />
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
-                <meta property="og:url" content={`${urlMain}/statistic/uploadingclients`} />
-                <link rel='canonical' href={`${urlMain}/statistic/uploadingclients`}/>
+                <meta property="og:url" content={`${urlMain}/statistic/uploadingitems`} />
+                <link rel='canonical' href={`${urlMain}/statistic/uploadingitems`}/>
             </Head>
             <Card className={classes.page}>
                 <CardContent className={classes.column} style={isMobileApp?{}:{justifyContent: 'start', alignItems: 'flex-start'}}>
                     <div className={classes.row}>
-                        Формат xlsx: GUID клиента из 1С, название магазина клиента, адрес магазина клиента.
+                        Формат xlsx: GUID товара из 1С, название товара, конечная цена товара, количество товара в упаковке, вес товара в килограммах, продается ли товар поштучно(1 - да).
                     </div>
                     <div className={classes.row}>
                         <Autocomplete
@@ -86,15 +86,15 @@ const UploadingClients = React.memo((props) => {
                     </div>
                     <br/>
                     {
-                        organization&&organization._id&&city.length&&document?
+                        city.length&&organization&&organization._id&&document?
                             <Button variant='contained' size='small' color='primary' onClick={async()=>{
                                 const action = async() => {
-                                    let res = await uploadingClients({
+                                    let res = await uploadingItems({
                                         organization: organization._id,
                                         document,
                                         city
                                     });
-                                    if(res.uploadingClients.data==='OK')
+                                    if(res.uploadingItems.data==='OK')
                                         showSnackBar('Все данные загруженны')
                                 }
                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
@@ -119,7 +119,7 @@ const UploadingClients = React.memo((props) => {
     )
 })
 
-UploadingClients.getInitialProps = async function(ctx) {
+UploadingItems.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
@@ -152,4 +152,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(UploadingClients);
+export default connect(mapStateToProps, mapDispatchToProps)(UploadingItems);

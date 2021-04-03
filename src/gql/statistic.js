@@ -653,6 +653,26 @@ export const getStatisticStorageSize = async(client)=>{
     }
 }
 
+export const getStatisticClientCity = async(client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                query: gql`
+                    query {
+                        statisticClientCity {
+                            columns
+                            row 
+                                {_id data}
+                        }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const getStatisticClientGeo = async({organization, item, search, city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
@@ -753,15 +773,34 @@ export const uploadingAgentRoute = async({document, agentRoute}, client)=>{
     }
 }
 
-export const uploadingClients = async({document, organization}, client)=>{
+export const uploadingClients = async({document, organization, city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .mutate({
-                variables: {document: document, organization: organization},
+                variables: {document, organization, city},
                 mutation: gql`
-                    mutation ($document: Upload!, $organization: ID!) {
-                        uploadingClients(document: $document, organization: $organization) {
+                    mutation ($document: Upload!, $organization: ID!, $city: String!) {
+                        uploadingClients(document: $document, organization: $organization, city: $city) {
+                            data
+                        }
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
+export const uploadingItems = async({document, organization, city}, client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .mutate({
+                variables: {document, organization, city},
+                mutation: gql`
+                    mutation ($document: Upload!, $organization: ID!, $city: String!) {
+                        uploadingItems(document: $document, organization: $organization, city: $city) {
                             data
                         }
                     }`,
