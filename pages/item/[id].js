@@ -460,7 +460,7 @@ const Item = React.memo((props) => {
                                                     <>
                                                     <Button onClick={async()=>{
                                                         if (categorys.length>0){
-                                                            let editElement = {_id: data.item._id, categorys: categorys}
+                                                            let editElement = {_id: data.item._id, categorys: categorys, subBrand: subBrand?subBrand._id:subBrand}
                                                             if(stock!==data.item.stock)editElement.stock = checkFloat(stock)
                                                             if(city!==data.item.city)editElement.city = city
                                                             if(name.length>0&&name!==data.item.name)editElement.name = name
@@ -477,7 +477,6 @@ const Item = React.memo((props) => {
                                                             if(latest!==data.item.latest)editElement.latest = latest
                                                             if(organization._id!==data.item.organization._id)editElement.organization = organization._id
                                                             if(subCategory._id!==data.item.subCategory._id)editElement.subCategory = subCategory._id
-                                                            if(!data.item.subBrand||subBrand._id!==data.item.subBrand._id)editElement.subBrand = subBrand._id
                                                             if(priotiry!==data.item.priotiry)editElement.priotiry = checkInt(priotiry)
                                                             const action = async() => {
                                                                 await setItem(editElement, subCategory._id)
