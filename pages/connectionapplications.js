@@ -2,8 +2,7 @@ import Head from 'next/head';
 import React, { useState, useEffect } from 'react';
 import App from '../layouts/App';
 import { connect } from 'react-redux'
-import { getBrandOrganizations } from '../src/gql/items'
-import { getConnectionApplications } from '../src/gql/connectionApplication'
+import { getConnectionApplications, getConnectionApplicationsSimpleStatistic } from '../src/gql/connectionApplication'
 import pageListStyle from '../src/styleMUI/connectionApplication/connectionApplicationList'
 import CardConnectionApplications from '../components/connectionApplication/CardConnectionApplication'
 import { urlMain } from '../redux/constants/other'
@@ -19,6 +18,7 @@ const ConnectionApplications = React.memo((props) => {
     const { profile } = props.user;
     const { data } = props;
     let [list, setList] = useState(data.connectionApplications);
+    let [simpleStatistic, setSimpleStatistic] = useState(data.connectionApplicationsSimpleStatistic);
     const { filter } = props.app;
     let height = 189
     let [paginationWork, setPaginationWork] = useState(true);
@@ -34,6 +34,7 @@ const ConnectionApplications = React.memo((props) => {
     }
     const getList = async()=>{
         setList((await getConnectionApplications({filter: filter, skip: 0})).connectionApplications)
+        setSimpleStatistic((await getConnectionApplicationsSimpleStatistic({filter: filter})).connectionApplicationsSimpleStatistic)
         setPaginationWork(true);
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         forceCheck()
@@ -72,6 +73,14 @@ const ConnectionApplications = React.memo((props) => {
                     ):null
                 }
             </div>
+            {
+                profile.role==='admin'?
+                    <div className='count'>
+                        {`Всего заявок: ${simpleStatistic}`}
+                    </div>
+                    :
+                    null
+            }
         </App>
     )
 })
@@ -89,6 +98,7 @@ ConnectionApplications.getInitialProps = async function(ctx) {
     return {
         data: {
             ...await getConnectionApplications({skip: 0, filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
+            ...await getConnectionApplicationsSimpleStatistic({filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }
     };
 };

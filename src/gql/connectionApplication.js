@@ -31,6 +31,23 @@ export const getConnectionApplications = async(element, client)=>{
     }
 }
 
+export const getConnectionApplicationsSimpleStatistic = async(element, client)=>{
+    try{
+        client = client? client : new SingletonApolloClient().getClient()
+        let res = await client
+            .query({
+                variables: element,
+                query: gql`
+                    query ($filter: String) {
+                        connectionApplicationsSimpleStatistic(filter: $filter) 
+                    }`,
+            })
+        return res.data
+    } catch(err){
+        console.error(err)
+    }
+}
+
 export const addConnectionApplication = async(element)=>{
     try{
         const client = new SingletonApolloClient().getClient()
