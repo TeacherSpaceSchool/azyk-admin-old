@@ -16,6 +16,7 @@ export const getBrandOrganizations = async({search, filter, city}, client)=>{
                             _id
                             image
                             miniInfo
+                            catalog
                           }
                           filterOrganization {
                            name

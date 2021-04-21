@@ -20,6 +20,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import { forceCheck } from 'react-lazyload';
 import { deleteBasketAll } from '../src/gql/basket';
 import Divider from '@material-ui/core/Divider';
+import Button from '@material-ui/core/Button';
 import LazyLoad from 'react-lazyload';
 import CardCatalogPlaceholder from '../components/catalog/CardCatalogPlaceholder'
 import initialApp from '../src/initialApp'
@@ -289,6 +290,19 @@ const Catalog = React.memo((props) => {
                             </>
                             :null
 
+                    }
+                    {
+                        organization&&organization.catalog?
+                            <>
+                            <Button className={classes.input} onClick={async()=> {
+                                window.open(organization.catalog, '_blank');
+                            }} size='small' color='primary'>
+                                Открыть каталог
+                            </Button>
+                            <br/>
+                            </>
+                            :
+                            null
                     }
                     {
                         list.map((row, idx) => {

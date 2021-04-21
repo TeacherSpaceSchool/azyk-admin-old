@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import { getOrganization } from '../../src/gql/organization'
@@ -103,6 +103,14 @@ const Organization = React.memo((props) => {
     };
     let [info, setInfo] = useState(data.organization!==null?data.organization.info:'');
     let [miniInfo, setMiniInfo] = useState(data.organization&&data.organization.miniInfo?data.organization.miniInfo:'');
+    let [catalog, setCatalog] = useState(undefined);
+    const catalogInput = useRef(true);
+    let handleChangeCatalog = ((event) => {
+        if(event.target.files[0].size/1024/1024<50)
+            setCatalog(event.target.files[0])
+        else
+            showSnackBar('Файл слишком большой')
+    })
     let [preview, setPreview] = useState(data.organization!==null?data.organization.image:'');
     let [image, setImage] = useState(undefined);
     let handleChangeImage = ((event) => {
@@ -238,6 +246,23 @@ const Organization = React.memo((props) => {
                                                 showFullDialog(true)
                                             }}>
                                                 Склад
+                                            </div>
+                                            <div className={classes.row}>
+                                                {
+                                                    data.organization.catalog?
+                                                        <Button onClick={async()=> {
+                                                            window.open(data.organization.catalog, '_blank');
+                                                        }} size='small' color='primary'>
+                                                            Открыть каталог
+                                                        </Button>
+                                                        :
+                                                        null
+                                                }
+                                                <Button onClick={async()=> {
+                                                    catalogInput.current.click()
+                                                }} size='small' color={catalog?'primary':'secondary'}>
+                                                    Загрузить каталог
+                                                </Button>
                                             </div>
                                             </>
                                             :
@@ -427,7 +452,7 @@ const Organization = React.memo((props) => {
                                                 <Button onClick={async()=>{
                                                     if (cities.length>0&&image!==undefined&&name.length>0&&email.length>0&&address.length>0&&phone.length>0&&info.length>0) {
                                                         const action = async() => {
-                                                            await addOrganization({cities: cities, pass: pass, miniInfo: miniInfo, priotiry: checkInt(priotiry),consignation: consignation, onlyDistrict: onlyDistrict, unite: unite, superagent: superagent, onlyIntegrate: onlyIntegrate, addedClient: addedClient, autoAccept: autoAccept, warehouse: warehouse, accessToClient: accessToClient, image: image, name: name, address: address, email: email, phone: phone, info: info, minimumOrder: checkInt(minimumOrder)})
+                                                            await addOrganization({catalog, cities: cities, pass: pass, miniInfo: miniInfo, priotiry: checkInt(priotiry),consignation: consignation, onlyDistrict: onlyDistrict, unite: unite, superagent: superagent, onlyIntegrate: onlyIntegrate, addedClient: addedClient, autoAccept: autoAccept, warehouse: warehouse, accessToClient: accessToClient, image: image, name: name, address: address, email: email, phone: phone, info: info, minimumOrder: checkInt(minimumOrder)})
                                                             Router.push('/organizations')
                                                         }
                                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
@@ -461,6 +486,7 @@ const Organization = React.memo((props) => {
                                                     if(warehouse!==data.organization.warehouse)editElement.warehouse = warehouse
                                                     if(consignation!==data.organization.consignation)editElement.consignation = consignation
                                                     if(minimumOrder!==data.organization.minimumOrder)editElement.minimumOrder = checkInt(minimumOrder)
+                                                    if(catalog&&catalog!==data.organization.catalog)editElement.catalog = catalog
                                                     if(priotiry!==data.organization.priotiry)editElement.priotiry = checkInt(priotiry)
                                                     const action = async() => {
                                                         await setOrganization(editElement)
@@ -582,6 +608,12 @@ const Organization = React.memo((props) => {
                 id='contained-button-file'
                 type='file'
                 onChange={handleChangeImage}
+            />
+            <input
+                style={{ display: 'none' }}
+                ref={catalogInput}
+                type='file'
+                onChange={handleChangeCatalog}
             />
         </App>
     )
