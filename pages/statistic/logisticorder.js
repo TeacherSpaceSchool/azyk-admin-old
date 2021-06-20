@@ -219,7 +219,7 @@ const LogistiOorder = React.memo((props) => {
                                 <TextField {...params} label='Экспедитор' fullWidth />
                             )}/>
                         <TextField
-                            type={isMobileApp?'number':'text'}
+                            type={ isMobileApp?'number':'text'}
                             label='Рейс'
                             value={track}
                             className={classes.input}

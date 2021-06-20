@@ -42,6 +42,7 @@ export default async (ctx)=>{
     ctx.store.getState().app.filter = ''
     ctx.store.getState().app.city = undefined
     ctx.store.getState().app.organization = undefined
+    ctx.store.getState().app.agent = undefined
     ctx.store.getState().app.date = ''
     ctx.store.getState().app.load = false
     ctx.store.getState().app.drawer = false

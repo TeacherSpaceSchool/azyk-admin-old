@@ -92,6 +92,7 @@ const District = React.memo((props) => {
             } else {
                 setOrganizations((await getOrganizations({search: '', filter: '', city: city})).organizations)
                 setOrganization({})
+                setUnselectedClient([])
             }
         })()
     },[city])
@@ -374,8 +375,8 @@ const District = React.memo((props) => {
                                                 <>
                                                 <Button onClick={async()=>{
                                                     const action = async() => {
-                                                        await deleteDistrict([data.district._id], data.district.organization._id)
-                                                        Router.push(`/districts/${data.district.organization._id}`)
+                                                        await deleteDistrict([data.district._id])
+                                                        Router.push(`/districts/${data.district.organization?data.district.organization._id:'super'}`)
                                                     }
                                                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                     showMiniDialog(true)

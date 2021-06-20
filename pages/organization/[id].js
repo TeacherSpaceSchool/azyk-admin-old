@@ -22,7 +22,7 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import * as snackbarActions from '../../redux/actions/snackbar'
 import Confirmation from '../../components/dialog/Confirmation'
 import { urlMain } from '../../redux/constants/other'
-import { checkInt } from '../../src/lib'
+import { checkInt, inputInt } from '../../src/lib'
 import { getClientGqlSsr } from '../../src/getClientGQL'
 import initialApp from '../../src/initialApp'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -314,9 +314,9 @@ const Organization = React.memo((props) => {
                                     <FormControl className={isMobileApp?classes.inputM:classes.inputD}>
                                         <InputLabel>Минимальный заказ</InputLabel>
                                         <Input
-                                            type={isMobileApp?'number':'text'}
+                                            type={ isMobileApp?'number':'text'}
                                             value={minimumOrder}
-                                            onChange={(event)=>{setMinimumOrder(event.target.value)}}
+                                            onChange={(event)=>{setMinimumOrder(inputInt(event.target.value))}}
                                             inputProps={{
                                                 'aria-label': 'description',
                                             }}
@@ -325,9 +325,9 @@ const Organization = React.memo((props) => {
                                     <FormControl className={isMobileApp?classes.inputM:classes.inputD}>
                                         <InputLabel>Приоритет</InputLabel>
                                         <Input
-                                            type={isMobileApp?'number':'text'}
+                                            type={ isMobileApp?'number':'text'}
                                             value={priotiry}
-                                            onChange={(event)=>{setPriotiry(event.target.value)}}
+                                            onChange={(event)=>{setPriotiry(inputInt(event.target.value))}}
                                             inputProps={{
                                                 'aria-label': 'description',
                                             }}

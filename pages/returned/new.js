@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import App from '../../layouts/App';
 import { connect } from 'react-redux'
 import pageListStyle from '../../src/styleMUI/catalog/catalog'
@@ -72,12 +72,21 @@ const Catalog = React.memo((props) => {
         setItems({})
         setOrganization(organization)
     };
+    const searchTimeOutRef = useRef(null);
     useEffect(()=>{
         (async()=>{
-            if (navigator.geolocation)
-                navigator.geolocation.getCurrentPosition((position)=>{
-                    setGeo(position)
-                })
+            if (navigator.geolocation){
+                searchTimeOutRef.current = setInterval(() => {
+                    navigator.geolocation.getCurrentPosition((position)=>{
+                        setGeo(position)
+                    })
+                }, 1000)
+                return ()=>{
+                    clearInterval(searchTimeOutRef.current)
+                }
+            } else {
+                showSnackBar('Геолокация не поддерживается')
+            }
             if(profile.organization){
                 organization = data.brandOrganizations.filter(elem=>elem._id===profile.organization)[0]
                 setOrganization({...organization})

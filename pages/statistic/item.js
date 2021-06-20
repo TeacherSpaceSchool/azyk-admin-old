@@ -89,9 +89,6 @@ const ItemStatistic = React.memo((props) => {
                         <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>setDateType('month')} size='small' color={dateType==='month'?'primary':''}>
                             Месяц
                         </Button>
-                        <Button style={{width: 50, margin: 5}} variant='contained' onClick={()=>setDateType('year')} size='small' color={dateType==='year'?'primary':''}>
-                            Год
-                        </Button>
                     </div>
                     <div className={classes.row}>
                         {

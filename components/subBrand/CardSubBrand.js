@@ -135,7 +135,7 @@ const CardSubBrand = React.memo((props) => {
                             </FormControl>
                             <br/>
                             <TextField
-                                type={isMobileApp?'number':'text'}
+                                type={ isMobileApp?'number':'text'}
                                 label='Приоритет'
                                 value={priotiry}
                                 className={isMobileApp?classes.inputM:classes.input}

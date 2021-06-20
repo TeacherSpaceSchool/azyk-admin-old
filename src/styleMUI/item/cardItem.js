@@ -89,6 +89,9 @@ export default makeStyles({
         display: 'flex',
         flexDirection: 'column'
     },
+    input: {
+        width: '100%',
+    },
     chip: {
         display: 'flex',
         alignItems: 'center',

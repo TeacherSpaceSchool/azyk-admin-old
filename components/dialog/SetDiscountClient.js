@@ -92,6 +92,7 @@ const SetDiscountClient =  React.memo(
                 />
                 <br/>
                 <TextField
+                    type={ isMobileApp?'number':'text'}
                     style={{width: width}}
                     label='Скидка'
                     value={discount}

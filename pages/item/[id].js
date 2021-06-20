@@ -7,7 +7,7 @@ import { getSubCategorys } from '../../src/gql/subcategory'
 import { getSubBrands } from '../../src/gql/subBrand'
 import { getOrganizations } from '../../src/gql/organization'
 import { getItem, addItem, setItem, onoffItem, deleteItem } from '../../src/gql/items'
-import { checkInt, checkFloat } from '../../src/lib'
+import { checkInt, checkFloat, inputInt, inputFloat } from '../../src/lib'
 import itemStyle from '../../src/styleMUI/item/item'
 import { useRouter } from 'next/router'
 import Card from '@material-ui/core/Card';
@@ -258,12 +258,12 @@ const Item = React.memo((props) => {
                                         </div>
                                         <div className={classes.price}>
                                             <TextField
-                                                type={isMobileApp?'number':'text'}
+                                                type={ isMobileApp?'number':'text'}
                                                 label='Приоритет'
                                                 value={priotiry}
                                                 className={isMobileApp?classes.inputM:classes.inputD}
                                                 onChange={(event)=>{
-                                                    setPriotiry(event.target.value)}
+                                                    setPriotiry(inputInt(event.target.value))}
                                                 }
                                                 inputProps={{
                                                     'aria-label': 'description',
@@ -285,14 +285,12 @@ const Item = React.memo((props) => {
                                         </div>
                                         <div className={classes.price}>
                                             <TextField
-                                                type={isMobileApp?'number':'text'}
+                                                type={ isMobileApp?'number':'text'}
                                                 label='Вес в килограммах'
                                                 value={weight}
                                                 className={isMobileApp?classes.inputM:classes.inputD}
                                                 onChange={(event)=>{
-                                                    while((event.target.value).includes(','))
-                                                        event.target.value = (event.target.value).replace(',', '.')
-                                                    setWeight(event.target.value)}
+                                                    setWeight(inputFloat(event.target.value))}
                                                 }
                                                 inputProps={{
                                                     'aria-label': 'description',
@@ -301,14 +299,12 @@ const Item = React.memo((props) => {
                                         </div>
                                         <div className={classes.price}>
                                             <TextField
-                                                type={isMobileApp?'number':'text'}
+                                                type={ isMobileApp?'number':'text'}
                                                 label='Кубатура в см³'
                                                 value={size}
                                                 className={isMobileApp?classes.inputM:classes.inputD}
                                                 onChange={(event)=>{
-                                                    while((event.target.value).includes(','))
-                                                        event.target.value = (event.target.value).replace(',', '.')
-                                                    setSize(event.target.value)}
+                                                    setSize(inputFloat(event.target.value))}
                                                 }
                                                 inputProps={{
                                                     'aria-label': 'description',
@@ -317,11 +313,11 @@ const Item = React.memo((props) => {
                                         </div>
                                         <div className={classes.price}>
                                             <TextField
-                                                type={isMobileApp?'number':'text'}
+                                                type={ isMobileApp?'number':'text'}
                                                 label='Упаковка'
                                                 value={packaging}
                                                 className={isMobileApp?classes.inputM:classes.inputD}
-                                                onChange={(event)=>{setPackaging(event.target.value)}}
+                                                onChange={(event)=>{setPackaging(inputInt(event.target.value))}}
                                                 inputProps={{
                                                     'aria-label': 'description',
                                                 }}
@@ -329,14 +325,12 @@ const Item = React.memo((props) => {
                                         </div>
                                         <div className={classes.price}>
                                             <TextField
-                                                type={isMobileApp?'number':'text'}
+                                                type={ isMobileApp?'number':'text'}
                                                 label='Цена'
                                                 value={price}
                                                 className={isMobileApp?classes.inputM:classes.inputD}
                                                 onChange={(event)=>{
-                                                    while((event.target.value).includes(','))
-                                                        event.target.value = (event.target.value).replace(',', '.')
-                                                    setPrice(event.target.value)
+                                                    setPrice(inputFloat(event.target.value))
                                                 }}
                                                 inputProps={{
                                                     'aria-label': 'description',
@@ -345,14 +339,12 @@ const Item = React.memo((props) => {
                                         </div>
                                         <div className={classes.price}>
                                             <TextField
-                                                type={isMobileApp?'number':'text'}
+                                                type={ isMobileApp?'number':'text'}
                                                 label='Себестоимость'
                                                 value={costPrice}
                                                 className={isMobileApp?classes.inputM:classes.inputD}
                                                 onChange={(event)=>{
-                                                    while((event.target.value).includes(','))
-                                                        event.target.value = (event.target.value).replace(',', '.')
-                                                    setCostPrice(event.target.value)
+                                                    setCostPrice(inputFloat(event.target.value))
                                                 }}
                                                 inputProps={{
                                                     'aria-label': 'description',
@@ -361,11 +353,11 @@ const Item = React.memo((props) => {
                                         </div>
                                             <div className={classes.price}>
                                                 <TextField
-                                                    type={isMobileApp?'number':'text'}
+                                                    type={ isMobileApp?'number':'text'}
                                                     label='Скидка'
                                                     value={stock}
                                                     className={isMobileApp?classes.inputM:classes.inputD}
-                                                    onChange={(event)=>{setStock(event.target.value)}}
+                                                    onChange={(event)=>{setStock(inputInt(event.target.value))}}
                                                     inputProps={{
                                                         'aria-label': 'description',
                                                     }}
@@ -446,7 +438,7 @@ const Item = React.memo((props) => {
                                                                     city: city,
                                                                     priotiry: checkInt(priotiry)
                                                                 }, subCategory._id)
-                                                                Router.push(`/items/${subCategory._id}`)
+                                                                Router.push(`/brand/${organization._id}`)
                                                             }
                                                             setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                             showMiniDialog(true)
@@ -608,9 +600,9 @@ Item.getInitialProps = async function(ctx) {
                         info: '',
                         categorys: ['A','B','C','D','Horeca'],
                         price: 0,
-                        subCategory: {_id: ''},
-                        subBrand: {_id: ''},
-                        organization: {_id: ''},
+                        subCategory: {_id: undefined},
+                        subBrand: {_id: undefined},
+                        organization: {_id: undefined},
                         hit: false,
                         latest: false
                     }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
@@ -8,48 +8,43 @@ import * as appActions from '../../redux/actions/app'
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
-import { pdDatePicker } from '../../src/lib'
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
-const SetDate =  React.memo(
+const SetAgent =  React.memo(
     (props) =>{
-        const { classes } = props;
-        let [dateChange, setDateChange] = useState();
-        useEffect(()=>{
-            let dateStart = new Date()
-            if (dateStart.getHours()<3)
-                dateStart.setDate(dateStart.getDate() - 1)
-            setDateChange(pdDatePicker(dateStart))
-        }, []);
+        const { classes, agents } = props;
+        let [agentChange, setAgentChange] = useState(undefined);
         const { isMobileApp } = props.app;
         const { showMiniDialog } = props.mini_dialogActions;
-        const { setDate } = props.appActions;
+        const { setAgent } = props.appActions;
         const width = isMobileApp? (window.innerWidth-112) : 500
         return (
             <div className={classes.main}>
-                <TextField
+                <Autocomplete
                     style={{width: width}}
                     className={classes.textField}
-                    label='Дата'
-                    type='date'
-                    InputLabelProps={{
-                        shrink: true,
+                    options={agents}
+                    getOptionLabel={option => option.name}
+                    value={agentChange}
+                    onChange={(event, newValue) => {
+                        setAgentChange(newValue)
                     }}
-                    value={dateChange}
-                    inputProps={{
-                        'aria-label': 'description',
-                    }}
-                    onChange={ event => setDateChange(event.target.value) }
-                    onKeyPress={async event => {
-                        if (event.key === 'Enter') {
-                            await setDate(new Date(dateChange))
-                            showMiniDialog(false);
-                        }
-                    }}
+                    noOptionsText='Ничего не найдено'
+                    renderInput={params => (
+                        <TextField {...params} label='Агент' fullWidth
+                                   onKeyPress={async event => {
+                                       if (event.key === 'Enter'&&agentChange) {
+                                           await setAgent(agentChange._id)
+                                           showMiniDialog(false);
+                                       }
+                                   }}/>
+                    )}
                 />
                 <br/>
                 <div>
                     <Button variant="contained" color="primary" onClick={async()=>{
-                       await setDate(new Date(dateChange))
+                       if(agentChange)
+                           await setAgent(agentChange._id)
                        showMiniDialog(false);
                     }} className={classes.button}>
                         Сохранить
@@ -76,8 +71,8 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-SetDate.propTypes = {
+SetAgent.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(withStyles(dialogContentStyle)(SetDate));
+export default connect(mapStateToProps, mapDispatchToProps)(withStyles(dialogContentStyle)(SetAgent));

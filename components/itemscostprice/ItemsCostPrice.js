@@ -4,6 +4,7 @@ import CardContent from '@material-ui/core/CardContent';
 import cardCategoryStyle from '../../src/styleMUI/subcategory/cardSubcategory'
 import { connect } from 'react-redux'
 import TextField from '@material-ui/core/TextField';
+import { inputFloat } from '../../src/lib'
 
 const CardCategory = React.memo((props) => {
     const classes = cardCategoryStyle();
@@ -12,9 +13,7 @@ const CardCategory = React.memo((props) => {
     //addCard
     let [costPrice, setCostPrice] = useState('');
     let handleCostPrice =  (event) => {
-        while((event.target.value).includes(','))
-            event.target.value = (event.target.value).replace(',', '.')
-        list[idx].costPrice = event.target.value
+        list[idx].costPrice = inputFloat(event.target.value)
         setList([...list])
     };
     useEffect(()=>{
@@ -42,7 +41,7 @@ const CardCategory = React.memo((props) => {
                     <TextField
                         label='Себестоимость'
                         value={costPrice}
-                        type={isMobileApp?'number':'text'}
+                        type={ isMobileApp?'number':'text'}
                         className={classes.input}
                         onChange={handleCostPrice}
                         inputProps={{

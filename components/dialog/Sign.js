@@ -48,18 +48,26 @@ const Sign =  React.memo(
                     margin='normal'
                     value={loginEnter}
                     onChange={handleLoginEnter}
+                    onKeyPress={event => {
+                        if (event.key === 'Enter'&&loginEnter.length>0&&passEnter.length>0)
+                            signin({login: loginEnter, password: passEnter})
+                    }}
                 />
                 <br/>
                 <FormControl style={{width: width}} className={classNames(classes.margin, classes.textField)}>
-                    <InputLabel htmlFor="adornment-password">Пароль</InputLabel>
+                    <InputLabel htmlFor='adornment-password'>Пароль</InputLabel>
                     <Input
-                        id="adornment-password"
+                        id='adornment-password'
                         type={hide ? 'password' : 'text' }
                         value={passEnter}
                         onChange={handlePassEnter}
+                        onKeyPress={event => {
+                            if (event.key === 'Enter'&&loginEnter.length>0&&passEnter.length>0)
+                                signin({login: loginEnter, password: passEnter})
+                        }}
                         endAdornment={
-                            <InputAdornment position="end">
-                                <IconButton aria-label="Toggle password visibility" onClick={handleHide}>
+                            <InputAdornment position='end'>
+                                <IconButton aria-label='Показать пароль' onClick={handleHide}>
                                     {hide ? <VisibilityOff />:<Visibility />  }
                                 </IconButton>
                             </InputAdornment>

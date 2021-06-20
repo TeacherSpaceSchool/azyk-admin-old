@@ -31,7 +31,13 @@ const SetOrganizations =  React.memo(
                     }}
                     noOptionsText='Ничего не найдено'
                     renderInput={params => (
-                        <TextField {...params} label='Организация' fullWidth/>
+                        <TextField {...params} label='Организация' fullWidth
+                                   onKeyPress={async event => {
+                                       if (event.key === 'Enter'&&organizationChange) {
+                                           await setOrganization(organizationChange._id)
+                                           showMiniDialog(false);
+                                       }
+                                   }}/>
                     )}
                 />
                 <br/>

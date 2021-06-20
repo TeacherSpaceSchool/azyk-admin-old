@@ -38,7 +38,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import {pdDatePicker, checkInt, checkFloat} from '../../src/lib'
+import {pdDatePicker, checkInt, checkFloat, inputInt} from '../../src/lib'
 import ListOrder from '../../components/dialog/ListOrder'
 import GeoRoute from '../../components/dialog/GeoRoute'
 import ItemList from '../../components/dialog/ItemList'
@@ -309,11 +309,11 @@ const Route = React.memo((props) => {
                                         />
                                         <TextField
                                             disabled={router.query.id!=='new'}
-                                            type={isMobileApp?'number':'text'}
+                                            type={ isMobileApp?'number':'text'}
                                             label='Максимально заказов'
                                             value={length}
                                             className={classes.inputThird}
-                                            onChange={(event)=>{setLength(event.target.value)}}
+                                            onChange={(event)=>{setLength(inputInt(event.target.value))}}
                                             inputProps={{
                                                 'aria-label': 'description',
                                             }}

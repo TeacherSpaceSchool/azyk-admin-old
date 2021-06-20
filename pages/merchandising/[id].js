@@ -104,11 +104,22 @@ const Merchandising = React.memo((props) => {
             showSnackBar('Файл слишком большой')
         }
     })
+    const searchTimeOutRef = useRef(null);
     useEffect(()=>{
-        if (router.query.id==='new'&&navigator.geolocation)
-            navigator.geolocation.getCurrentPosition((position)=>{
-                setGeo(position.coords.latitude+', '+position.coords.longitude)
-            })
+        if (router.query.id==='new'){
+            if(navigator.geolocation){
+                searchTimeOutRef.current = setInterval(() => {
+                    navigator.geolocation.getCurrentPosition((position)=>{
+                        setGeo(position.coords.latitude+', '+position.coords.longitude)
+                    })
+                }, 1000)
+                return ()=>{
+                    clearInterval(searchTimeOutRef.current)
+                }
+            } else {
+                showSnackBar('Геолокация не поддерживается')
+            }
+        }
         if(profile.organization)
             setOrganization({_id: profile.organization})
     },[])

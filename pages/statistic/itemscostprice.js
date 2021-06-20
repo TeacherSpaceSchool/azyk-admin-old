@@ -8,7 +8,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Router from 'next/router'
 import { urlMain } from '../../redux/constants/other'
-import { checkFloat } from '../../src/lib'
+import { checkFloat, inputFloat } from '../../src/lib'
 import initialApp from '../../src/initialApp'
 import ItemsCostPriceCard from '../../components/itemscostprice/ItemsCostPrice'
 import ItemsCostPricePlaceholder from '../../components/itemscostprice/ItemsCostPricePlaceholder'
@@ -40,9 +40,7 @@ const ItemsCostPrice = React.memo((props) => {
     let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
     let [costPrecent, setCostPrecent] = useState('');
     let handleCostPrecent =  (event) => {
-        while((event.target.value).includes(','))
-            event.target.value = (event.target.value).replace(',', '.')
-        setCostPrecent(event.target.value)
+        setCostPrecent(inputFloat(event.target.value))
     };
     let [pagination, setPagination] = useState(100);
     let [list, setList] = useState([]);
@@ -125,7 +123,7 @@ const ItemsCostPrice = React.memo((props) => {
                         />
                         <TextField
                             label='Процент себестоимости'
-                            type={isMobileApp?'number':'text'}
+                            type={ isMobileApp?'number':'text'}
                             value={costPrecent}
                             className={classes.input}
                             onChange={handleCostPrecent}

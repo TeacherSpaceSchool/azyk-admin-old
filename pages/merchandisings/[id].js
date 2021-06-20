@@ -23,7 +23,7 @@ const Merchandisings = React.memo((props) => {
     const { profile } = props.user;
     const { data } = props;
     let [list, setList] = useState(data.merchandisings);
-    const { search, filter, sort, date } = props.app;
+    const { search, filter, sort, date, agent } = props.app;
     const initialRender = useRef(true);
     let height = 70
     let [searchTimeOut, setSearchTimeOut] = useState(null);
@@ -39,7 +39,7 @@ const Merchandisings = React.memo((props) => {
         }
     }
     const getList = async()=>{
-        setList((await getMerchandisings({...router.query.client?{client: router.query.client}:{}, date: date, organization: router.query.id, sort: sort, filter: filter, search: search, skip: 0})).merchandisings)
+        setList((await getMerchandisings({...router.query.client?{client: router.query.client}:{}, agent, date: date, organization: router.query.id, sort: sort, filter: filter, search: search, skip: 0})).merchandisings)
         setPaginationWork(true);
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         forceCheck()
@@ -50,7 +50,7 @@ const Merchandisings = React.memo((props) => {
                 await getList()
             }
         })()
-    },[filter, sort, date])
+    },[filter, sort, date, agent])
     useEffect(()=>{
         if(initialRender.current) {
             initialRender.current = false;
@@ -64,7 +64,7 @@ const Merchandisings = React.memo((props) => {
         }
     },[search])
     return (
-        <App dates filters={data.filterMerchandising} sorts={data.sortMerchandising} checkPagination={checkPagination} setList={setList} list={list} searchShow={true} pageName='Мерчендайзинг'>
+        <App dates filters={data.filterMerchandising} agents={true} sorts={data.sortMerchandising} checkPagination={checkPagination} setList={setList} list={list} searchShow={true} pageName='Мерчендайзинг'>
             <Head>
                 <title>Мерчендайзинг</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -102,6 +102,7 @@ const Merchandisings = React.memo((props) => {
 Merchandisings.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.sort = '-date'
+    ctx.store.getState().app.organization = ctx.query.id
     if(!['admin', 'суперагент', 'суперорганизация', 'организация', 'менеджер', 'агент'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {

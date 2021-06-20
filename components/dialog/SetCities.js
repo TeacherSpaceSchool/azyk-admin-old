@@ -32,7 +32,13 @@ const SetCities =  React.memo(
                     }}
                     noOptionsText='Ничего не найдено'
                     renderInput={params => (
-                        <TextField {...params} label='Город' fullWidth/>
+                        <TextField {...params} label='Город' fullWidth
+                                   onKeyPress={async event => {
+                                       if (event.key === 'Enter'&&cityChange) {
+                                           await setCity(cityChange)
+                                           showMiniDialog(false);
+                                       }
+                                   }}/>
                     )}
                 />
                 <br/>

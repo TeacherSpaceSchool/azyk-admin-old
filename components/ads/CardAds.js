@@ -125,6 +125,7 @@ const CardAds = React.memo((props) => {
                                     )}/>
                                 <br/>
                                 <TextField
+                                    type={ isMobileApp?'number':'text'}
                                     label='Количество'
                                     value={count}
                                     className={classes.input}
@@ -200,6 +201,7 @@ const CardAds = React.memo((props) => {
                                     <TextField
                                         label='Целевая цена'
                                         value={targetPrice}
+                                        type={ isMobileApp?'number':'text'}
                                         className={classes.input}
                                         onChange={handleTargetPrice}
                                         inputProps={{
@@ -273,6 +275,7 @@ const CardAds = React.memo((props) => {
                                                     <InputLabel>{targetItems[idx].type==='Количество'?'Целевое количество':'Целевая цена'}</InputLabel>
                                                     <Input
                                                         placeholder={targetItems[idx].type==='Количество'?'Целевое количество':'Целевая цена'}
+                                                        type={ isMobileApp?'number':'text'}
                                                         value={targetItems[idx].type==='Количество'?element.count:element.targetPrice}
                                                         onChange={(event)=>{
                                                             if(targetItems[idx].type==='Количество')

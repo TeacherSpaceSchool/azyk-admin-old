@@ -12,17 +12,25 @@ import Confirmation from '../dialog/Confirmation'
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import { setItem } from '../../src/gql/items'
-
+import Done from '@material-ui/icons/Done';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton';
+import { checkFloat, inputFloat } from '../../src/lib'
 
 const CardItem = React.memo((props) => {
     const classes = cardItemStyle();
     const { element, setList, list, idx } = props;
+    const { isMobileApp } = props.app;
     const { profile } = props.user;
     let [status, setStatus] = useState(element!==undefined?element.status:'');
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     let [hit, setHit] = useState(element.hit);
     let [latest, setLatest] = useState(element.latest);
     let [apiece, setApiece] = useState(element.apiece);
+    let [price, setPrice] = useState(element.price);
     return (
         <Card className={classes.card}>
             <CardContent className={classes.column}>
@@ -92,11 +100,9 @@ const CardItem = React.memo((props) => {
                         }
                         {
                             element.hit?
-                                <>
                                 <div className={classes.chip} style={{color: 'black',background: 'yellow'}}>
                                     Хит
                                 </div>
-                                </>
                                 :null
                         }
                         </>
@@ -116,25 +122,58 @@ const CardItem = React.memo((props) => {
                         {element.name}
                     </a>
                 </Link>
-                <Link href={`/${profile.role==='client'?'catalog':'item'}/[id]`} as={`/${profile.role==='client'?'catalog':'item'}/${profile.role==='client'?element.organization._id:element._id}`}>
-                    <div className={classes.row}>
-                        {
-                            element.stock===0||element.stock===undefined?
-                                <div className={classes.price}>
-                                    {`${element.price} сом`}
-                                </div>
-                                :
-                                <>
-                                <div className={classes.crossedPrice}>
-                                    {`${element.price}`}
-                                </div>
-                                <div className={classes.stockPrice}>
-                                    {`${element.stock} сом`}
-                                </div>
-                                </>
-                        }
-                    </div>
-                </Link>
+                {'admin' === profile.role || (['суперорганизация', 'организация'].includes(profile.role) && profile.organization === element.organization._id) ?
+                    <>
+                    <FormControl className={classes.input}>
+                        <InputLabel htmlFor={`adornment-price${idx}`}>Цена</InputLabel>
+                        <Input
+                            id={`adornment-price${idx}`}
+                            type={ isMobileApp?'number':'text'}
+                            value={price}
+                            onChange={(event)=>{setPrice(inputFloat(event.target.value))}}
+                            endAdornment={
+                                price!=element.price?
+                                    <InputAdornment position='end'>
+                                        <IconButton aria-label='Задать цену' onClick={async ()=>{
+                                            price = checkFloat(price)
+                                            if(price>0) {
+                                                await setItem({_id: element._id, price})
+                                                list[idx].price = price
+                                                setList([...list])
+                                            }
+                                        }}>
+                                            <Done />
+                                        </IconButton>
+                                    </InputAdornment>
+                                    :
+                                    null
+                            }
+                        />
+                    </FormControl>
+                    <br/>
+                    </>
+                    :
+                    <Link href={`/${profile.role==='client'?'catalog':'item'}/[id]`} as={`/${profile.role==='client'?'catalog':'item'}/${profile.role==='client'?element.organization._id:element._id}`}>
+                        <div className={classes.row}>
+                            {
+                                element.stock===0||element.stock===undefined?
+                                    <div className={classes.price}>
+                                        {`${element.price} сом`}
+                                    </div>
+                                    :
+                                    <>
+                                    <div className={classes.crossedPrice}>
+                                        {`${element.price}`}
+                                    </div>
+                                    <div className={classes.stockPrice}>
+                                        {`${element.stock} сом`}
+                                    </div>
+                                    </>
+                            }
+                        </div>
+                    </Link>
+
+                }
                                         {'admin'===profile.role||(['суперорганизация', 'организация'].includes(profile.role)&&profile.organization===element.organization._id)?
                                             element.del!=='deleted'?
                                             <>
@@ -190,7 +229,8 @@ const CardItem = React.memo((props) => {
 
 function mapStateToProps (state) {
     return {
-        user: state.user
+        user: state.user,
+        app: state.app
     }
 }
 

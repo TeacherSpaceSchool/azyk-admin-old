@@ -31,7 +31,7 @@ import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { checkInt } from '../../../src/lib'
+import { checkInt, inputInt } from '../../../src/lib'
 
 const LotteryEdit = React.memo((props) => {
     const classes = itemStyle();
@@ -204,9 +204,9 @@ const LotteryEdit = React.memo((props) => {
                                                                                 label='Количество'
                                                                                 value={element.count}
                                                                                 className={classes.inputPrize}
-                                                                                type={isMobileApp?'number':'text'}
+                                                                                type={ isMobileApp?'number':'text'}
                                                                                 onChange={(event)=>{
-                                                                                    prizes[idx].count = event.target.value
+                                                                                    prizes[idx].count = inputInt(event.target.value)
                                                                                     setPrizes([...prizes])
                                                                                 }}
                                                                                 inputProps={{

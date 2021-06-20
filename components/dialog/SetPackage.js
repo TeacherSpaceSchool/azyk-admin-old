@@ -26,6 +26,12 @@ const SetPackage =  React.memo(
                     inputProps={{
                         'aria-label': 'description',
                     }}
+                    onKeyPress={event => {
+                        if (event.key === 'Enter') {
+                            action(idx, count);
+                            showMiniDialog(false);
+                        }
+                    }}
                 />
                 <br/>
                 <br/>

@@ -207,6 +207,7 @@ const DiscountClient = React.memo((props) => {
                             )}
                         />
                         <TextField
+                            type={ isMobileApp?'number':'text'}
                             label='Скидка'
                             value={discount}
                             className={classes.input}

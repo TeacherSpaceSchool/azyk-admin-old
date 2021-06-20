@@ -8,8 +8,8 @@ export const getMerchandisings = async(args, client)=>{
             .query({
                 variables: args,
                 query: gql`
-                    query ($organization: ID!, $client: ID, $search: String!, $date: String, $sort: String!, $filter: String!, $skip: Int) {
-                        merchandisings(organization: $organization, client: $client, date: $date, search: $search, sort: $sort, filter: $filter, skip: $skip) {
+                    query ($organization: ID!, $agent: ID, $client: ID, $search: String!, $date: String, $sort: String!, $filter: String!, $skip: Int) {
+                        merchandisings(organization: $organization, agent: $agent, client: $client, date: $date, search: $search, sort: $sort, filter: $filter, skip: $skip) {
                             client 
                                 {_id name address}
                             employment 

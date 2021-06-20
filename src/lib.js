@@ -65,6 +65,36 @@ export const weekDay = [
     'Пятница',
     'Суббота',
 ]
+
+export const inputFloat = (str) => {
+    if(!str.length)
+        return ''
+    let oldStr = str.substring(0, str.length-1)
+    let newChr = str[str.length-1]
+    if(!['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', ','].includes(newChr))
+        return oldStr
+    if(','===newChr) {
+        str = oldStr+'.'
+        newChr = '.'
+    }
+    if(newChr==='.'&&oldStr.includes('.'))
+        return oldStr
+    if(str.length===2&&str[0]==='0'&&newChr!=='.')
+        return str[1]
+    return str
+}
+
+export const inputInt = (str) => {
+    if(!str.length)
+        return ''
+    let oldStr = str.substring(0, str.length-1)
+    let newChr = str[str.length-1]
+    if(!['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].includes(newChr))
+        return oldStr
+    if(str.length===2&&str[0]==='0')
+        return str[1]
+    return str
+}
 export const checkFloat = (float) => {
     float = parseFloat(float)
     return isNaN(float)?0:Math.round(float * 10)/10
