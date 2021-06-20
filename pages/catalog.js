@@ -88,26 +88,29 @@ const Catalog = React.memo((props) => {
     const searchTimeOutRef = useRef(null);
     useEffect(()=>{
         (async()=>{
-            if (navigator.geolocation){
-                searchTimeOutRef.current = setInterval(() => {
-                    navigator.geolocation.getCurrentPosition((position)=>{
-                        setGeo(position)
-                    })
-                }, 1000)
-                return ()=>{
-                    clearInterval(searchTimeOutRef.current)
-                }
-            } else {
-                showSnackBar('Геолокация не поддерживается')
-            }
             if(profile.organization){
                 organization = data.brandOrganizations.filter(elem=>elem._id===profile.organization)[0]
+                console.log(organization)
                 setOrganization({...organization})
             }
             if(sessionStorage.catalog&&sessionStorage.catalog!=='{}'){
                 setBasket(JSON.parse(sessionStorage.catalog))
             }
         })()
+    },[])
+    useEffect(()=>{
+        if (navigator.geolocation){
+            searchTimeOutRef.current = setInterval(() => {
+                navigator.geolocation.getCurrentPosition((position)=>{
+                    setGeo(position)
+                })
+            }, 1000)
+            return ()=>{
+                clearInterval(searchTimeOutRef.current)
+            }
+        } else {
+            showSnackBar('Геолокация не поддерживается')
+        }
     },[])
     useEffect(()=>{
         (async()=>{

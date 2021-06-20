@@ -106,20 +106,20 @@ const Merchandising = React.memo((props) => {
     })
     const searchTimeOutRef = useRef(null);
     useEffect(()=>{
-        if (router.query.id==='new'){
-            if(navigator.geolocation){
-                searchTimeOutRef.current = setInterval(() => {
-                    navigator.geolocation.getCurrentPosition((position)=>{
-                        setGeo(position.coords.latitude+', '+position.coords.longitude)
-                    })
-                }, 1000)
-                return ()=>{
-                    clearInterval(searchTimeOutRef.current)
-                }
-            } else {
-                showSnackBar('Геолокация не поддерживается')
+        if (router.query.id==='new'&&navigator.geolocation){
+            searchTimeOutRef.current = setInterval(() => {
+                navigator.geolocation.getCurrentPosition((position)=>{
+                    setGeo(position.coords.latitude+', '+position.coords.longitude)
+                })
+            }, 1000)
+            return ()=>{
+                clearInterval(searchTimeOutRef.current)
             }
+        } else {
+            showSnackBar('Геолокация не поддерживается')
         }
+    },[])
+    useEffect(()=>{
         if(profile.organization)
             setOrganization({_id: profile.organization})
     },[])

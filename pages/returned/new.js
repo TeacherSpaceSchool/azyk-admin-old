@@ -74,19 +74,21 @@ const Catalog = React.memo((props) => {
     };
     const searchTimeOutRef = useRef(null);
     useEffect(()=>{
-        (async()=>{
-            if (navigator.geolocation){
-                searchTimeOutRef.current = setInterval(() => {
-                    navigator.geolocation.getCurrentPosition((position)=>{
-                        setGeo(position)
-                    })
-                }, 1000)
-                return ()=>{
-                    clearInterval(searchTimeOutRef.current)
-                }
-            } else {
-                showSnackBar('Геолокация не поддерживается')
+        if (navigator.geolocation){
+            searchTimeOutRef.current = setInterval(() => {
+                navigator.geolocation.getCurrentPosition((position)=>{
+                    setGeo(position)
+                })
+            }, 1000)
+            return ()=>{
+                clearInterval(searchTimeOutRef.current)
             }
+        } else {
+            showSnackBar('Геолокация не поддерживается')
+        }
+    },[])
+    useEffect(()=>{
+        (async()=>{
             if(profile.organization){
                 organization = data.brandOrganizations.filter(elem=>elem._id===profile.organization)[0]
                 setOrganization({...organization})
