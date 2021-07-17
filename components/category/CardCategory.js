@@ -91,7 +91,7 @@ const CardCategory = React.memo((props) => {
                                     }} size='small' color={status==='active'?'primary':'secondary'}>
                                         {status==='active'?'Отключить':'Включить'}
                                     </Button>
-                                    <Button size='small' color='primary' onClick={()=>{
+                                    <Button size='small' color='secondary' onClick={()=>{
                                         const action = async() => {
                                             await deleteCategory([element._id])
                                             let _list = [...list]

@@ -80,7 +80,7 @@ const Catalog = React.memo((props) => {
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(basket[id].count)
         basket[id].count+=list[idx].apiece?1:list[idx].packaging
-        basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        basket[id].allPrice = checkFloat(basket[id].count*list[idx].price)
         setBasket({...basket})
     }
     let decrement = async (idx)=>{
@@ -89,7 +89,7 @@ const Catalog = React.memo((props) => {
             if(basket[id].count>0) {
                 basket[id].count = checkInt(basket[id].count)
                 basket[id].count -= list[idx].apiece?1:list[idx].packaging
-                basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+                basket[id].allPrice = checkFloat(basket[id].count*list[idx].price)
                 setBasket({...basket})
             }
         }
@@ -121,7 +121,7 @@ const Catalog = React.memo((props) => {
         if(!basket[id])
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(count)
-        basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        basket[id].allPrice = checkFloat(basket[id].count*list[idx].price)
         setBasket({...basket})
     }
     let addPackaging= async(idx)=>{
@@ -131,7 +131,7 @@ const Catalog = React.memo((props) => {
         basket[id].count = checkInt(basket[id].count)
         if(list[idx].packaging){
             basket[id].count = (parseInt(basket[id].count/list[idx].packaging)+1)*list[idx].packaging
-            basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+            basket[id].allPrice = checkFloat(basket[id].count*list[idx].price)
             setBasket({...basket})
         }
     }
@@ -183,8 +183,6 @@ const Catalog = React.memo((props) => {
                             let price
                             if(basket[row._id]&&basket[row._id].allPrice)
                                 price = basket[row._id].allPrice
-                            else if(row.stock)
-                                price = row.stock
                             else
                                 price = row.price
                             if(idx<pagination)

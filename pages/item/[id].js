@@ -38,7 +38,6 @@ const Item = React.memo((props) => {
     const router = useRouter()
     const { isMobileApp } = props.app;
     const { profile } = props.user;
-    let [stock, setStock] = useState(data.item?data.item.stock:'');
     let [unit, setUnit] = useState(data.item?data.item.unit:'');
     let [name, setName] = useState(data.item?data.item.name:'');
     let [info, setInfo] = useState(data.item?data.item.info:'');
@@ -351,18 +350,6 @@ const Item = React.memo((props) => {
                                                 }}
                                             />
                                         </div>
-                                            <div className={classes.price}>
-                                                <TextField
-                                                    type={ isMobileApp?'number':'text'}
-                                                    label='Скидка'
-                                                    value={stock}
-                                                    className={isMobileApp?classes.inputM:classes.inputD}
-                                                    onChange={(event)=>{setStock(inputInt(event.target.value))}}
-                                                    inputProps={{
-                                                        'aria-label': 'description',
-                                                    }}
-                                                />
-                                            </div>
                                         {profile.role==='admin'?
                                             <FormControl className={isMobileApp?classes.inputM:classes.inputD}>
                                                 <InputLabel>Организация</InputLabel>
@@ -421,7 +408,6 @@ const Item = React.memo((props) => {
                                                                     packaging: checkInt(packaging)>0?checkInt(packaging):1,
                                                                     name: name,
                                                                     categorys: categorys,
-                                                                    stock: checkFloat(stock),
                                                                     costPrice: checkFloat(costPrice),
                                                                     image: image,
                                                                     info: info,
@@ -453,7 +439,6 @@ const Item = React.memo((props) => {
                                                     <Button onClick={async()=>{
                                                         if (categorys.length>0){
                                                             let editElement = {_id: data.item._id, categorys: categorys, subBrand: subBrand?subBrand._id:subBrand}
-                                                            if(stock!==data.item.stock)editElement.stock = checkFloat(stock)
                                                             if(city!==data.item.city)editElement.city = city
                                                             if(name.length>0&&name!==data.item.name)editElement.name = name
                                                             if(packaging!==data.item.packaging&&checkInt(packaging)>0)editElement.packaging = checkInt(packaging)
@@ -500,7 +485,7 @@ const Item = React.memo((props) => {
                                                                 }
                                                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                                 showMiniDialog(true)
-                                                            }} size='small' color='primary'>
+                                                            }} size='small' color='secondary'>
                                                                 Удалить
                                                             </Button>
                                                             :
@@ -544,21 +529,9 @@ const Item = React.memo((props) => {
                                         </Link>
                                         <br/>
                                         <div className={classes.row}>
-                                            {
-                                                data.item.stock===0||data.item.stock===undefined?
-                                                    <div className={classes.price}>
-                                                        {data.item.price}&nbsp;сом
-                                                    </div>
-                                                    :
-                                                    <>
-                                                    <div className={classes.stockPrice}>
-                                                        {data.item.stock}&nbsp;сом
-                                                    </div>
-                                                    <div className={classes.crossedPrice}>
-                                                        {data.item.price}&nbsp;сом
-                                                    </div>
-                                                    </>
-                                            }
+                                            <div className={classes.price}>
+                                                {data.item.price}&nbsp;сом
+                                            </div>
                                         </div>
                                         <br/>
                                     </div>
@@ -593,7 +566,6 @@ Item.getInitialProps = async function(ctx) {
                     item:{
                         priotiry: 0,
                         image: '/static/add.png',
-                        stock: 0,
                         packaging: 1,
                         costPrice: 0,
                         name: '',

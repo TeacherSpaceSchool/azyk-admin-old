@@ -19,7 +19,6 @@ import { bindActionCreators } from 'redux'
 import * as appActions from '../../redux/actions/app'
 
 const OrderStatistic = React.memo((props) => {
-
     const classes = pageListStyle();
     const { data } = props;
     const { isMobileApp, filter, city } = props.app;

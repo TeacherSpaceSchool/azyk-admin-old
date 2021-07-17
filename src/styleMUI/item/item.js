@@ -81,13 +81,6 @@ export default makeStyles({
         overflow: 'hidden',
         marginBottom: 10
     },
-    stockPrice: {
-        color: '#ff0000',
-        fontWeight: 'bold',
-        fontSize: '2rem',
-        fontFamily: 'Roboto',
-        marginBottom: 10
-    },
     counter: {
         width: 145,
         borderRadius: 5,

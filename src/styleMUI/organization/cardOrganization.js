@@ -30,7 +30,8 @@ export default makeStyles({
     input: {
         marginBottom: 5,
         fontSize: '1rem',
-        fontFamily: 'Roboto'
+        fontFamily: 'Roboto',
+        width: '100%'
     },
     line: {
         margin: 10,

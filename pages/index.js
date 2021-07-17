@@ -19,8 +19,7 @@ const Organization = React.memo((props) => {
     const { data } = props;
      const { search, filter, sort, isMobileApp, city } = props.app;
     const { profile } = props.user;
-    const height = 80
-     let [list, setList] = useState(data.brandOrganizations);
+    let [list, setList] = useState(data.brandOrganizations);
     /*const popularItemsRef = useRef(null);
     const widthPopularItemsRef = useRef(0);
     const searchTimeOutRef = useRef(null);
@@ -54,6 +53,7 @@ const Organization = React.memo((props) => {
         }
     }, []);*/
     let [searchTimeOut, setSearchTimeOut] = useState(null);
+    let [type, setType] = useState('👁');
     const initialRender = useRef(true);
     const getList = async ()=>{
         setList((await getBrandOrganizations({search: search, sort: sort, filter: filter, city: city})).brandOrganizations);
@@ -105,13 +105,22 @@ const Organization = React.memo((props) => {
                 {`Всего брендов: ${list.length}`}
             </div>
             {
-                profile.role==='client'&&isMobileApp?
+                isMobileApp?
                     <div className={classes.scrollDown} onClick={()=>{
-                        let appBody = (document.getElementsByClassName('App-body'))[0]
-                        appBody.scroll({top: appBody.offsetHeight+appBody.scrollTop-122, left: 0, behavior: 'smooth' })
+                        if(profile.role==='client') {
+                            let appBody = (document.getElementsByClassName('App-body'))[0]
+                            appBody.scroll({
+                                top: appBody.offsetHeight + appBody.scrollTop - 122,
+                                left: 0,
+                                behavior: 'smooth'
+                            })
+                        }
+                        else {
+                            setType(type==='👁'?'⚙':'👁')
+                        }
                     }}>
                         <div className={classes.scrollDownContainer}>
-                            ▼ЕЩЕ БРЕНДЫ▼
+                            {profile.role==='client'?'▼ЕЩЕ БРЕНДЫ▼':type}
                             <div className={classes.scrollDownDiv}/>
                         </div>
                     </div>
@@ -130,8 +139,8 @@ const Organization = React.memo((props) => {
                 {list?list.map((element, idx)=> {
                     if(idx<pagination)
                         return(
-                            <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardBrandPlaceholder height={height}/>}>
-                                <CardBrand key={element._id} element={element}/>
+                            <LazyLoad scrollContainer={'.App-body'} key={element._id} height={data.height} offset={[data.height, 0]} debounce={0} once={true}  placeholder={<CardBrandPlaceholder height={data.height}/>}>
+                                <CardBrand key={element._id} element={element} idx={idx} list={list} setList={setList} type={type}/>
                             </LazyLoad>
                         )
                 }):null}
@@ -158,6 +167,7 @@ Organization.getInitialProps = async function(ctx) {
         }
     return {
         data: {
+            height: role==='admin'?149:80,
             ...await getBrandOrganizations({search: '', sort: ctx.store.getState().app.sort, filter: '', city: ctx.store.getState().app.city}, ctx.req?await getClientGqlSsr(ctx.req):undefined),
             //...await getPopularItems(ctx.req?await getClientGqlSsr(ctx.req):undefined),
         }

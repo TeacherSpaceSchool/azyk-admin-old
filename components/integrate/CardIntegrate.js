@@ -205,7 +205,7 @@ const CardIntegrate = React.memo((props) => {
                             }} size='small' color='primary'>
                                 Сохранить
                             </Button>
-                            <Button size='small' color='primary' onClick={()=>{
+                            <Button size='small' color='secondary' onClick={()=>{
                                 const action = async() => {
                                     await deleteIntegrate1C([element._id])
                                     let _list = [...list]

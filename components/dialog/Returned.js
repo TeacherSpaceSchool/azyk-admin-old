@@ -203,7 +203,7 @@ const Returned =  React.memo(
                                             </a>
                                             <IconButton onClick={()=>{
                                                 remove(idx)
-                                            }} color='primary' className={classes.button} aria-label='удалить'>
+                                            }} color='secondary' className={classes.button} aria-label='удалить'>
                                                 <CancelIcon style={{height: 20, width: 20}}/>
                                             </IconButton>
                                         </div>

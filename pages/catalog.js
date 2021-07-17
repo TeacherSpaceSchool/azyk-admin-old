@@ -148,7 +148,7 @@ const Catalog = React.memo((props) => {
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(basket[id].count)
         basket[id].count+=list[idx].apiece?1:(list[idx].packaging?list[idx].packaging:1)
-        basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        basket[id].allPrice = checkFloat(basket[id].count*list[idx].price)
         setBasket({...basket})
     }
     let decrement = async (idx)=>{
@@ -157,7 +157,7 @@ const Catalog = React.memo((props) => {
             if(basket[id].count>0) {
                 basket[id].count = checkInt(basket[id].count)
                 basket[id].count -= list[idx].apiece?1:(list[idx].packaging?list[idx].packaging:1)
-                basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+                basket[id].allPrice = checkFloat(basket[id].count*list[idx].price)
                 setBasket({...basket})
             }
         }
@@ -189,7 +189,7 @@ const Catalog = React.memo((props) => {
         if(!basket[id])
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(count)
-        basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        basket[id].allPrice = checkFloat(basket[id].count*list[idx].price)
         setBasket({...basket})
     }
     let setPackage= async(idx, count)=>{
@@ -198,7 +198,7 @@ const Catalog = React.memo((props) => {
             basket[id] = {_id: id, count: 0, allPrice: 0, consignment: 0}
         basket[id].count = checkInt(basket[id].count)
         basket[id].count = count*(list[idx].packaging?list[idx].packaging:1)
-        basket[id].allPrice = checkFloat(basket[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        basket[id].allPrice = checkFloat(basket[id].count*list[idx].price)
         setBasket({...basket})
     }
     let setPackageConsignment = async(idx, count)=>{
@@ -320,8 +320,6 @@ const Catalog = React.memo((props) => {
                             let price
                             if(basket[row._id]&&basket[row._id].allPrice)
                                 price = basket[row._id].allPrice
-                            else if(row.stock)
-                                price = row.stock
                             else
                                 price = row.price
                             if(idx<pagination)

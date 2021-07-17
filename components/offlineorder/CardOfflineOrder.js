@@ -89,7 +89,7 @@ const CardOfflineOrder = React.memo((props) => {
                     await deleteOfflineOrderByKey(element.key)
                     list.splice(idx, 1)
                     setList([...list])
-                }} size='small' color='primary'>
+                }} size='small' color='secondary'>
                     Удалить
                 </Button>
             </CardActions>

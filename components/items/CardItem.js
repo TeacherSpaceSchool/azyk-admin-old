@@ -18,11 +18,12 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
-import { checkFloat, inputFloat } from '../../src/lib'
+import { checkFloat, inputFloat, checkInt, inputInt } from '../../src/lib'
 
 const CardItem = React.memo((props) => {
     const classes = cardItemStyle();
-    const { element, setList, list, idx } = props;
+    const { element, setList, idx } = props;
+    let { list } = props;
     const { isMobileApp } = props.app;
     const { profile } = props.user;
     let [status, setStatus] = useState(element!==undefined?element.status:'');
@@ -31,6 +32,7 @@ const CardItem = React.memo((props) => {
     let [latest, setLatest] = useState(element.latest);
     let [apiece, setApiece] = useState(element.apiece);
     let [price, setPrice] = useState(element.price);
+    let [priotiry, setPriotiry] = useState(element.priotiry);
     return (
         <Card className={classes.card}>
             <CardContent className={classes.column}>
@@ -124,52 +126,70 @@ const CardItem = React.memo((props) => {
                 </Link>
                 {'admin' === profile.role || (['суперорганизация', 'организация'].includes(profile.role) && profile.organization === element.organization._id) ?
                     <>
-                    <FormControl className={classes.input}>
-                        <InputLabel htmlFor={`adornment-price${idx}`}>Цена</InputLabel>
-                        <Input
-                            id={`adornment-price${idx}`}
-                            type={ isMobileApp?'number':'text'}
-                            value={price}
-                            onChange={(event)=>{setPrice(inputFloat(event.target.value))}}
-                            endAdornment={
-                                price!=element.price?
-                                    <InputAdornment position='end'>
-                                        <IconButton aria-label='Задать цену' onClick={async ()=>{
-                                            price = checkFloat(price)
-                                            if(price>0) {
-                                                await setItem({_id: element._id, price})
-                                                list[idx].price = price
+                    <div className={classes.row}>
+                        <FormControl className={classes.input}>
+                            <InputLabel htmlFor={`adornment-price${element._id}`}>Цена</InputLabel>
+                            <Input
+                                id={`adornment-price${element._id}`}
+                                type={ isMobileApp?'number':'text'}
+                                value={price}
+                                onChange={(event)=>{setPrice(inputFloat(event.target.value))}}
+                                endAdornment={
+                                    price!=element.price?
+                                        <InputAdornment position='end'>
+                                            <IconButton aria-label='Задать цену' onClick={async ()=>{
+                                                price = checkFloat(price)
+                                                if(price>0) {
+                                                    await setItem({_id: element._id, price})
+                                                    list[idx].price = price
+                                                    setList([...list])
+                                                }
+                                            }}>
+                                                <Done />
+                                            </IconButton>
+                                        </InputAdornment>
+                                        :
+                                        null
+                                }
+                            />
+                        </FormControl>
+                        &nbsp;&nbsp;
+                        <FormControl className={classes.input}>
+                            <InputLabel htmlFor={`adornment-priotiry${element._id}`}>Приоритет</InputLabel>
+                            <Input
+                                id={`adornment-priotiry${element._id}`}
+                                type={ isMobileApp?'number':'text'}
+                                value={priotiry}
+                                onChange={(event)=>{setPriotiry(inputInt(event.target.value))}}
+                                endAdornment={
+                                    priotiry!=element.priotiry?
+                                        <InputAdornment position='end'>
+                                            <IconButton aria-label='Задать цену' onClick={async ()=>{
+                                                priotiry = checkInt(priotiry)
+                                                await setItem({_id: element._id, priotiry})
+                                                list[idx].priotiry = priotiry
+                                                list = list.sort(function(a, b) {
+                                                    return b.priotiry - a.priotiry
+                                                });
                                                 setList([...list])
-                                            }
-                                        }}>
-                                            <Done />
-                                        </IconButton>
-                                    </InputAdornment>
-                                    :
-                                    null
-                            }
-                        />
-                    </FormControl>
+                                            }}>
+                                                <Done />
+                                            </IconButton>
+                                        </InputAdornment>
+                                        :
+                                        null
+                                }
+                            />
+                        </FormControl>
+                    </div>
                     <br/>
                     </>
                     :
                     <Link href={`/${profile.role==='client'?'catalog':'item'}/[id]`} as={`/${profile.role==='client'?'catalog':'item'}/${profile.role==='client'?element.organization._id:element._id}`}>
                         <div className={classes.row}>
-                            {
-                                element.stock===0||element.stock===undefined?
-                                    <div className={classes.price}>
-                                        {`${element.price} сом`}
-                                    </div>
-                                    :
-                                    <>
-                                    <div className={classes.crossedPrice}>
-                                        {`${element.price}`}
-                                    </div>
-                                    <div className={classes.stockPrice}>
-                                        {`${element.stock} сом`}
-                                    </div>
-                                    </>
-                            }
+                            <div className={classes.price}>
+                                {`${element.price} сом`}
+                            </div>
                         </div>
                     </Link>
 
@@ -198,7 +218,7 @@ const CardItem = React.memo((props) => {
                                                         }
                                                         setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                         showMiniDialog(true)
-                                                    }} size='small' color='primary'>
+                                                    }} size='small' color='secondary'>
                                                         Удалить
                                                     </Button>:null
                                             }

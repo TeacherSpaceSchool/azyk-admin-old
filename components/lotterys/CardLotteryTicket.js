@@ -141,7 +141,7 @@ const CardLotteryTicket = React.memo((props) => {
                             {
                                 element!==undefined?
                                     <>
-                                    <Button size='small' color='primary' onClick={()=>{
+                                    <Button size='small' color='secondary' onClick={()=>{
                                         const action = async() => {
                                             let _list = [...list]
                                             _list.splice(idx, 1)

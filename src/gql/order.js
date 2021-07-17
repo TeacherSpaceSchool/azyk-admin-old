@@ -388,7 +388,6 @@ export const getOrder = async({_id})=>{
                                             image
                                             _id
                                             name    
-                                            stock 
                                             apiece
                                             unit
                                             priotiry

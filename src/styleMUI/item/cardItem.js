@@ -57,18 +57,6 @@ export default makeStyles({
         textAlign: 'right',
         marginBottom: 10
     },
-    stockPrice: {
-        marginLeft: 3,
-        color: '#ff0000',
-        fontWeight: 'bold',
-        fontSize: '1.3rem',
-        fontFamily: 'Roboto',
-        width: 100,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        textAlign: 'left',
-        marginBottom: 10
-    },
     button: {
         height: 50,
         width: 50,

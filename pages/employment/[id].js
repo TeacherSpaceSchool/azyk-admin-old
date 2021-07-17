@@ -277,7 +277,7 @@ const Client = React.memo((props) => {
                                                                 }
                                                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                                 showMiniDialog(true)
-                                                            }} size='small' color='primary'>
+                                                            }} size='small' color={status==='active'?'primary':'secondary'}>
                                                                 {status==='active'?'Отключить':'Включить'}
                                                             </Button>
                                                             <Button onClick={async()=>{
@@ -287,7 +287,7 @@ const Client = React.memo((props) => {
                                                                 }
                                                                 setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                                                 showMiniDialog(true)
-                                                            }} size='small' color='primary'>
+                                                            }} size='small' color='secondary'>
                                                                 Удалить
                                                             </Button>
                                                             </>

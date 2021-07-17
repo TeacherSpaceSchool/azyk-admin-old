@@ -123,7 +123,7 @@ const CardFaq = React.memo((props) => {
                                       }
                                       setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                                       showMiniDialog(true)
-                                  }} size='small' color='primary'>
+                                  }} size='small' color='secondary'>
                                       Удалить
                                   </Button>
                                   </>

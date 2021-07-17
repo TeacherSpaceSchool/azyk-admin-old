@@ -118,7 +118,7 @@ const Catalog = React.memo((props) => {
         if(!items[id])
             items[id] = {_id: id, item: list[idx].name, count: 0, allPrice: 0, allTonnage: 0, allSize: 0, weight: checkInt(list[idx].weight), price: list[idx].price, size: checkInt(list[idx].size)}
         items[id].count+=1
-        items[id].allPrice = checkFloat(items[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        items[id].allPrice = checkFloat(items[id].count*list[idx].price)
         items[id].allTonnage = checkFloat(items[id].count*items[id].weight)
         items[id].allSize = checkFloat(items[id].count*items[id].size)
         setItems({...items})
@@ -129,7 +129,7 @@ const Catalog = React.memo((props) => {
             items[id] = {_id: id, item: list[idx].name, count: 0, allPrice: 0, allTonnage: 0, allSize: 0, weight: checkInt(list[idx].weight), price: list[idx].price, size: checkInt(list[idx].size)}
         if(items[id].count>0) {
             items[id].count -= 1
-            items[id].allPrice = checkFloat(items[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+            items[id].allPrice = checkFloat(items[id].count*list[idx].price)
             items[id].allTonnage = checkFloat(items[id].count*items[id].weight)
             items[id].allSize = checkFloat(items[id].count*items[id].size)
             setItems({...items})
@@ -140,7 +140,7 @@ const Catalog = React.memo((props) => {
         if(!items[id])
             items[id] = {_id: id, item: list[idx].name, count: 0, allPrice: 0, allTonnage: 0, allSize: 0, weight: checkInt(list[idx].weight), price: list[idx].price, size: checkInt(list[idx].size)}
         items[id].count = checkInt(count)
-        items[id].allPrice = checkFloat(items[id].count*(list[idx].stock?list[idx].stock:list[idx].price))
+        items[id].allPrice = checkFloat(items[id].count*list[idx].price)
         items[id].allTonnage = checkFloat(items[id].count*items[id].weight)
         items[id].allSize = checkFloat(items[id].count*items[id].size)
         setItems({...items})
@@ -225,8 +225,6 @@ const Catalog = React.memo((props) => {
                             let price
                             if(items[row._id]&&items[row._id].allPrice)
                                 price = items[row._id].allPrice
-                            else if(row.stock)
-                                price = row.stock
                             else
                                 price = row.price
                             if(idx<pagination)

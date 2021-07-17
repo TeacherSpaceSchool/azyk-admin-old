@@ -6,8 +6,9 @@ import Skeleton from '@material-ui/lab/Skeleton';
 const CardOrganizationPlaceholder = React.memo((props) => {
     const classes = cardCategoryStyle();
     const { isMobileApp } = props.app;
+    const { height } = props;
     return (
-        <div className={isMobileApp?classes.cardBrand:classes.cardD} style={{height: isMobileApp?125:80}}>
+        <div className={isMobileApp?classes.cardBrand:classes.cardD} style={{height: isMobileApp?125:height}}>
             <Skeleton variant='rect' height='100%'/>
         </div>
     );
