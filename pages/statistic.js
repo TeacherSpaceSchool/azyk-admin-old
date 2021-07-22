@@ -128,6 +128,11 @@ const list = {
             role: ['admin', 'суперорганизация', 'организация']
         },
         {
+            name: 'Статистика подбрендов',
+            link: '/statistic/subbrand',
+            role: ['admin']
+        },
+        {
             name: 'Статистика товаров',
             link: '/statistic/item',
             role: ['admin']

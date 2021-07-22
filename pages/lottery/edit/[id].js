@@ -375,9 +375,8 @@ const LotteryEdit = React.memo((props) => {
                             if(image!==undefined)editElement.image = image
                             let _prizes = []
                             for(let i=0; i<prizes.length; i++) {
-                                prizes[i].count = checkInt(prizes[i].count)
                                 if((prizes[i].image||prizes[i]._id)&&prizes[i].count&&prizes[i].name.length)
-                                    _prizes.push({_id: prizes[i]._id, image: prizes[i].image, count: prizes[i].count, name: prizes[i].name})
+                                    _prizes.push({_id: prizes[i]._id, image: prizes[i].image, count: checkInt(prizes[i].count), name: prizes[i].name})
                             }
                             editElement.prizes = _prizes
                             let _photoReports = []
