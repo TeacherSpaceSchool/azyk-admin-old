@@ -18,15 +18,20 @@ const Subscriber = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
     let [list, setList] = useState(data.subscribers);
+    let [failed, setFailed] = useState(0);
+    let [delivered, setDelivered] = useState(0);
     let height = 214
-    let failed = 0
-    let delivered = 0
-    for(let i=0; i<data.subscribers.length; i++){
-        if(data.subscribers[i].status==='доставлено')
-            delivered+=1
-        else
-            failed+=1
-    }
+    useEffect(()=>{
+        for(let i=0; i<data.subscribers.length; i++){
+            if(data.subscribers[i].status==='доставлено')
+                delivered+=1
+            else
+                failed+=1
+        }
+        setFailed(failed)
+        setDelivered(delivered)
+    })
+
     let [showStat, setShowStat] = useState(false);
     let [pagination, setPagination] = useState(100);
     const checkPagination = ()=>{
