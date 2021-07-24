@@ -194,48 +194,48 @@ const BuyBasket =  React.memo(
                         if(unlock) {
                             if (agent || !organization.minimumOrder === 0 || organization.minimumOrder <= allPrice) {
                                if (paymentMethod.length > 0) {
-                                   const action = async () => {
-                                       sessionStorage.catalog = '{}'
-                                       if(navigator.onLine){
-                                           if (agent&&geo&&client.address[0][1].includes(', ')) {
-                                               let distance = getGeoDistance(geo.coords.latitude, geo.coords.longitude, ...(client.address[0][1].split(', ')))
-                                               if(distance<1000){
-                                                   await addAgentHistoryGeo({client: client._id, geo: `${geo.coords.latitude}, ${geo.coords.longitude}`})
-                                               }
+                                   sessionStorage.catalog = '{}'
+                                   if(navigator.onLine){
+                                       if (agent&&geo&&client.address[0][1].includes(', ')) {
+                                           let distance = getGeoDistance(geo.coords.latitude, geo.coords.longitude, ...(client.address[0][1].split(', ')))
+                                           if(distance<1000){
+                                               await addAgentHistoryGeo({client: client._id, geo: `${geo.coords.latitude}, ${geo.coords.longitude}`})
                                            }
-                                           await addOrders({
-                                               inv: inv,
-                                               priority: priority,
-                                               unite: organization.unite,
-                                               info: coment,
-                                               paymentMethod: paymentMethod,
-                                               organization: organization._id,
-                                               client: client._id,
-                                               dateDelivery: dateDelivery
-                                           })
-                                           Router.push('/orders')
                                        }
-                                       else if(profile.role.includes('агент')) {
-                                           await putOfflineOrders({
-                                               ...(geo?{geo: {latitude: geo.coords.latitude, longitude: geo.coords.longitude}}:{}),
-                                               inv: inv,
-                                               priority: priority,
-                                               unite: organization.unite,
-                                               info: coment,
-                                               paymentMethod: paymentMethod,
-                                               organization: organization._id,
-                                               client: client._id,
-                                               dateDelivery: dateDelivery,
-                                               basket: basket,
-                                               address: client.address[0],
-                                               name: client.name,
-                                               allPrice: `${allPrice-allPrice/100*discount} сом`
-                                           })
-                                           Router.push('/statistic/offlineorder')
-                                       }
-                                       showMiniDialog(false);
+                                       await addOrders({
+                                           inv: inv,
+                                           priority: priority,
+                                           unite: organization.unite,
+                                           info: coment,
+                                           paymentMethod: paymentMethod,
+                                           organization: organization._id,
+                                           client: client._id,
+                                           dateDelivery: dateDelivery
+                                       })
+                                       Router.push('/orders')
                                    }
-                                   setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
+                                   else if(profile.role.includes('агент')) {
+                                       await putOfflineOrders({
+                                           ...(geo?{geo: {latitude: geo.coords.latitude, longitude: geo.coords.longitude}}:{}),
+                                           inv: inv,
+                                           priority: priority,
+                                           unite: organization.unite,
+                                           info: coment,
+                                           paymentMethod: paymentMethod,
+                                           organization: organization._id,
+                                           client: client._id,
+                                           dateDelivery: dateDelivery,
+                                           basket: basket,
+                                           address: client.address[0],
+                                           name: client.name,
+                                           allPrice: `${allPrice-allPrice/100*discount} сом`
+                                       })
+                                       Router.push('/statistic/offlineorder')
+                                   }
+                                   showMiniDialog(false);
+                                   /*const action = async () => {
+                                   }
+                                   setMiniDialog('Вы уверены?', <Confirmation action={action}/>)*/
                                }
                                else
                                    showSnackBar('Заполните все поля')

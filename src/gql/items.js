@@ -19,6 +19,7 @@ export const getBrandOrganizations = async({search, filter, city}, client)=>{
                             catalog
                             priotiry
                             type
+                            unite
                           }
                           filterOrganization {
                            name
