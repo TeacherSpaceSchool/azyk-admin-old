@@ -22,7 +22,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 const CardSubBrand = React.memo((props) => {
     const classes = cardSubBrandStyle();
     const { element, setList, list, idx, organizations } = props;
-    const { profile } = props.user;
     const { isMobileApp } = props.app;
     //addCard
     let [preview, setPreview] = useState(element?element.image:'/static/add.png');
@@ -45,7 +44,7 @@ const CardSubBrand = React.memo((props) => {
         setName(event.target.value)
     };
     const _cities = ['Бишкек', 'Кара-Балта', 'Токмок', 'Кочкор', 'Нарын', 'Боконбаева', 'Каракол', 'Чолпон-Ата', 'Балыкчы', 'Казарман', 'Талас', 'Жалал-Абад', 'Ош']
-    let [cities, setCities] = useState(element?element.cities:['Бишкек']);
+    let [cities, setCities] = useState(element&&element.cities?element.cities:['Бишкек']);
     let handleCities =  (event) => {
         setCities(event.target.value)
     };

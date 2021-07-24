@@ -22,6 +22,7 @@ const SubBrands = React.memo((props) => {
     const { search, organization, city } = props.app;
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     let [organizations, setOrganizations] = useState(data.organizations);
+    const initialRender = useRef(true);
     useEffect(()=>{
         (async()=>{
             if(initialRender.current) {
@@ -31,7 +32,6 @@ const SubBrands = React.memo((props) => {
             }
         })()
     },[city])
-    const initialRender = useRef(true);
     const getList = async ()=>{
         setList((await getSubBrands({search, organization, city})).subBrands);
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
