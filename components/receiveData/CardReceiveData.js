@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import CardActions from '@material-ui/core/CardActions';
 import { bindActionCreators } from 'redux'
 import * as mini_dialogActions from '../../redux/actions/mini_dialog'
+import * as snackbarActions from '../../redux/actions/snackbar'
 import {deleteReceivedData, addReceivedDataClient} from '../../src/gql/receiveData'
 
 const CardReceiveData = React.memo((props) => {
@@ -16,6 +17,7 @@ const CardReceiveData = React.memo((props) => {
     const { element, idx, list, setList } = props;
     const { isMobileApp } = props.app;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
+    const { showSnackBar } = props.snackbarActions;
     return (
         <Card className={isMobileApp?classes.cardM:classes.cardD}>
             <CardContent>
@@ -107,9 +109,13 @@ const CardReceiveData = React.memo((props) => {
             <CardActions>
                 <Button onClick={async () => {
                     const action = async () => {
-                        await addReceivedDataClient(element._id)
-                        list.splice(idx, 1)
-                        setList([...list])
+                        let res = (await addReceivedDataClient(element._id)).addReceivedDataClient
+                        if(res.data==='OK') {
+                            list.splice(idx, 1)
+                            setList([...list])
+                        }
+                        else
+                            showSnackBar('Уже существует')
                     }
                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                     showMiniDialog(true)
@@ -141,6 +147,7 @@ function mapStateToProps (state) {
 function mapDispatchToProps(dispatch) {
     return {
         mini_dialogActions: bindActionCreators(mini_dialogActions, dispatch),
+        snackbarActions: bindActionCreators(snackbarActions, dispatch),
     }
 }
 

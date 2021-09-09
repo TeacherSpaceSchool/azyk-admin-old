@@ -54,7 +54,7 @@ export const deleteReceivedData = async(ids)=>{
 export const addReceivedDataClient = async(id)=>{
     try{
         const client = new SingletonApolloClient().getClient()
-        await client.mutate({
+        let res = await client.mutate({
             variables: {_id: id},
             mutation : gql`
                     mutation ($_id: ID!) {
@@ -62,6 +62,7 @@ export const addReceivedDataClient = async(id)=>{
                              data
                         }
                     }`})
+        return res.data
     } catch(err){
         console.error(err)
     }
