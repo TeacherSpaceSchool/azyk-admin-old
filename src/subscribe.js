@@ -19,9 +19,6 @@ export let checkDisableSubscribe = () => {
             xmlHttp.send(JSON.stringify({number: localStorage.browserNumber}));
         }
     }
-
-
-
 }
 
 export let register = (update) => {
@@ -69,8 +66,6 @@ export let register = (update) => {
                         })
                 }
             })
-
-
         }
         else resolve()
     })
