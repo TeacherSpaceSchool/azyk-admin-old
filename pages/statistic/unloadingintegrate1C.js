@@ -23,6 +23,7 @@ import Confirmation from '../../components/dialog/Confirmation'
 const UnloadingIntegrate1C = React.memo((props) => {
     const classes = pageListStyle();
     const { data } = props;
+    const { isMobileApp, city } = props.app;
     const { setMiniDialog, showMiniDialog } = props.mini_dialogActions;
     const initialRender = useRef(true);
     let [activeOrganization, setActiveOrganization] = useState(data.activeOrganization);
@@ -38,7 +39,6 @@ const UnloadingIntegrate1C = React.memo((props) => {
         })()
     },[city])
     let [organization, setOrganization] = useState({_id: undefined});
-    const { isMobileApp, city } = props.app;
     const { showSnackBar } = props.snackbarActions;
     let [document, setDocument] = useState(undefined);
     let documentRef = useRef(null);

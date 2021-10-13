@@ -25,14 +25,14 @@ const Integrate = React.memo((props) => {
     let [agents, setAgents] = useState(data.agentsIntegrate1C);
     let [ecspeditors, setEcspeditors] = useState(data.ecspeditorsIntegrate1C);
     let [clients, setClients] = useState(data.clientsIntegrate1C);
-    const { search, filter } = props.app;
+    const { search, filter, city } = props.app;
     let [showStat, setShowStat] = useState(false);
     let height = 189
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     let [paginationWork, setPaginationWork] = useState(true);
     const checkPagination = async()=>{
         if(paginationWork){
-            let addedList = (await getIntegrate1Cs({search: search, filter: filter, skip: list.length}, router.query.id)).integrate1Cs
+            let addedList = (await getIntegrate1Cs({search, filter, skip: list.length}, router.query.id)).integrate1Cs
             if(addedList.length>0){
                 setList([...list, ...addedList])
             }
@@ -41,15 +41,15 @@ const Integrate = React.memo((props) => {
         }
     }
     const getList = async()=>{
-        setList((await getIntegrate1Cs({search: search, filter: filter, skip: 0}, router.query.id)).integrate1Cs)
-        setSimpleStatistic((await getIntegrate1CsSimpleStatistic({search: search, filter: filter}, router.query.id)).integrate1CsSimpleStatistic[0])
+        setList((await getIntegrate1Cs({search, filter, skip: 0}, router.query.id)).integrate1Cs)
+        setSimpleStatistic((await getIntegrate1CsSimpleStatistic({search, filter}, router.query.id)).integrate1CsSimpleStatistic[0])
         setPaginationWork(true);
         (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
         forceCheck()
-        setItems((await getItemsIntegrate1C(router.query.id)).itemsIntegrate1C)
+        setItems((await getItemsIntegrate1C({organization: router.query.id, city})).itemsIntegrate1C)
         setAgents((await getAgentsIntegrate1C(router.query.id)).agentsIntegrate1C)
         setEcspeditors((await getEcspeditorsIntegrate1C(router.query.id)).ecspeditorsIntegrate1C)
-        setClients((await getClientsIntegrate1C(router.query.id)).clientsIntegrate1C)
+        setClients((await getClientsIntegrate1C({organization: router.query.id, city})).clientsIntegrate1C)
     }
     useEffect(()=>{
         if(searchTimeOut)
@@ -58,9 +58,9 @@ const Integrate = React.memo((props) => {
             await getList()
         }, 500)
         setSearchTimeOut(searchTimeOut)
-    },[filter, search])
+    },[filter, search, city])
     return (
-        <App checkPagination={checkPagination} searchShow={true} filters={data.filterIntegrate1C} pageName={data.organization?data.organization.name:'AZYK.STORE'}>
+        <App cityShow checkPagination={checkPagination} searchShow={true} filters={data.filterIntegrate1C} pageName={data.organization?data.organization.name:'AZYK.STORE'}>
             <Head>
                 <title>{data.organization?data.organization.name:'AZYK.STORE'}</title>
                 <meta name='description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
@@ -123,10 +123,10 @@ Integrate.getInitialProps = async function(ctx) {
         data: {
             ...(await getIntegrate1Cs({search: '', filter: '', skip: 0}, ctx.query.id, ctx.req?await getClientGqlSsr(ctx.req):null)),
             ...(await getOrganization({_id: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):null)),
-            ...(await getItemsIntegrate1C(ctx.query.id, ctx.req?await getClientGqlSsr(ctx.req):null)),
+            ...(await getItemsIntegrate1C({organization: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):null)),
             ...(await getAgentsIntegrate1C(ctx.query.id, ctx.req?await getClientGqlSsr(ctx.req):null)),
             ...(await getEcspeditorsIntegrate1C(ctx.query.id, ctx.req?await getClientGqlSsr(ctx.req):null)),
-            ...(await getClientsIntegrate1C(ctx.query.id, ctx.req?await getClientGqlSsr(ctx.req):null)),
+            ...(await getClientsIntegrate1C({organization: ctx.query.id}, ctx.req?await getClientGqlSsr(ctx.req):null)),
         }
     };
 };

@@ -27,7 +27,7 @@ const CardIntegrate = React.memo((props) => {
     let handleGuid =  (event) => {
         setGuid(event.target.value)
     };
-    const cities = ['Бишкек', 'Кара-Балта', 'Токмок', 'Кочкор', 'Нарын', 'Боконбаева', 'Каракол', 'Чолпон-Ата', 'Балыкчы', 'Казарман', 'Талас', 'Жалал-Абад', 'Ош']
+    const cities = ['Бишкек', 'Кара-Балта', 'Токмок', 'Кочкор', 'Нарын', 'Боконбаева', 'Каракол', 'Чолпон-Ата', 'Балыкчы', 'Казарман', 'Талас', 'Жалал-Абад', 'Ош', 'Москва']
     let [city, setCity] = useState(element&&element.item?element.item.city:'Бишкек');
     let handleCity =  (event) => {
         setItem({})

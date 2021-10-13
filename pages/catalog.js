@@ -90,7 +90,6 @@ const Catalog = React.memo((props) => {
         (async()=>{
             if(profile.organization){
                 organization = data.brandOrganizations.filter(elem=>elem._id===profile.organization)[0]
-                console.log(organization)
                 setOrganization({...organization})
             }
             if(sessionStorage.catalog&&sessionStorage.catalog!=='{}'){

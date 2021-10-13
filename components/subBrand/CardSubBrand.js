@@ -43,7 +43,7 @@ const CardSubBrand = React.memo((props) => {
     let handleName =  (event) => {
         setName(event.target.value)
     };
-    const _cities = ['Бишкек', 'Кара-Балта', 'Токмок', 'Кочкор', 'Нарын', 'Боконбаева', 'Каракол', 'Чолпон-Ата', 'Балыкчы', 'Казарман', 'Талас', 'Жалал-Абад', 'Ош']
+    const _cities = ['Бишкек', 'Кара-Балта', 'Токмок', 'Кочкор', 'Нарын', 'Боконбаева', 'Каракол', 'Чолпон-Ата', 'Балыкчы', 'Казарман', 'Талас', 'Жалал-Абад', 'Ош', 'Москва']
     let [cities, setCities] = useState(element&&element.cities?element.cities:['Бишкек']);
     let handleCities =  (event) => {
         setCities(event.target.value)

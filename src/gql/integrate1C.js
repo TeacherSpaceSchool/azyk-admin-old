@@ -19,7 +19,7 @@ export const getIntegrate1Cs = async(arg, organization, client)=>{
                             organization
                                 {_id name}
                             client
-                                {_id name}
+                                {_id name city}
                             agent
                                 {_id name}
                             item
@@ -113,15 +113,15 @@ export const getAgentsIntegrate1C = async(organization, client)=>{
     }
 }
 
-export const getItemsIntegrate1C = async(organization, client)=>{
+export const getItemsIntegrate1C = async({organization, city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {organization: organization},
+                variables: {organization, city},
                 query: gql`
-                    query ($organization: ID!) {
-                        itemsIntegrate1C(organization: $organization) {
+                    query ($organization: ID!, $city: String) {
+                        itemsIntegrate1C(organization: $organization, city: $city) {
                             _id 
                             name
                             city
@@ -134,17 +134,18 @@ export const getItemsIntegrate1C = async(organization, client)=>{
     }
 }
 
-export const getClientsIntegrate1C = async(organization, client)=>{
+export const getClientsIntegrate1C = async({organization, city}, client)=>{
     try{
         client = client? client : new SingletonApolloClient().getClient()
         let res = await client
             .query({
-                variables: {organization: organization},
+                variables: {organization, city},
                 query: gql`
-                    query ($organization: ID!) {
-                        clientsIntegrate1C(organization: $organization) {
+                    query ($organization: ID!, $city: String) {
+                        clientsIntegrate1C(organization: $organization, city: $city) {
                             _id 
                             name
+                            city
                         }
                     }`,
             })
