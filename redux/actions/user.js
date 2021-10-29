@@ -39,6 +39,7 @@ export function signup(payload) {
                            employment
                            addedClient
                            _id
+                           city
                         }
                     }`})
             if(result.data.signupuser.role==='Проверьте данные') {
@@ -100,6 +101,7 @@ export function signin(payload) {
                            employment
                            addedClient
                            _id
+                           city
                         }
                     }`})
             if(result.data.signinuser.role==='Проверьте данные') {
@@ -209,6 +211,7 @@ export function setProfile() {
                            employment
                            addedClient
                            _id
+                           city
                           }
                     }`
                 })
@@ -239,6 +242,7 @@ export async function getProfile(client) {
                            employment
                            addedClient
                           _id
+                          city
                        }
                    }`
             })
