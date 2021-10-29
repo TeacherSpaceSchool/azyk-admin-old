@@ -3,7 +3,9 @@ export let urlGQLws
 export let urlMain
 export let urlSubscribe
 export let applicationKey
+export let urlGQLSSR
 if(process.env.URL==='azyk.store') {
+    urlGQLSSR = `http://localhost:4000/graphql`
     urlGQL = `https://${process.env.URL}:3000/graphql`
     urlGQLws = `wss://${process.env.URL}:3000/graphql`
     urlSubscribe = `https://${process.env.URL}:3000/subscribe`
@@ -11,6 +13,7 @@ if(process.env.URL==='azyk.store') {
     applicationKey = 'BDbYgfB_0iu1aqu7AHHTervMZnvSjYQtZsm-kKCQ9NH58DU-iRKDk0U-tiio1NzHi25ceaatYrM4c6Oqj1KvnXM'
 }
 else {
+    urlGQLSSR = `http://localhost:3000/graphql`
     urlGQL = `http://${process.env.URL}:3000/graphql`
     urlGQLws = `ws://${process.env.URL}:3000/graphql`
     urlMain = `http://${process.env.URL}`

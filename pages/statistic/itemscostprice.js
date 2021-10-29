@@ -205,7 +205,7 @@ const ItemsCostPrice = React.memo((props) => {
 ItemsCostPrice.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = 'Заказы'
-    ctx.store.getState().app.city = 'Бишкек'
+    //ctx.store.getState().app.city = 'Бишкек'
     if('admin'!==ctx.store.getState().user.profile.role)
         if(ctx.res) {
             ctx.res.writeHead(302, {

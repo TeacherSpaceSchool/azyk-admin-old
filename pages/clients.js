@@ -106,7 +106,7 @@ const Client = React.memo((props) => {
 
 Client.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    ctx.store.getState().app.city = ''
+    //ctx.store.getState().app.city = ''
     let role = ctx.store.getState().user.profile.role
     let authenticated = ctx.store.getState().user.authenticated
     if(authenticated&&!['admin', 'суперорганизация', 'организация', 'менеджер', 'агент', 'суперагент', 'экспедитор'].includes(role))

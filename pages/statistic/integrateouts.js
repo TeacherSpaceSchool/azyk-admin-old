@@ -28,7 +28,7 @@ const Integrates = React.memo((props) => {
                 initialRender.current = false;
             }
             else {
-                setList((await getOrganizations({search: '', filter: '', city: city})).organizations)
+                setList((await getOrganizations({search: '', filter: '', city})).organizations)
             }
         })()
     },[city])
@@ -78,7 +78,7 @@ const Integrates = React.memo((props) => {
 
 Integrates.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    ctx.store.getState().app.city = 'Бишкек'
+    //ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {

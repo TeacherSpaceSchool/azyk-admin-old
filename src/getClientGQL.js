@@ -1,5 +1,5 @@
 /* eslint-disable no-extra-boolean-cast */
-import { urlGQL } from '../redux/constants/other';
+import { urlGQLSSR } from '../redux/constants/other';
 import { ApolloClient } from 'apollo-client';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import fetch from 'node-fetch';
@@ -11,7 +11,7 @@ import { createUploadLink } from 'apollo-upload-client'
 
 export const getClientGqlSsr = (req) => {
     const uploadLink = createUploadLink({
-        uri: urlGQL,
+        uri: urlGQLSSR,
         fetch: fetch,
         credentials: 'include'
     });

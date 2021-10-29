@@ -153,7 +153,7 @@ Organization.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     let role = ctx.store.getState().user.profile.role
     ctx.store.getState().app.sort = 'name'
-    ctx.store.getState().app.city = 'Бишкек'
+    //ctx.store.getState().app.city = 'Бишкек'
     let authenticated = ctx.store.getState().user.authenticated
     if(!['admin', 'client'].includes(role))
         if(ctx.res) {

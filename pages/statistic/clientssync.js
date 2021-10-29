@@ -79,7 +79,7 @@ const ClientsSync = React.memo((props) => {
 
 ClientsSync.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    ctx.store.getState().app.city = 'Бишкек'
+    //ctx.store.getState().app.city = 'Бишкек'
     if(!['admin'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {

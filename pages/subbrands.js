@@ -99,7 +99,7 @@ const SubBrands = React.memo((props) => {
 SubBrands.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     let role = ctx.store.getState().user.profile.role
-    ctx.store.getState().app.city = 'Бишкек'
+    //ctx.store.getState().app.city = 'Бишкек'
     let authenticated = ctx.store.getState().user.authenticated
     if('admin'!==role)
         if(ctx.res) {

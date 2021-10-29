@@ -198,7 +198,7 @@ const ClientStatistic = React.memo((props) => {
 ClientStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     if(ctx.query.id==='super')
-        ctx.store.getState().app.city = 'Бишкек'
+        //ctx.store.getState().app.city = 'Бишкек'
     ctx.store.getState().app.filter = false
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {

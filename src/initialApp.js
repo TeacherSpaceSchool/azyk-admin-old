@@ -40,7 +40,8 @@ export default async (ctx)=>{
     ctx.store.getState().app.search = ''
     ctx.store.getState().app.sort = '-createdAt'
     ctx.store.getState().app.filter = ''
-    ctx.store.getState().app.city = undefined
+    if(!ctx.store.getState().user.profile||ctx.store.getState().user.profile.role!=='admin')
+        ctx.store.getState().app.city = undefined
     ctx.store.getState().app.organization = undefined
     ctx.store.getState().app.agent = undefined
     ctx.store.getState().app.date = ''
