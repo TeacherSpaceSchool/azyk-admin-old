@@ -39,6 +39,7 @@ import SetAgent from '../dialog/SetAgent'
 import SetCities from '../dialog/SetCities'
 import { getActiveOrganization } from '../../src/gql/statistic'
 import { getAgents } from '../../src/gql/employment'
+import { setCityCookie } from '../../src/lib'
 
 const MyAppBar = React.memo((props) => {
     //props
@@ -166,6 +167,7 @@ const MyAppBar = React.memo((props) => {
                             {
                                 cityShow||dates||searchShow||filters||sorts?
                                     <IconButton
+                                        style={{background: date||organization||agent||city||filter?'rgba(51, 143, 255, 0.29)': 'transparent'}}
                                         aria-owns={openMobileMenu ? 'menu-appbar' : undefined}
                                         aria-haspopup='true'
                                         onClick={handleMobileMenu}
@@ -204,7 +206,7 @@ const MyAppBar = React.memo((props) => {
                                 }
                                 {filters&&filters.length>0?
                                     [
-                                        <MenuItem key='filterMenu' onClick={handleMenuFilter}style={{background: filter?'rgba(51, 143, 255, 0.29)': '#fff'}}>
+                                        <MenuItem key='filterMenu' onClick={handleMenuFilter} style={{background: filter?'rgba(51, 143, 255, 0.29)': '#fff'}}>
                                             <div style={{display: 'flex', color: '#606060'}}>
                                                 <FilterList/>&nbsp;Фильтр
                                             </div>
@@ -258,7 +260,7 @@ const MyAppBar = React.memo((props) => {
                                 }
                                 {dates?
                                     [
-                                        <MenuItem key='dateMenu' onClick={handleMenuDate} style={{background: date!==''?'rgba(51, 143, 255, 0.29)': '#fff'}}>
+                                        <MenuItem key='dateMenu' onClick={handleMenuDate} style={{background: date?'rgba(51, 143, 255, 0.29)': '#fff'}}>
                                             <div style={{display: 'flex', color: '#606060'}}>
                                                 <DateRange/>&nbsp;Дата
                                             </div>
@@ -278,10 +280,10 @@ const MyAppBar = React.memo((props) => {
                                             open={openDate}
                                             onClose={handleCloseDate}
                                         >
-                                            <MenuItem key='onDate' style={{background: date!==''?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setMiniDialog('Дата', <SetDate/>);showMiniDialog(true);handleCloseDate();handleCloseMobileMenu();}}>
+                                            <MenuItem key='onDate' style={{background: date?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setMiniDialog('Дата', <SetDate/>);showMiniDialog(true);handleCloseDate();handleCloseMobileMenu();}}>
                                                 По дате
                                             </MenuItem>
-                                            <MenuItem key='allDate' style={{background: date===''?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setDate('');handleCloseDate();handleCloseMobileMenu();}}>
+                                            <MenuItem key='allDate' style={{background: !date?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setDate('');handleCloseDate();handleCloseMobileMenu();}}>
                                                 Все
                                             </MenuItem>
                                         </Menu>
@@ -377,7 +379,7 @@ const MyAppBar = React.memo((props) => {
                                             <MenuItem key='onCity' style={{background: city?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{setMiniDialog('Город', <SetCities/>);showMiniDialog(true);handleCloseCities();handleCloseMobileMenu();}}>
                                                 По городу
                                             </MenuItem>
-                                            <MenuItem key='allCity' style={{background: !city?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setCity(undefined);handleCloseCities();handleCloseMobileMenu();}}>
+                                            <MenuItem key='allCity' style={{background: !city?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setCity(undefined);setCityCookie('');handleCloseCities();handleCloseMobileMenu();}}>
                                                 Все
                                             </MenuItem>
                                         </Menu>
@@ -471,6 +473,7 @@ const MyAppBar = React.memo((props) => {
                                 <>
                                 <Tooltip title='Город'>
                                     <IconButton
+                                        style={{background: city?'rgba(51, 143, 255, 0.29)': 'transparent'}}
                                         aria-owns={openCities ? 'menu-appbar' : undefined}
                                         aria-haspopup='true'
                                         onClick={handleMenuCities}
@@ -497,7 +500,7 @@ const MyAppBar = React.memo((props) => {
                                     <MenuItem style={{background: city?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={async ()=>{setMiniDialog('Город', <SetCities/>);showMiniDialog(true);handleCloseCities();}}>
                                         По городу
                                     </MenuItem>
-                                    <MenuItem style={{background: !city?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setCity(undefined);handleCloseCities();}}>
+                                    <MenuItem style={{background: !city?'rgba(51, 143, 255, 0.29)': '#fff'}} onClick={()=>{setCity(undefined);setCityCookie('');handleCloseCities();}}>
                                         Все
                                     </MenuItem>
                                 </Menu>
@@ -509,6 +512,7 @@ const MyAppBar = React.memo((props) => {
                                 <>
                                 <Tooltip title='Организации'>
                                     <IconButton
+                                        style={{background: organization?'rgba(51, 143, 255, 0.29)': 'transparent'}}
                                         aria-owns={openOrganizations ? 'menu-appbar' : undefined}
                                         aria-haspopup='true'
                                         onClick={handleMenuOrganizations}
@@ -547,6 +551,7 @@ const MyAppBar = React.memo((props) => {
                                 <>
                                 <Tooltip title='Агенты'>
                                     <IconButton
+                                        style={{background: agent?'rgba(51, 143, 255, 0.29)': 'transparent'}}
                                         aria-owns={openAgents ? 'menu-appbar' : undefined}
                                         aria-haspopup='true'
                                         onClick={handleMenuAgents}
@@ -585,6 +590,7 @@ const MyAppBar = React.memo((props) => {
                                 <>
                                 <Tooltip title='Дата'>
                                     <IconButton
+                                        style={{background: date?'rgba(51, 143, 255, 0.29)': 'transparent'}}
                                         aria-owns={openDate ? 'menu-appbar' : undefined}
                                         aria-haspopup='true'
                                         onClick={handleMenuDate}
@@ -623,6 +629,7 @@ const MyAppBar = React.memo((props) => {
                                 <>
                                 <Tooltip title='Фильтр'>
                                     <IconButton
+                                        style={{background: filter?'rgba(51, 143, 255, 0.29)': 'transparent'}}
                                         aria-owns={openFilter ? 'menu-appbar' : undefined}
                                         aria-haspopup='true'
                                         onClick={handleMenuFilter}

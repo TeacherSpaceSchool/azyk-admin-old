@@ -26,6 +26,26 @@ export const getJWT = (cookie)=>{
     //console.timeEnd('perfomance')
     return undefined;
 }
+export const getCityCookie = (cookie)=>{
+    let name = 'city=';
+    let decodedCookie = decodeURIComponent(cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) === 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return undefined;
+}
+export const setCityCookie = (city)=>{
+    let date = new Date(Date.now() + 10000*24*60*60*1000);
+    date = date.toUTCString();
+    document.cookie = `city=${encodeURI(city)}; expires=` + date;
+}
 export const countdown = (date) => {
     date = new Date(date).getTime()
     let now = new Date().getTime();

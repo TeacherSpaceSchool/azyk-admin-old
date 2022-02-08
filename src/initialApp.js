@@ -1,6 +1,6 @@
 import { getProfile } from '../redux/actions/user'
 import { setClient } from './gql/client'
-import { getJWT, checkMobile } from './lib'
+import { getJWT, checkMobile, getCityCookie } from './lib'
 import uaParserJs from 'ua-parser-js';
 import { getClientGqlSsr } from './getClientGQL'
 
@@ -11,6 +11,8 @@ export default async (ctx)=>{
         ctx.store.getState().user.authenticated = getJWT(ctx.req.headers.cookie)
         if (ctx.store.getState().user.authenticated) {
             ctx.store.getState().user.profile = await getProfile(await getClientGqlSsr(ctx.req))
+            if(ctx.store.getState().user.profile.role==='admin')
+                ctx.store.getState().app.city = getCityCookie(ctx.req.headers.cookie)
             if (ctx.store.getState().user.profile&&ctx.store.getState().user.profile.client) {
                 let deviceModel
                 if(ua.device.model)

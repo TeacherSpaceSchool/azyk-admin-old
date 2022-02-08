@@ -118,7 +118,7 @@ const Items = React.memo((props) => {
                     if(idx<pagination)
                         return(
                             <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardItemPlaceholder/>}>
-                                <CardItem list={list} idx={idx} setList={setList} key={element._id} element={element} subCategory={router.query.id==='all'?'all':data.subCategory._id}/>
+                                <CardItem nl list={list} idx={idx} setList={setList} key={element._id} element={element} subCategory={router.query.id==='all'?'all':data.subCategory._id}/>
                             </LazyLoad>
                         )}
                 ):null}

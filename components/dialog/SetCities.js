@@ -9,6 +9,7 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import dialogContentStyle from '../../src/styleMUI/dialogContent'
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { setCityCookie } from '../../src/lib'
 
 const SetCities =  React.memo(
     (props) =>{
@@ -36,6 +37,7 @@ const SetCities =  React.memo(
                                    onKeyPress={async event => {
                                        if (event.key === 'Enter'&&cityChange) {
                                            await setCity(cityChange)
+                                           setCityCookie(cityChange?cityChange:'')
                                            showMiniDialog(false);
                                        }
                                    }}/>
@@ -44,9 +46,9 @@ const SetCities =  React.memo(
                 <br/>
                 <div>
                     <Button variant="contained" color="primary" onClick={async()=>{
-                       if(cityChange)
-                           await setCity(cityChange)
-                       showMiniDialog(false);
+                        await setCity(cityChange)
+                        setCityCookie(cityChange?cityChange:'')
+                        showMiniDialog(false);
                     }} className={classes.button}>
                         Сохранить
                     </Button>
