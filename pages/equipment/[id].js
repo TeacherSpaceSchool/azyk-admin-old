@@ -263,7 +263,6 @@ const Equipment = React.memo((props) => {
 
 Equipment.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    //ctx.store.getState().app.city = 'Бишкек'
     if(!(['admin', 'суперорганизация', 'организация', 'менеджер', 'агент', 'ремонтник'].includes(ctx.store.getState().user.profile.role)))
         if(ctx.res) {
             ctx.res.writeHead(302, {

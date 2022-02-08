@@ -76,7 +76,6 @@ const OutXMLAds = React.memo((props) => {
 
 OutXMLAds.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    //ctx.store.getState().app.city = 'Бишкек'
     if(ctx.store.getState().user.profile.role!=='admin')
         if(ctx.res) {
             ctx.res.writeHead(302, {

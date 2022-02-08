@@ -111,7 +111,6 @@ Brand.getInitialProps = async function(ctx) {
             ctx.res.end()
         } else
             Router.push('/contact')
-    //ctx.store.getState().app.city = 'Бишкек'
     ctx.store.getState().app.sort = '-priotiry'
     return {
         data: await getBrands({city: ctx.store.getState().app.city, organization: ctx.query.id, search: '', sort: ctx.store.getState().app.sort}, ctx.req?await getClientGqlSsr(ctx.req):undefined),

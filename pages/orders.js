@@ -237,7 +237,6 @@ const Orders = React.memo((props) => {
 
 Orders.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    //ctx.store.getState().app.city = 'Бишкек'
     if(!['экспедитор', 'admin', 'суперорганизация', 'организация', 'менеджер', 'client', 'агент', 'суперагент', 'суперэкспедитор'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {

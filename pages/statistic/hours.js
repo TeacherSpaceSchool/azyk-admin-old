@@ -162,7 +162,6 @@ const HoursStatistic = React.memo((props) => {
 HoursStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = 'hours'
-    //ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {

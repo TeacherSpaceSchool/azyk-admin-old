@@ -204,7 +204,7 @@ const MyAppBar = React.memo((props) => {
                                 }
                                 {filters&&filters.length>0?
                                     [
-                                        <MenuItem key='filterMenu' onClick={handleMenuFilter}>
+                                        <MenuItem key='filterMenu' onClick={handleMenuFilter}style={{background: filter?'rgba(51, 143, 255, 0.29)': '#fff'}}>
                                             <div style={{display: 'flex', color: '#606060'}}>
                                                 <FilterList/>&nbsp;Фильтр
                                             </div>
@@ -258,7 +258,7 @@ const MyAppBar = React.memo((props) => {
                                 }
                                 {dates?
                                     [
-                                        <MenuItem key='dateMenu' onClick={handleMenuDate}>
+                                        <MenuItem key='dateMenu' onClick={handleMenuDate} style={{background: date!==''?'rgba(51, 143, 255, 0.29)': '#fff'}}>
                                             <div style={{display: 'flex', color: '#606060'}}>
                                                 <DateRange/>&nbsp;Дата
                                             </div>
@@ -290,7 +290,7 @@ const MyAppBar = React.memo((props) => {
                                 }
                                 {organizations&&['суперагент', 'admin', 'client'].includes(profile.role)?
                                     [
-                                        <MenuItem key='organizationsMenu' onClick={handleMenuOrganizations}>
+                                        <MenuItem key='organizationsMenu' onClick={handleMenuOrganizations} style={{background: organization?'rgba(51, 143, 255, 0.29)': '#fff'}}>
                                             <div style={{display: 'flex', color: '#606060'}}>
                                                 <BusinessCenterIcon/>&nbsp;Организации
                                             </div>
@@ -322,7 +322,7 @@ const MyAppBar = React.memo((props) => {
                                 }
                                 {organization&&agents&&['суперорганизация', 'организация', 'менеджер', 'admin'].includes(profile.role)?
                                     [
-                                        <MenuItem key='agentssMenu' onClick={handleMenuAgents}>
+                                        <MenuItem key='agentssMenu' onClick={handleMenuAgents} style={{background: agent?'rgba(51, 143, 255, 0.29)': '#fff'}}>
                                             <div style={{display: 'flex', color: '#606060'}}>
                                                 <GroupIcon/>&nbsp;Агенты
                                             </div>
@@ -354,7 +354,7 @@ const MyAppBar = React.memo((props) => {
                                 }
                                 {cityShow&&['admin'].includes(profile.role)?
                                     [
-                                        <MenuItem key='cityMenu' onClick={handleMenuCities}>
+                                        <MenuItem key='cityMenu' onClick={handleMenuCities} style={{background: city?'rgba(51, 143, 255, 0.29)': '#fff'}}>
                                             <div style={{display: 'flex', color: '#606060'}}>
                                                 <LocationCityIcon/>&nbsp;Город
                                             </div>

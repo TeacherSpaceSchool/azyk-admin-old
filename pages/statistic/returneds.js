@@ -156,7 +156,6 @@ const ReturnedStatistic = React.memo((props) => {
 
 ReturnedStatistic.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    //ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {

@@ -322,7 +322,6 @@ const DiscountClient = React.memo((props) => {
 DiscountClient.getInitialProps = async function(ctx) {
     await initialApp(ctx)
     ctx.store.getState().app.filter = 'Заказы'
-    //ctx.store.getState().app.city = 'Бишкек'
     if(!['admin', 'суперорганизация', 'организация', 'агент', 'менеджер'].includes(ctx.store.getState().user.profile.role))
         if(ctx.res) {
             ctx.res.writeHead(302, {

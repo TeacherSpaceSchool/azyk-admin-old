@@ -102,7 +102,6 @@ const Organization = React.memo((props) => {
 
 Organization.getInitialProps = async function(ctx) {
     await initialApp(ctx)
-    //ctx.store.getState().app.city = 'Бишкек'
     if(!ctx.store.getState().user.profile.role||ctx.store.getState().user.profile.organization)
         if(ctx.res) {
             ctx.res.writeHead(302, {
