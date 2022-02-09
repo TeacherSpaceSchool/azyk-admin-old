@@ -23,6 +23,7 @@ import * as mini_dialogActions from '../redux/actions/mini_dialog'
 import * as appActions from '../redux/actions/app'
 import { bindActionCreators } from 'redux'
 import Badge from '@material-ui/core/Badge';
+import CircularProgress from '@material-ui/core/CircularProgress';
 const height = 225
 
 
@@ -36,24 +37,29 @@ const Orders = React.memo((props) => {
     const { showLoad } = props.appActions;
     const { search, filter, sort, date, organization, city } = props.app;
     const { profile } = props.user;
-    let [paginationWork, setPaginationWork] = useState(true);
+    let numberSearch = useRef(0);
+    let paginationWork = useRef(true);
     const checkPagination = async()=>{
-        if(paginationWork){
+        if(paginationWork.current){
             let addedList = (await getOrders({search: search, sort: sort, filter: filter, date: date, skip: list.length, organization: organization, city: city})).invoices
             if(addedList.length>0){
                 setList([...list, ...addedList])
             }
             else
-                setPaginationWork(false)
+                paginationWork.current = false
         }
     }
-    const getList = async ()=>{
+    const getList = async (_numberSearch)=>{
         setSelected([])
-        setList((await getOrders({search: search, sort: sort, filter: filter, date: date, skip: 0, organization: organization, city: city})).invoices)
-        setSimpleStatistic((await getInvoicesSimpleStatistic({search: search, filter: filter, date: date, organization: organization, city: city})).invoicesSimpleStatistic);
-        (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant' });
-        forceCheck()
-        setPaginationWork(true);
+        let list = (await getOrders({search: search, sort: sort, filter: filter, date: date, skip: 0, organization: organization, city: city})).invoices
+        let simpleStatistic = (await getInvoicesSimpleStatistic({search: search, filter: filter, date: date, organization: organization, city: city})).invoicesSimpleStatistic
+        if(!_numberSearch||_numberSearch===numberSearch.current) {
+            setList(list)
+            setSimpleStatistic(simpleStatistic);
+            (document.getElementsByClassName('App-body'))[0].scroll({top: 0, left: 0, behavior: 'instant'});
+            forceCheck()
+            paginationWork.current = true
+        }
      }
     let [searchTimeOut, setSearchTimeOut] = useState(null);
     useEffect(()=>{
@@ -74,7 +80,9 @@ const Orders = React.memo((props) => {
                 if(searchTimeOut)
                     clearTimeout(searchTimeOut)
                 searchTimeOut = setTimeout(async()=>{
-                    await getList()
+                    numberSearch.current += 1
+                    await getList(numberSearch.current)
+                    setSearchTimeOut(null)
                 }, 500)
                 setSearchTimeOut(searchTimeOut)
             }
@@ -89,7 +97,6 @@ const Orders = React.memo((props) => {
     let close = () => {
         setAnchorEl(null);
     };
-
     return (
         <App organizations cityShow checkPagination={checkPagination} setList={setList} list={list} searchShow={true} dates={true} filters={data.filterInvoice} sorts={data.sortInvoice} pageName='Заказы'>
             <Head>
@@ -99,7 +106,7 @@ const Orders = React.memo((props) => {
                 <meta property='og:description' content='Азык – это онлайн платформа для заказа товаров оптом, разработанная специально для малого и среднего бизнеса.  Она объединяет производителей и торговые точки напрямую, сокращая расходы и повышая продажи. Азык предоставляет своим пользователям мощные технологии для масштабирования и развития своего бизнеса.' />
                 <meta property='og:type' content='website' />
                 <meta property='og:image' content={`${urlMain}/static/512x512.png`} />
-                <meta property="og:url" content={`${urlMain}/orders`} />
+                <meta property='og:url' content={`${urlMain}/orders`} />
                 <link rel='canonical' href={`${urlMain}/orders`}/>
             </Head>
             <div className='count' onClick={()=>setShowStat(!showStat)}>
@@ -146,28 +153,33 @@ const Orders = React.memo((props) => {
                         }
                     </div>
             <div className={classes.page}>
-                {list?list.map((element, idx)=> {
-                        return(
-                            <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOrderPlaceholder/>}>
-                        <ClickNHold
-                            style={{background: selected.includes(element._id)?'rgba(51, 143, 255, 0.29)':null}}
-                            time={3}
-                            onClickNHold={()=>{
-                                if(profile.role==='admin'&&(element.cancelClient||element.cancelForwarder))
-                                    if(selected.includes(element._id)) {
-                                        selected = selected.filter((i)=>i!==element._id)
-                                        setSelected([...selected])
-                                    }
-                                    else
-                                        setSelected([...selected, element._id])
+                {
+                    searchTimeOut?
+                        <CircularProgress style={{position: 'fixed', top: '50vh'}}/>
+                        :
+                        list?list.map((element, idx)=> {
+                            return(
+                                <LazyLoad scrollContainer={'.App-body'} key={element._id} height={height} offset={[height, 0]} debounce={0} once={true}  placeholder={<CardOrderPlaceholder/>}>
+                                    <ClickNHold
+                                        style={{background: selected.includes(element._id)?'rgba(51, 143, 255, 0.29)':null}}
+                                        time={3}
+                                        onClickNHold={()=>{
+                                            if(profile.role==='admin'&&(element.cancelClient||element.cancelForwarder))
+                                                if(selected.includes(element._id)) {
+                                                    selected = selected.filter((i)=>i!==element._id)
+                                                    setSelected([...selected])
+                                                }
+                                                else
+                                                    setSelected([...selected, element._id])
 
-                            }}
-                        >
-                            <CardOrder list={list} idx={idx} setSelected={setSelected} selected={selected} setList={setList} key={element._id} element={element}/>
-                        </ClickNHold>
-                    </LazyLoad>
-                        )}
-                ):null}
+                                        }}
+                                    >
+                                        <CardOrder list={list} idx={idx} setSelected={setSelected} selected={selected} setList={setList} key={element._id} element={element}/>
+                                    </ClickNHold>
+                                </LazyLoad>
+                            )}
+                        ):null
+                }
             </div>
             {profile.role==='admin'&&(selected.length||filter==='обработка')?
                 <Fab onClick={open} color='primary' aria-label='add' className={classes.fab}>

@@ -200,6 +200,7 @@ const Catalog = React.memo((props) => {
                         )}
                     />
                     <br/>
+
                     {
                         !profile.organization?
                             <>

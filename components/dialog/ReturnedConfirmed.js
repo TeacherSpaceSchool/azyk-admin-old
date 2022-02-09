@@ -13,6 +13,8 @@ import Confirmation from './Confirmation'
 import Link from 'next/link';
 import { addAgentHistoryGeo } from '../../src/gql/agentHistoryGeo'
 import {getGeoDistance} from '../../src/lib'
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const ReturnedConfirmed =  React.memo(
     (props) =>{
@@ -22,6 +24,7 @@ const ReturnedConfirmed =  React.memo(
         const { classes } = props;
         const width = isMobileApp? (window.innerWidth-112) : 500
         let [coment, setComent] = useState('');
+        let [inv, setInv] = useState(false);
         let handleComent =  (event) => {
             setComent(event.target.value)
         };
@@ -43,6 +46,14 @@ const ReturnedConfirmed =  React.memo(
                     }}
                 />
                 <br/>
+                <FormControlLabel
+                    style={{width: width}}
+                    onChange={(e)=>{
+                        setInv(e.target.checked)
+                    }}
+                    control={<Checkbox/>}
+                    label={'Cчет фактура'}
+                />
                 <div style={{width: width}} className={classes.itogo}><b>Итого:</b>{` ${allPrice} сом`}</div>
                 <br/>
                 <div>
@@ -56,6 +67,7 @@ const ReturnedConfirmed =  React.memo(
                             }
 
                             await addReturned({
+                                inv,
                                 info: coment,
                                 address: client.address[0],
                                 organization: organization._id,

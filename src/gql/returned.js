@@ -276,8 +276,8 @@ export const addReturned = async(element)=>{
         await client.mutate({
             variables: element,
             mutation : gql`
-                    mutation ($info: String, $address: [[String]], $organization: ID!, $client: ID!, $items: [ReturnedItemsInput]) {
-                        addReturned(info: $info, address: $address, organization: $organization, client: $client, items: $items) {
+                    mutation ($info: String, $inv: Boolean, $address: [[String]], $organization: ID!, $client: ID!, $items: [ReturnedItemsInput]) {
+                        addReturned(info: $info, inv: $inv, address: $address, organization: $organization, client: $client, items: $items) {
                              data
                         }
                     }`})
