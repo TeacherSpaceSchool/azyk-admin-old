@@ -115,12 +115,12 @@ const CardReceiveData = React.memo((props) => {
                             setList([...list])
                         }
                         else
-                            showSnackBar('Уже существует')
+                            showSnackBar('Ошибка')
                     }
                     setMiniDialog('Вы уверены?', <Confirmation action={action}/>)
                     showMiniDialog(true)
                 }} size='small' color='primary'>
-                    Добавить
+                    {element.status}
                 </Button>
                 <Button onClick={async()=>{
                     const action = async() => {

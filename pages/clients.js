@@ -118,8 +118,8 @@ Client.getInitialProps = async function(ctx) {
             Router.push('/contact')
     return {
         data: {
-            ...(await getClients({search: '', sort: '-createdAt', filter: '', skip: 0}, ctx.req?await getClientGqlSsr(ctx.req):undefined)),
-            ...(await getClientsSimpleStatistic({search: '', sort: '-createdAt', filter: ''}, ctx.req?await getClientGqlSsr(ctx.req):undefined))
+            ...(await getClients({search: '', sort: '-createdAt', filter: '', skip: 0, city: ctx.store.getState().app.city}, ctx.req?await getClientGqlSsr(ctx.req):undefined)),
+            ...(await getClientsSimpleStatistic({search: '', sort: '-createdAt', filter: '', city: ctx.store.getState().app.city}, ctx.req?await getClientGqlSsr(ctx.req):undefined))
         }
     };
 };
